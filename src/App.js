@@ -12,14 +12,12 @@ class App extends Component {
       <>
         <div>
           <a href="http://localhost:3000/api/v1/login">OAUTH LOGIN</a>
+          <a href="http://spotify.com/logout" target="_blank">
+            Logout
+          </a>
         </div>
 
-        <Route 
-        path="/users"
-        render={() => (
-          <UsersContainer/>
-        )}
-        /> 
+        <Route path="/users" render={() => <UsersContainer />} />
         {/* <Anime
           easing="easeOutElastic"
           loop={true}

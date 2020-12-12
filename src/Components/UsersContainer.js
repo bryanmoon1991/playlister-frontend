@@ -1,29 +1,28 @@
-import React, {Component} from 'react'
+import React from 'react'
 import {Switch, Route} from 'react-router-dom';
+import {connect} from 'react-redux';
+import {fetchCurrentUser} from '../Redux/actions'
 
 var Spotify = require('spotify-web-api-js');
 var spotifyApi = new Spotify();
 
-class UsersContainer extends Component {
-    
+const UsersContainer = ({user, fetchCurrentUser}) => {
 
-    state = {
-        user: null
-    }
+    // const componentDidMount = () => {
+    //     props.user ?
+    //     console.log("already found user") :
+    //     fetch(`http://localhost:3000/api/v1/users/${id}`)
+    //       .then(response => response.json())
+    //       .then(user => {
+    //         this.setState({user: user});
+    //         spotifyApi.setAccessToken(user.access_token)
+    //     })
+        
+    // }
 
-    findProfile = (id) => {
-        this.state.user ?
-        console.log("already found user") :
-        fetch(`http://localhost:3000/api/v1/users/${id}`)
-          .then(response => response.json())
-          .then(user => {
-            this.setState({user: user});
-            spotifyApi.setAccessToken(user.access_token)
-        })
-    }
-
-    createPlaylist = () => {
-        spotifyApi.createPlaylist(this.state.user.spotify_id, {
+    const createPlaylist = () => {
+        spotifyApi.setAccessToken(user.access_token)
+        spotifyApi.createPlaylist(user.spotify_id, {
             "name": 'New Playlist',
             "description": "New playlist description",
             "public": false
@@ -32,23 +31,22 @@ class UsersContainer extends Component {
     }
 
 
-    render() {
         return (
             <>
               <Switch>
                   <Route
                   path="/users/:id"
                   render={({match}) => {
-                    this.state.user ? 
+                    user ? 
                     console.log("user detected") :
-                    this.findProfile(match.params.id)
+                    fetchCurrentUser(match.params.id)
                     
                     return (
                         <>
-                        {this.state.user ? 
+                        {user ? 
                         <>
-                            <h1>hello {this.state.user.display_name}</h1>
-                            <button onClick={() => this.createPlaylist()}>Create Test Playlist</button>
+                            <h1>hello {user.display_name}</h1>
+                            <button onClick={() => createPlaylist()}>Create Test Playlist</button>
                         </>
                         :
                         <h1>loading</h1>
@@ -60,7 +58,13 @@ class UsersContainer extends Component {
               </Switch>  
             </>
         )
-    } 
 }
 
-export default UsersContainer;
+
+const msp = (state) => {
+    return {
+        user: state.user
+    }
+}
+
+export default connect(msp, {fetchCurrentUser})(UsersContainer);
