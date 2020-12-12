@@ -1,21 +1,20 @@
-import React, { Component } from 'react'; 
-// import Anime from 'react-anime';
+import React from 'react'; 
 import {Route, withRouter} from 'react-router-dom'
 import UsersContainer from './Components/UsersContainer'
+import {connect} from 'react-redux';
+// import Anime from 'react-anime';
 
 import './App.css';
 
-class App extends Component {
+const App = ({user}) => {
 
-  render() {
     return (
       <>
-        <div>
-          <a href="http://localhost:3000/api/v1/login">OAUTH LOGIN</a>
-          <a href="http://spotify.com/logout" target="_blank">
-            Logout
-          </a>
-        </div>
+      {user ?
+      <a href="http://spotify.com/logout" target="_blank">Logout</a> :
+      <a href="http://localhost:3000/api/v1/login">OAUTH LOGIN</a>
+      }
+          
 
         <Route path="/users" render={() => <UsersContainer />} />
         {/* <Anime
@@ -42,7 +41,13 @@ class App extends Component {
         </Anime> */}
       </>
     );
-  } 
 }
 
-export default withRouter(App);
+const msp = state => {
+  return {
+    user: state.user
+  }
+}
+
+
+export default connect(msp)(withRouter(App));
