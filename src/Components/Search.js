@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {connect} from 'react-redux';
 import {fetchSearch} from '../Redux/actions'
 import ResultsContainer from './ResultsContainer';
@@ -20,19 +20,17 @@ const Search = ({user, searchResults, fetchSearch}) => {
     const [query, setQuery] = useState({search: ''})
 
     const handleChange = (event) => {
-        const { name, value } = event.target;
-        setQuery({ [name]: value });
-        fetchSearch(spotifyApi, query.search)
-        // console.log("in search", searchResults)
+      const { name, value } = event.target;
+      setQuery({ [name]: value });
     };
 
-
-
-    // useEffect(() => {
-    //     fetch(`https://api.spotify.com/v1/search?q=${query.search.split(" ").join("%20")}&type=artist,track`)
-    //     .then(response => response.json())
-    //     .then(data => function(data)); 
-    // }, [query])
+    useEffect(() => {
+      if (query.search === '') {
+        console.log("empty search field")
+      } else {
+        fetchSearch(spotifyApi, query.search)
+      }
+    }, [query])
 
     return (
       <>

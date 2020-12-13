@@ -7,18 +7,18 @@ const Result = (props) => {
         <div className="artist">
             <li>
                 {props.artist.name}
-                {props.artist.images ? 
+                {/* {props.artist.images ? 
                 <img src={props.artist.images[props.artist.images.length - 1].url} alt={props.artist.name} /> :
-                undefined}
+                undefined} */}
             </li>
         </div>   
         :
         <div className="track">
             <li>
                 {props.track.name}
-                {props.track.album.images ? 
+                {/* {props.track.album.images ? 
                 <img src={props.track.album.images[props.track.album.images.length - 1].url} alt={props.track.name}/> :
-                undefined}
+                undefined} */}
             </li>
         </div>
     }
