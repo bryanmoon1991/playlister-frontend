@@ -1,7 +1,8 @@
 import {combineReducers} from 'redux';
 
 const defaultState = {
-    user: null
+    user: null,
+    searchResults: null
 }
 
 const currentUserReducer = (state = defaultState.user, action) => {
@@ -13,8 +14,18 @@ const currentUserReducer = (state = defaultState.user, action) => {
     }
 }
 
+const searchReducer = (state = defaultState.searchResults, action) => {
+    switch (action.type) {
+        case 'TYPE_TO_SEARCH':
+            return action.payload
+        default:
+            return state
+    }
+}
+
 const rootReducer = combineReducers({
-    user: currentUserReducer
+    user: currentUserReducer,
+    searchResults: searchReducer
 })
 
 export default rootReducer
