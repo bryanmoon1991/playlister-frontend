@@ -20,10 +20,15 @@ const ResultsContainer = ({searchResults}) => {
 
     return (
         <>
-        <h3>Artists</h3>
-        {renderArtists()}
-        <h3>Tracks</h3>
-        {renderTracks()}
+            {searchResults ?
+                <>
+                <h3>Artists</h3>
+                {renderArtists()}
+                <h3>Tracks</h3>
+                {renderTracks()}
+                </>
+            :
+            undefined}
         </>
     )
 }

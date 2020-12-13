@@ -7,13 +7,12 @@ var spotifyApi = new Spotify()
 
 
 const msp = (state) => {
-    return {
-        user: state.user,
-        searchResults: state.searchResults
-    }
+  return {
+    user: state.user,
+  }
 }
 
-const Search = ({user, searchResults, fetchSearch}) => {
+const Search = ({user, fetchSearch}) => {
     spotifyApi.setAccessToken(user.access_token)
 
     // const [query, setQuery] = useReducer((state, newState) => ({ ...state, ...newState }), { search: '' });
@@ -30,7 +29,7 @@ const Search = ({user, searchResults, fetchSearch}) => {
       } else {
         fetchSearch(spotifyApi, query.search)
       }
-    }, [query])
+    }, [query, fetchSearch])
 
     return (
       <>
@@ -43,10 +42,7 @@ const Search = ({user, searchResults, fetchSearch}) => {
             onChange={handleChange}
           />
         </form>
-        {searchResults ?
-        <ResultsContainer/> :
-        undefined
-        }
+        <ResultsContainer/> 
       </>
     );
 }
