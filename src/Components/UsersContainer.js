@@ -3,6 +3,7 @@ import {Switch, Route} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {fetchCurrentUser} from '../Redux/actions'
 import Search from './Search'
+import RecommendedContainer from './RecommendedContainer';
 
 var Spotify = require('spotify-web-api-js');
 var spotifyApi = new Spotify();
@@ -49,6 +50,7 @@ const UsersContainer = ({user, fetchCurrentUser}) => {
                             <h1>hello {user.display_name}</h1>
                             <button onClick={() => createPlaylist()}>Create Test Playlist</button>
                             <Search/>
+                            <RecommendedContainer/>
                         </>
                         :
                         <h1>loading</h1>

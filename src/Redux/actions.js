@@ -11,14 +11,11 @@ export const fetchCurrentUser = id => {
 };
 
 export const fetchSearch = (spotifyApi, query) => {
-    
-    
-    return (dispatch) => {
-        Promise.all([
-          spotifyApi.searchArtists(query, { limit: 10 }),
-          spotifyApi.searchTracks(query, { limit: 10 }),
+    return dispatch => {
+      Promise.all([
+        spotifyApi.searchArtists(query, { limit: 5 }),
+        spotifyApi.searchTracks(query, { limit: 5 }),
         ])
-          // .then(([res1, res2]) => Promise.all([res1.json(), res2.json()]))
           .then(([data1, data2]) => {
             console.log(data1, data2);
             dispatch({
@@ -26,10 +23,20 @@ export const fetchSearch = (spotifyApi, query) => {
               payload: { artists: data1.artists.items, tracks: data2.tracks.items },
             });
           });
-
-
-        // fetch(`https://api.spotify.com/v1/search?q=${query.split(" ").join("%20")}&type=artist,track`)
-        //   .then(response => response.json())
-        //   .then(data => function(data));
     }
+}
+
+export const fetchRecommended = (spotifyApi) => {
+  return (dispatch) => {
+    Promise.all([
+      spotifyApi.getMyTopArtists({ limit: 5 }),
+      spotifyApi.getMyTopTracks({ limit: 5 }),
+    ]).then(([data1, data2]) => {
+      console.log(data1, data2);
+      dispatch({
+        type: 'RECOMMENDED_ARTISTS_AND_TRACKS',
+        payload: { artists: data1, tracks: data2, images:data2.items.map(item => item.album.images[2])},
+      });
+    });
+  };
 }

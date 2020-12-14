@@ -2,7 +2,8 @@ import {combineReducers} from 'redux';
 
 const defaultState = {
     user: null,
-    searchResults: null
+    searchResults: null,
+    recommended: []
 }
 
 const currentUserReducer = (state = defaultState.user, action) => {
@@ -23,9 +24,19 @@ const searchReducer = (state = defaultState.searchResults, action) => {
     }
 }
 
+const recommendedReducer = (state = defaultState.recommended, action) => {
+    switch (action.type) {
+        case 'RECOMMENDED_ARTISTS_AND_TRACKS':
+            return action.payload
+        default:
+            return state
+    }
+}
+
 const rootReducer = combineReducers({
     user: currentUserReducer,
-    searchResults: searchReducer
+    searchResults: searchReducer,
+    recommended: recommendedReducer
 })
 
 export default rootReducer

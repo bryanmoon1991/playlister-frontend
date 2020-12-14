@@ -2,7 +2,7 @@ import React from 'react'
 
 const Result = (props) => {
     let preview
-    props.track ? (props.track.preview_url ? preview = new Audio(props.track.preview_url) : console.log("track with no preview")) : console.log('no preview')
+    props.track ? (props.track.preview_url ? preview = new Audio(props.track.preview_url) : console.log('track with no preview')) : console.log('no preview')
 
 
     const playPreview = () => {
@@ -22,7 +22,7 @@ const Result = (props) => {
         preview.pause();
         preview.currentTime = 0
       } else {
-        console.log("track with no preview") 
+        console.log('track with no preview') 
       }
     };
     

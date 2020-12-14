@@ -50,4 +50,4 @@ const msp = state => {
 }
 
 
-export default connect(msp)(withRouter(App));
+export default withRouter(connect(msp)(App));

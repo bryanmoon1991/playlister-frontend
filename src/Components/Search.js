@@ -13,6 +13,7 @@ const msp = (state) => {
 }
 
 const Search = ({user, fetchSearch}) => {
+  // potentially refactor into state
     spotifyApi.setAccessToken(user.access_token)
 
     // const [query, setQuery] = useReducer((state, newState) => ({ ...state, ...newState }), { search: '' });
