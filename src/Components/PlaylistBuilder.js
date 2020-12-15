@@ -3,12 +3,14 @@ import {connect} from 'react-redux'
 
 const msp = state => {
     return {
+        user: state.user,
         playlistBuild: state.playlistBuild
     }
 }
 
-const PlaylistBuilder = ({playlistBuild}) => {
+const PlaylistBuilder = ({user, playlistBuild}) => {
 
+    console.log("in playlistBuilder:", playlistBuild)
     return (
         <>
         {playlistBuild.name ? 

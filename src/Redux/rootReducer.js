@@ -5,7 +5,8 @@ const defaultState = {
   searchResults: null,
   recommended: [],
   playlistBuild: {},
-  initialDiscovery: {}
+  initialDiscovery: {},
+  currentArtist: {},
 };
 
 const currentUserReducer = (state = defaultState.user, action) => {
@@ -36,22 +37,34 @@ const recommendedReducer = (state = defaultState.recommended, action) => {
 };
 
 const playlistBuildReducer = (state = defaultState.playlistBuild, action) => {
-    switch (action.type) {
-        case 'PLAYLIST_BUILD':
-            return action.payload;
-        default:
-            return state;
-    }
-}
+  switch (action.type) {
+    case 'PLAYLIST_BUILD':
+      return action.payload;
+    default:
+      return state;
+  }
+};
 
-const initialDiscoveryReducer = (state = defaultState.initialDiscovery, action) => {
-    switch (action.type) {
-        case 'INITIAL_DISCOVERY':
-            return action.payload;
-        default:
-            return state;
-    }
-}
+const initialDiscoveryReducer = (
+  state = defaultState.initialDiscovery,
+  action
+) => {
+  switch (action.type) {
+    case 'INITIAL_DISCOVERY':
+      return action.payload;
+    default:
+      return state;
+  }
+};
+
+const currentArtistReducer = (state = defaultState.currentArtist, action) => {
+  switch (action.type) {
+    case 'CURRENT_ARTIST':
+      return action.payload;
+    default:
+      return state;
+  }
+};
 
 const rootReducer = combineReducers({
   user: currentUserReducer,
@@ -59,6 +72,7 @@ const rootReducer = combineReducers({
   recommended: recommendedReducer,
   playlistBuild: playlistBuildReducer,
   initialDiscovery: initialDiscoveryReducer,
+  currentArtist: currentArtistReducer,
 });
 
 export default rootReducer;

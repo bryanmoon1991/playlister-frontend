@@ -16,11 +16,11 @@ export const fetchSearch = (spotifyApi, query) => {
         spotifyApi.searchArtists(query, { limit: 5 }),
         spotifyApi.searchTracks(query, { limit: 5 }),
         ])
-          .then(([data1, data2]) => {
-            console.log(data1, data2);
+          .then(([data1, relatedArtists]) => {
+            console.log(data1, relatedArtists);
             dispatch({
               type: 'TYPE_TO_SEARCH',
-              payload: { artists: data1.artists.items, tracks: data2.tracks.items },
+              payload: { artists: data1.artists.items, tracks: relatedArtists.tracks.items },
             });
           });
     }
@@ -31,11 +31,11 @@ export const fetchRecommended = (spotifyApi) => {
     Promise.all([
       spotifyApi.getMyTopArtists({ limit: 5 }),
       spotifyApi.getMyTopTracks({ limit: 5 }),
-    ]).then(([data1, data2]) => {
-      console.log(data1, data2);
+    ]).then(([data1, relatedArtists]) => {
+      console.log(data1, relatedArtists);
       dispatch({
         type: 'RECOMMENDED_ARTISTS_AND_TRACKS',
-        payload: { artists: data1, tracks: data2, images:data2.items.map(item => item.album.images[2])},
+        payload: { artists: data1, tracks: relatedArtists, images:relatedArtists.items.map(item => item.album.images[2])},
       });
     });
   };
@@ -61,20 +61,37 @@ export const startNew = (userId, seedId, spotifyApi) => {
           items: `{${seedId}}`,
           uri: '',
         }),
-      })
-        .then((r) => r.json()),
-        spotifyApi.getArtistRelatedArtists(seedId, { limit: 5 })
-    ])
-      .then(([data1, data2]) => {
-        console.log("in start NEW action:", data1, data2)
+      }).then((r) => r.json()),
+      spotifyApi.getArtistRelatedArtists(seedId),
+      spotifyApi.getArtist(seedId),
+      spotifyApi.getArtistAlbums(seedId),
+      spotifyApi.getArtistTopTracks(seedId,"US"),
+    ]).then(
+      ([
+        playlistBuild,
+        relatedArtists,
+        currentArtist,
+        currentArtistAlbums,
+        currentArtistTopTracks,
+      ]) => {
+        console.log('in start NEW action:', playlistBuild, relatedArtists);
         dispatch({
           type: 'PLAYLIST_BUILD',
-          payload: { playlistBuild: data1 }
-        })
+          payload: playlistBuild,
+        });
         dispatch({
           type: 'INITIAL_DISCOVERY',
-          payload: { initialDiscovery: data2 }
-        })
-      });
+          payload: relatedArtists,
+        });
+        dispatch({
+          type: 'CURRENT_ARTIST',
+          payload: {
+            info: currentArtist,
+            albums: currentArtistAlbums.items,
+            tracks: currentArtistTopTracks.tracks,
+          },
+        });
+      }
+    );
   }
 };
