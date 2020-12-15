@@ -4,23 +4,12 @@ import {connect} from 'react-redux';
 import {fetchCurrentUser} from '../Redux/actions'
 import Search from './Search'
 import RecommendedContainer from './RecommendedContainer';
-
+import Discovery from './Discovery';
+import PlaylistBuilder from './PlaylistBuilder'
 var Spotify = require('spotify-web-api-js');
 var spotifyApi = new Spotify();
 
 const UsersContainer = ({user, fetchCurrentUser}) => {
-
-    // const componentDidMount = () => {
-    //     props.user ?
-    //     console.log("already found user") :
-    //     fetch(`http://localhost:3000/api/v1/users/${id}`)
-    //       .then(response => response.json())
-    //       .then(user => {
-    //         this.setState({user: user});
-    //         spotifyApi.setAccessToken(user.access_token)
-    //     })
-        
-    // }
 
     const createPlaylist = () => {
         spotifyApi.setAccessToken(user.access_token)
@@ -32,17 +21,17 @@ const UsersContainer = ({user, fetchCurrentUser}) => {
         (err, data) => err ? console.log(err) : console.log(data));
     }
 
-
         return (
             <>
               <Switch>
                   <Route
                   path='/users/:id/new'
-                  render={({match}) => {
-                      console.log("in new playlist:", match)
+                  render={() => {
                       return (
                           <>
-                          <h3>new playlist area</h3>
+                            <h3>new playlist area</h3>
+                            <PlaylistBuilder/>
+                            <Discovery/>
                           </>
                       )
                   }}
@@ -78,7 +67,8 @@ const UsersContainer = ({user, fetchCurrentUser}) => {
 
 const msp = (state) => {
     return {
-        user: state.user
+        user: state.user,
+        playlistBuild: state.playlistBuild
     }
 }
 

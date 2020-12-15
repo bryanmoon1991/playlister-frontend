@@ -27,7 +27,7 @@ export const fetchSearch = (spotifyApi, query) => {
 }
 
 export const fetchRecommended = (spotifyApi) => {
-  return (dispatch) => {
+  return dispatch => {
     Promise.all([
       spotifyApi.getMyTopArtists({ limit: 5 }),
       spotifyApi.getMyTopTracks({ limit: 5 }),
@@ -40,3 +40,41 @@ export const fetchRecommended = (spotifyApi) => {
     });
   };
 }
+
+export const startNew = (userId, seedId, spotifyApi) => {
+  return dispatch => {
+    Promise.all([
+      fetch('http://localhost:3000/api/v1/playlists', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          name: 'newPlaylist',
+          private: false,
+          description: 'Playlist created with Perfect Playlist',
+          href: '',
+          spotify_id: '',
+          images: '{}',
+          items: `{${seedId}}`,
+          uri: '',
+        }),
+      })
+        .then((r) => r.json()),
+        spotifyApi.getArtistRelatedArtists(seedId, { limit: 5 })
+    ])
+      .then(([data1, data2]) => {
+        console.log("in start NEW action:", data1, data2)
+        dispatch({
+          type: 'PLAYLIST_BUILD',
+          payload: { playlistBuild: data1 }
+        })
+        dispatch({
+          type: 'INITIAL_DISCOVERY',
+          payload: { initialDiscovery: data2 }
+        })
+      });
+  }
+};

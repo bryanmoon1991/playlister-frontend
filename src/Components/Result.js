@@ -1,6 +1,9 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { startNew } from '../Redux/actions'
+var Spotify = require('spotify-web-api-js');
+var spotifyApi = new Spotify();
 
 const msp = state => {
   return {
@@ -9,6 +12,7 @@ const msp = state => {
 }
 
 const Result = (props) => {
+    spotifyApi.setAccessToken(props.user.access_token);
     let preview
     props.track ? (props.track.preview_url ? preview = new Audio(props.track.preview_url) : console.log('track with no preview')) : console.log('no preview')
 
@@ -34,34 +38,12 @@ const Result = (props) => {
       }
     };
 
-    const startNew = (userId, seedId) => {
-      fetch('http://localhost:3000/api/v1/playlists',{
-              method: "POST",
-              headers: {
-                  "Content-Type": "application/json",
-                  "Accept": "application/json"
-              },
-              body: JSON.stringify({
-                user_id: userId,
-                name: "newPlaylist",
-                private: false,
-                description: "Playlist created with Perfect Playlist",
-                href: "",
-                spotify_id: "",
-                images: '{}',
-                items: `{${seedId}}`,
-                uri: ""
-              })
-          })
-          .then(r => r.json())
-          .then(console.log)
-    }
     
     return (
       <>
         {props.artist ? (
           <div className="artist">
-            <h3 onClick={() => startNew(props.user.id, props.artist.id)}>
+            <h3 onClick={() => props.startNew(props.user.id, props.artist.id, spotifyApi)}>
               <Link to={`/users/${props.user.id}/new`}>{props.artist.name}</Link>
               {/* {props.artist.images ? 
                 <img src={props.artist.images[props.artist.images.length - 1].url} alt={props.artist.name} /> :
@@ -91,4 +73,4 @@ const Result = (props) => {
     );
 }
 
-export default connect(msp)(Result);
+export default connect(msp, {startNew})(Result);
