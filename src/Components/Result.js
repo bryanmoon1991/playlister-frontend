@@ -1,4 +1,12 @@
 import React from 'react'
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+
+const msp = state => {
+  return {
+    user: state.user
+  }
+}
 
 const Result = (props) => {
     let preview
@@ -25,13 +33,36 @@ const Result = (props) => {
         console.log('track with no preview') 
       }
     };
+
+    const startNew = (userId, seedId) => {
+      fetch('http://localhost:3000/api/v1/playlists',{
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+                  "Accept": "application/json"
+              },
+              body: JSON.stringify({
+                user_id: userId,
+                name: "newPlaylist",
+                private: false,
+                description: "Playlist created with Perfect Playlist",
+                href: "",
+                spotify_id: "",
+                images: '{}',
+                items: `{${seedId}}`,
+                uri: ""
+              })
+          })
+          .then(r => r.json())
+          .then(console.log)
+    }
     
     return (
       <>
         {props.artist ? (
           <div className="artist">
-            <h3>
-              {props.artist.name}
+            <h3 onClick={() => startNew(props.user.id, props.artist.id)}>
+              <Link to={`/users/${props.user.id}/new`}>{props.artist.name}</Link>
               {/* {props.artist.images ? 
                 <img src={props.artist.images[props.artist.images.length - 1].url} alt={props.artist.name} /> :
             undefined} */}
@@ -60,4 +91,4 @@ const Result = (props) => {
     );
 }
 
-export default Result;
+export default connect(msp)(Result);

@@ -37,6 +37,17 @@ const UsersContainer = ({user, fetchCurrentUser}) => {
             <>
               <Switch>
                   <Route
+                  path='/users/:id/new'
+                  render={({match}) => {
+                      console.log("in new playlist:", match)
+                      return (
+                          <>
+                          <h3>new playlist area</h3>
+                          </>
+                      )
+                  }}
+                  />
+                  <Route
                   path="/users/:id"
                   render={({match}) => {
                     user ? 
