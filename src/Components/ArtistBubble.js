@@ -20,12 +20,14 @@ const ArtistBubble = ({artist, user}) => {
     }, [artist.id])
 
     const playPreview = () => {
-        track.play();
+        track ? track.play() : console.log("first render")
     }
 
     const stopPreview = () => {
-        track.pause();
-        track.currentTime = 0
+        if (track) {
+            track.pause()
+            track.currentTime = 0
+        }
     }
     
     return (

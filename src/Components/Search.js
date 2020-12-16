@@ -2,21 +2,9 @@ import React, {useState, useEffect} from 'react';
 import {connect} from 'react-redux';
 import {fetchSearch} from '../Redux/actions'
 import ResultsContainer from './ResultsContainer';
-var Spotify = require('spotify-web-api-js');
-var spotifyApi = new Spotify()
 
 
-const msp = (state) => {
-  return {
-    user: state.user,
-  }
-}
-
-const Search = ({user, fetchSearch}) => {
-  // potentially refactor into state
-    spotifyApi.setAccessToken(user.access_token)
-
-    // const [query, setQuery] = useReducer((state, newState) => ({ ...state, ...newState }), { search: '' });
+const Search = ({fetchSearch}) => {
     const [query, setQuery] = useState({search: ''})
 
     const handleChange = (event) => {
@@ -28,7 +16,7 @@ const Search = ({user, fetchSearch}) => {
       if (query.search === '') {
         console.log("empty search field")
       } else {
-        fetchSearch(spotifyApi, query.search)
+        fetchSearch(query.search)
       }
     }, [query, fetchSearch])
 
@@ -49,4 +37,4 @@ const Search = ({user, fetchSearch}) => {
 }
 
 
-export default connect(msp, {fetchSearch})(Search);
+export default connect(null, {fetchSearch})(Search);

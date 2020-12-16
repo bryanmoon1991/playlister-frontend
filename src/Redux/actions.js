@@ -4,17 +4,37 @@ export const fetchCurrentUser = id => {
         fetch(`http://localhost:3000/api/v1/users/${id}`)
         .then(response => response.json())
         .then(user => {
-            console.log(user)
+            var Spotify = require('spotify-web-api-js');
+            var spotifyApi = new Spotify();
+            spotifyApi.setAccessToken(user.access_token)
             dispatch({type: 'FETCH_CURRENT_USER', payload: user})
+            dispatch({type: 'SET_AUTHORIZATION', payload: spotifyApi})
         })
     }
 };
 
-export const fetchSearch = (spotifyApi, query) => {
-    return dispatch => {
+export const fetchCurrentUsersPlaylists = userId => {
+  return (dispatch, getState) => {
+    Promise.all([
+      getState().spotifyApi.getUserPlaylists(),
+      fetch(`http://localhost:3000/api/v1/users/${userId}/playlists`)
+        .then(response => response.json())
+    ])
+    .then(([data1, data2]) => {
+      console.log("playlists:", data1, data2)
+      dispatch({
+        type: 'GET_MY_PLAYLISTS',
+        payload: { published: data1, unPublished: data2 }
+      });
+    });
+  }
+}
+
+export const fetchSearch = query => {
+    return (dispatch, getState) => {
       Promise.all([
-        spotifyApi.searchArtists(query, { limit: 5 }),
-        spotifyApi.searchTracks(query, { limit: 5 }),
+        getState().spotifyApi.searchArtists(query, { limit: 5 }),
+        getState().spotifyApi.searchTracks(query, { limit: 5 }),
         ])
           .then(([data1, relatedArtists]) => {
             console.log(data1, relatedArtists);
@@ -26,11 +46,11 @@ export const fetchSearch = (spotifyApi, query) => {
     }
 }
 
-export const fetchRecommended = (spotifyApi) => {
-  return dispatch => {
+export const fetchRecommended = () => {
+  return (dispatch, getState) => {
     Promise.all([
-      spotifyApi.getMyTopArtists({ limit: 5 }),
-      spotifyApi.getMyTopTracks({ limit: 5 }),
+      getState().spotifyApi.getMyTopArtists({ limit: 5 }),
+      getState().spotifyApi.getMyTopTracks({ limit: 5 }),
     ]).then(([data1, relatedArtists]) => {
       console.log(data1, relatedArtists);
       dispatch({
@@ -41,8 +61,8 @@ export const fetchRecommended = (spotifyApi) => {
   };
 }
 
-export const startNew = (userId, seedId, spotifyApi) => {
-  return dispatch => {
+export const startNew = (userId, seedId) => {
+  return (dispatch, getState) => {
     Promise.all([
       fetch('http://localhost:3000/api/v1/playlists', {
         method: 'POST',
@@ -62,10 +82,10 @@ export const startNew = (userId, seedId, spotifyApi) => {
           uri: '',
         }),
       }).then((r) => r.json()),
-      spotifyApi.getArtistRelatedArtists(seedId),
-      spotifyApi.getArtist(seedId),
-      spotifyApi.getArtistAlbums(seedId),
-      spotifyApi.getArtistTopTracks(seedId,"US"),
+      getState().spotifyApi.getArtistRelatedArtists(seedId),
+      getState().spotifyApi.getArtist(seedId),
+      getState().spotifyApi.getArtistAlbums(seedId),
+      getState().spotifyApi.getArtistTopTracks(seedId, 'US'),
     ]).then(
       ([
         playlistBuild,

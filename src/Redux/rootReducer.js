@@ -2,11 +2,13 @@ import { combineReducers } from 'redux';
 
 const defaultState = {
   user: null,
+  spotifyApi: null,
   searchResults: null,
   recommended: [],
   playlistBuild: {},
   relatedArtists: {},
   currentArtist: {},
+  playlists: {},
 };
 
 const currentUserReducer = (state = defaultState.user, action) => {
@@ -17,6 +19,24 @@ const currentUserReducer = (state = defaultState.user, action) => {
       return state;
   }
 };
+
+const spotifyApiReducer = (state = defaultState.spotifyApi, action) => {
+    switch(action.type) {
+        case 'SET_AUTHORIZATION':
+            return action.payload;
+        default:
+            return state;
+    }
+}
+
+const currentUsersPlaylistsReducer = (state = defaultState.playlists, action) => {
+    switch (action.type) {
+        case 'GET_MY_PLAYLISTS':
+            return action.payload;
+        default:
+            return state;
+    }
+}
 
 const searchReducer = (state = defaultState.searchResults, action) => {
   switch (action.type) {
@@ -68,11 +88,13 @@ const currentArtistReducer = (state = defaultState.currentArtist, action) => {
 
 const rootReducer = combineReducers({
   user: currentUserReducer,
+  spotifyApi: spotifyApiReducer,
   searchResults: searchReducer,
   recommended: recommendedReducer,
   playlistBuild: playlistBuildReducer,
   relatedArtists: relatedArtistsReducer,
   currentArtist: currentArtistReducer,
+  playlists: currentUsersPlaylistsReducer,
 });
 
 export default rootReducer;
