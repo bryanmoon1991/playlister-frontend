@@ -5,7 +5,7 @@ const defaultState = {
   searchResults: null,
   recommended: [],
   playlistBuild: {},
-  initialDiscovery: {},
+  relatedArtists: {},
   currentArtist: {},
 };
 
@@ -45,12 +45,12 @@ const playlistBuildReducer = (state = defaultState.playlistBuild, action) => {
   }
 };
 
-const initialDiscoveryReducer = (
-  state = defaultState.initialDiscovery,
+const relatedArtistsReducer = (
+  state = defaultState.relatedArtists,
   action
 ) => {
   switch (action.type) {
-    case 'INITIAL_DISCOVERY':
+    case 'RELATED_ARTISTS':
       return action.payload;
     default:
       return state;
@@ -71,7 +71,7 @@ const rootReducer = combineReducers({
   searchResults: searchReducer,
   recommended: recommendedReducer,
   playlistBuild: playlistBuildReducer,
-  initialDiscovery: initialDiscoveryReducer,
+  relatedArtists: relatedArtistsReducer,
   currentArtist: currentArtistReducer,
 });
 

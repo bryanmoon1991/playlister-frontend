@@ -74,13 +74,12 @@ export const startNew = (userId, seedId, spotifyApi) => {
         currentArtistAlbums,
         currentArtistTopTracks,
       ]) => {
-        console.log('in start NEW action:', playlistBuild, relatedArtists);
         dispatch({
           type: 'PLAYLIST_BUILD',
           payload: playlistBuild,
         });
         dispatch({
-          type: 'INITIAL_DISCOVERY',
+          type: 'RELATED_ARTISTS',
           payload: relatedArtists,
         });
         dispatch({
