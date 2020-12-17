@@ -31,6 +31,7 @@ const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersPlaylists, loa
                 path="/users/:id/playlists"
                 render={({ match }) => {
                     fetchCurrentUsersPlaylists(match.params.id)
+                    console.log('test')
                     return (
                     <>
                     <div className="playlists">

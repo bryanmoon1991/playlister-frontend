@@ -22,7 +22,6 @@ const UnpublishedContainer = ({user, playlists}) => {
         })
     }
 
-    console.log("in unpublished", playlists)
     return (
         <div>
             {playlists.unPublished ? 

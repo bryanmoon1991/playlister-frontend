@@ -75,6 +75,8 @@ const playlistSeedsReducer = produce((draft, action) => {
             return draft
         case 'CREATE_SEEDS':
             return action.payload
+        case 'NO_SEEDS':
+            return action.payload
         case 'ADD_SEED':
             draft.push(action.payload)
             return draft;

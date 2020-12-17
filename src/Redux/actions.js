@@ -1,6 +1,5 @@
 import produce from 'immer';
 
-
 export const fetchCurrentUser = id => {
     return dispatch => {
         fetch(`http://localhost:3000/api/v1/users/${id}`)
@@ -154,7 +153,7 @@ export const removeSeed = (seed, playlistId) => {
 }
 
 export const loadBuild = (id) => {
-  return (dispatch) => {
+  return dispatch => {
     fetch(`http://localhost:3000/api/v1/playlists/${id}`)
       .then((response) => response.json())
       .then((data) => {
@@ -166,6 +165,36 @@ export const loadBuild = (id) => {
   };
 };
 
+export const loadSeeds = (seeds) => {
+  if (seeds.length === 1) {
+    return (dispatch, getState) => {
+      getState().spotifyApi.getArtist(seeds[0])
+      .then(data => {
+        dispatch({
+          type: 'FIRST_SEED',
+          payload: data
+        })
+      })
+    }
+  } else if (seeds.length === 0) {
+    return dispatch => {
+    dispatch({
+      type: 'NO_SEEDS',
+      payload: []
+    })
+  }
+  } else {
+    return (dispatch, getState) => {
+      getState().spotifyApi.getArtists(seeds.join())
+      .then(data => {
+        dispatch({
+          type: 'CREATE_SEEDS',
+          payload: data
+        })
+      })
+    }
+  }
+}
 
 export const updatePlaylist = (id, attribute, value) => {
   let body = {}
