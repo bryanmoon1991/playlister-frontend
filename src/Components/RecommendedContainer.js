@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react'
 import {fetchRecommended} from '../Redux/actions'
 import { motion, AnimatePresence } from 'framer-motion';
 import { wrap } from 'popmotion';
+import './Recommended.css'
 
 const msp = state => {
     return {
@@ -54,11 +55,12 @@ const RecommendedContainer = ({user, recommended, fetchRecommended}) => {
     paginate(1)
     setTimeout(() => autoFlip(), 5000)
   }
-  
+
   return (
     <>
       {recommended.images && (
         <>
+        <div className="recommended">
           <div className="next" onClick={() => paginate(1)}>
             {'‣'}
           </div>
@@ -77,10 +79,10 @@ const RecommendedContainer = ({user, recommended, fetchRecommended}) => {
               }}
             />
           </AnimatePresence>
-
           <div className="prev" onClick={() => paginate(-1)}>
             {'‣'}
           </div>
+        </div>
         </>
       )}
     </>

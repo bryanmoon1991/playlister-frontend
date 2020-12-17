@@ -1,3 +1,5 @@
+import produce from 'immer';
+
 
 export const fetchCurrentUser = id => {
     return dispatch => {
@@ -61,7 +63,7 @@ export const fetchRecommended = () => {
   };
 }
 
-export const startNew = (userId, seedId) => {
+export const startNew = (userId, artist) => {
   return (dispatch, getState) => {
     Promise.all([
       fetch('http://localhost:3000/api/v1/playlists', {
@@ -78,14 +80,14 @@ export const startNew = (userId, seedId) => {
           href: '',
           spotify_id: '',
           images: '{}',
-          items: `{${seedId}}`,
+          items: `{${artist.id}}`,
           uri: '',
         }),
       }).then((r) => r.json()),
-      getState().spotifyApi.getArtistRelatedArtists(seedId),
-      getState().spotifyApi.getArtist(seedId),
-      getState().spotifyApi.getArtistAlbums(seedId),
-      getState().spotifyApi.getArtistTopTracks(seedId, 'US'),
+      getState().spotifyApi.getArtistRelatedArtists(artist.id),
+      getState().spotifyApi.getArtist(artist.id),
+      getState().spotifyApi.getArtistAlbums(artist.id),
+      getState().spotifyApi.getArtistTopTracks(artist.id, 'US'),
     ]).then(
       ([
         playlistBuild,
@@ -110,7 +112,43 @@ export const startNew = (userId, seedId) => {
             tracks: currentArtistTopTracks.tracks,
           },
         });
+        dispatch({
+          type: 'ADD_SEED',
+          payload: currentArtist
+        })
       }
     );
   }
 };
+
+
+export const removeSeed = (seed, playlistBuild) => {
+  let removedArray = produce(playlistBuild.items, draft => {
+    const index = draft.findIndex(id => id === seed.id);
+    if (index !== -1) draft.splice(index, 1);
+  })
+  return dispatch => {
+    fetch(`http://localhost:3000/api/v1/playlists/${playlistBuild.id}`,{
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+              items: `{${removedArray.join(",")}}`
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+          console.log(data)
+          dispatch({
+            type: 'PLAYLIST_BUILD',
+            payload: data
+          })
+          dispatch({
+            type: 'REMOVE_SEED',
+            payload: seed
+          })
+        })
+  }
+}

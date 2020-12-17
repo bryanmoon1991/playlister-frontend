@@ -22,6 +22,9 @@ const Search = ({fetchSearch}) => {
 
     return (
       <>
+      <h2>
+        Begin playlist with an item from your search or...
+      </h2>
         <form>
           <input
             type="text"
@@ -31,6 +34,7 @@ const Search = ({fetchSearch}) => {
             onChange={handleChange}
           />
         </form>
+
         <ResultsContainer/> 
       </>
     );

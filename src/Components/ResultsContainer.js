@@ -1,6 +1,7 @@
 import React from 'react'
 import Result from './Result'
 import {connect} from 'react-redux';
+import './ResultsContainer.css'
 
 const msp = state => {
     return {
@@ -22,10 +23,16 @@ const ResultsContainer = ({searchResults}) => {
         <>
             {searchResults ?
                 <>
-                <h3>Artists</h3>
-                {renderArtists()}
-                <h3>Tracks</h3>
-                {renderTracks()}
+                <div className="results">
+                    <div className="artists-results">
+                        <h3>Artists</h3>
+                        {renderArtists()}
+                    </div>
+                    <div className="track-results">
+                        <h3>Tracks</h3>
+                        {renderTracks()}
+                    </div>
+                </div>
                 </>
             :
             undefined}

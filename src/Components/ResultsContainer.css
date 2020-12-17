@@ -1,0 +1,13 @@
+.results {
+    display: grid;
+    grid-template-columns: 1fr, 1fr;
+    gap: 100px;
+}
+
+.artist-results {
+    grid-column: 1/2;
+}
+
+.track-results {
+    grid-column: 2/3;
+}

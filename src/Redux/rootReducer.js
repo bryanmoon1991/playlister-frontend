@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import produce from 'immer';
 
 const defaultState = {
   user: null,
@@ -6,6 +7,7 @@ const defaultState = {
   searchResults: null,
   recommended: [],
   playlistBuild: {},
+  playlistSeeds: [],
   relatedArtists: {},
   currentArtist: {},
   playlists: {},
@@ -65,10 +67,21 @@ const playlistBuildReducer = (state = defaultState.playlistBuild, action) => {
   }
 };
 
-const relatedArtistsReducer = (
-  state = defaultState.relatedArtists,
-  action
-) => {
+const playlistSeedsReducer = produce((draft, action) => {
+    switch (action.type) {
+        case 'ADD_SEED':
+            draft.push(action.payload)
+            return draft;
+        case 'REMOVE_SEED':
+            const index = draft.findIndex(seed => seed.id === action.payload.id)
+            if (index !== -1) draft.splice(index, 1)
+    }
+}, defaultState.playlistSeeds)
+
+
+
+
+const relatedArtistsReducer = (state = defaultState.relatedArtists, action) => {
   switch (action.type) {
     case 'RELATED_ARTISTS':
       return action.payload;
@@ -92,6 +105,7 @@ const rootReducer = combineReducers({
   searchResults: searchReducer,
   recommended: recommendedReducer,
   playlistBuild: playlistBuildReducer,
+  playlistSeeds: playlistSeedsReducer,
   relatedArtists: relatedArtistsReducer,
   currentArtist: currentArtistReducer,
   playlists: currentUsersPlaylistsReducer,

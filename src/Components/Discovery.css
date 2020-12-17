@@ -1,0 +1,19 @@
+.discovery-tool {
+    display: grid;
+    grid-template-columns: 1fr, 1fr;
+}
+
+.artist-card {
+    grid-column: 1/2;
+}
+
+.bubbles {
+    grid-column: 2/3;
+    justify-self: start;
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.bubbles img {
+    border-radius: 50%;
+}

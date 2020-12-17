@@ -6,6 +6,7 @@ import Search from './Search'
 import RecommendedContainer from './RecommendedContainer';
 import Discovery from './Discovery';
 import PlaylistBuilder from './PlaylistBuilder'
+import './Views.css'
 
 const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersPlaylists}) => {
 
@@ -27,7 +28,9 @@ const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersPlaylists}) =>
                     fetchCurrentUsersPlaylists(match.params.id)
                     return (
                     <>
+                    <div className="playlists">
                       <h3>Where the Playlists go</h3>
+                    </div>
                     </>
                   );
                 }}
@@ -37,9 +40,10 @@ const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersPlaylists}) =>
                 render={() => {
                   return (
                     <>
-                      <h3>new playlist area</h3>
-                      <PlaylistBuilder />
-                      <Discovery />
+                    <div className="discover">
+                      <PlaylistBuilder/>
+                      <Discovery/>
+                    </div>
                     </>
                   );
                 }}
@@ -55,12 +59,14 @@ const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersPlaylists}) =>
                     <>
                       {user ? (
                         <>
-                          <h1>hello {user.display_name}</h1>
-                          {/* <button onClick={() => createPlaylist()}>
+                          <div className="home">
+                            {/* <button onClick={() => createPlaylist()}>
                             Create Test Playlist
                           </button> */}
-                          <Search />
-                          <RecommendedContainer />
+                            <Search />
+                            <h2>...a recommended item</h2>
+                            <RecommendedContainer />
+                          </div>
                         </>
                       ) : (
                         <h1>loading</h1>

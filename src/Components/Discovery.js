@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux';
 import ArtistBubble from './ArtistBubble';
 import ArtistCard from './ArtistCard'
+import './Discovery.css'
 
 const msp = state => {
     return {
@@ -28,13 +29,19 @@ const Discovery = ({user, playlistBuild, relatedArtists, currentArtist}) => {
 
     return (
         <>
-        {relatedArtists.artists ? 
-        <>
-        <ArtistCard/>
-        {renderArtistBubbles()} 
-        </> :
-        <h2>loading discovery tool</h2>
-        }
+        <div className="discovery-tool">
+            {relatedArtists.artists ? 
+            <>
+            <div className="artist-card">
+                <ArtistCard/>
+            </div>
+            <div className="bubbles">
+                {renderArtistBubbles()} 
+            </div>
+            </> :
+            <h2>loading discovery tool</h2>
+            }
+        </div>
         </>
     )
 }

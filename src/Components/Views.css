@@ -1,0 +1,30 @@
+/* home page */
+
+.home {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-items: center;
+}
+
+
+
+
+/* discovery page */
+
+.discover {
+    display: grid;
+    grid-template-columns: 0.5fr, 2fr;
+    gap: 80px;
+}
+
+.discover .builder {
+    grid-column: 1/2;
+    justify-self: end;
+}
+
+.discover .discovery-tool {
+    grid-column: 2/3; 
+
+}
+
+
