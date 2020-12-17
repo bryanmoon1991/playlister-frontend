@@ -69,6 +69,12 @@ const playlistBuildReducer = (state = defaultState.playlistBuild, action) => {
 
 const playlistSeedsReducer = produce((draft, action) => {
     switch (action.type) {
+        case 'FIRST_SEED':
+            draft.length = 0;
+            draft.push(action.payload)
+            return draft
+        case 'CREATE_SEEDS':
+            return action.payload
         case 'ADD_SEED':
             draft.push(action.payload)
             return draft;

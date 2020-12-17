@@ -113,7 +113,7 @@ export const startNew = (userId, artist) => {
           },
         });
         dispatch({
-          type: 'ADD_SEED',
+          type: 'FIRST_SEED',
           payload: currentArtist
         })
       }
@@ -122,13 +122,13 @@ export const startNew = (userId, artist) => {
 };
 
 
-export const removeSeed = (seed, playlistBuild) => {
-  let removedArray = produce(playlistBuild.items, draft => {
-    const index = draft.findIndex(id => id === seed.id);
-    if (index !== -1) draft.splice(index, 1);
-  })
-  return dispatch => {
-    fetch(`http://localhost:3000/api/v1/playlists/${playlistBuild.id}`,{
+export const removeSeed = (seed, playlistId) => {
+  return (dispatch, getState) => {
+    let removedArray = produce(getState().playlistBuild.items, draft => {
+      const index = draft.findIndex(id => id === seed.id);
+      if (index !== -1) draft.splice(index, 1);
+    })
+    fetch(`http://localhost:3000/api/v1/playlists/${playlistId}`,{
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -148,6 +148,42 @@ export const removeSeed = (seed, playlistBuild) => {
           dispatch({
             type: 'REMOVE_SEED',
             payload: seed
+          })
+        })
+  }
+}
+
+export const loadBuild = (id) => {
+  return (dispatch) => {
+    fetch(`http://localhost:3000/api/v1/playlists/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        dispatch({
+          type: 'PLAYLIST_BUILD',
+          payload: data,
+        });
+      });
+  };
+};
+
+
+export const updatePlaylist = (id, attribute, value) => {
+  let body = {}
+  body[attribute] = value
+  return dispatch => {
+    fetch(`http://localhost:3000/api/v1/playlists/${id}`,{
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(body)
+        })
+        .then(r => r.json())
+        .then(data => {
+          dispatch({
+            type: 'PLAYLIST_BUILD',
+            payload: data
           })
         })
   }

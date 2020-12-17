@@ -1,14 +1,15 @@
 import React from 'react'
 import {Switch, Route} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {fetchCurrentUser, fetchCurrentUsersPlaylists} from '../Redux/actions'
+import {fetchCurrentUser, fetchCurrentUsersPlaylists, loadBuild} from '../Redux/actions'
 import Search from './Search'
 import RecommendedContainer from './RecommendedContainer';
 import Discovery from './Discovery';
 import PlaylistBuilder from './PlaylistBuilder'
 import './Views.css'
+import UnpublishedContainer from './UnpublishedContainer';
 
-const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersPlaylists}) => {
+const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersPlaylists, loadBuild}) => {
 
     // const createPlaylist = () => {
     //     spotifyApi.createPlaylist(user.spotify_id, {
@@ -23,6 +24,10 @@ const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersPlaylists}) =>
           <>
             <Switch>
               <Route
+                path="/users/:id/playlists/:id"
+                component={PlaylistBuilder}
+              />
+              <Route
                 path="/users/:id/playlists"
                 render={({ match }) => {
                     fetchCurrentUsersPlaylists(match.params.id)
@@ -30,6 +35,7 @@ const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersPlaylists}) =>
                     <>
                     <div className="playlists">
                       <h3>Where the Playlists go</h3>
+                      <UnpublishedContainer/>
                     </div>
                     </>
                   );
@@ -88,4 +94,4 @@ const msp = (state) => {
     }
 }
 
-export default connect(msp, {fetchCurrentUser, fetchCurrentUsersPlaylists})(UsersContainer);
+export default connect(msp, {fetchCurrentUser, fetchCurrentUsersPlaylists, loadBuild})(UsersContainer);

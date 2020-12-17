@@ -1,17 +1,15 @@
 import React, {useEffect, useState} from 'react'
 import { connect } from 'react-redux';
-var Spotify = require('spotify-web-api-js');
-var spotifyApi = new Spotify();
 
 
 const msp = state => {
     return {
-        user: state.user
+        user: state.user,
+        spotifyApi: state.spotifyApi,
     }
 }
 
-const ArtistBubble = ({artist, user}) => {
-    spotifyApi.setAccessToken(user.access_token);
+const ArtistBubble = ({artist, user, spotifyApi}) => {
     let [track, setTrack] = useState(undefined)
 
     useEffect(() => {
