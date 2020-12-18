@@ -1,17 +1,16 @@
 import React, {useState, useEffect} from 'react';
 import { connect } from 'react-redux';
 import PlaylistItem from './PlaylistItem';
-import {updatePlaylist, loadSeeds, loadBuild} from '../Redux/actions'
+import {updatePlaylist, loadBuild} from '../Redux/actions'
 
 const msp = (state) => {
   return {
     playlistBuild: state.playlistBuild,
-    playlistSeeds: state.playlistSeeds,
     spotifyApi: state.spotifyApi
   };
 };
 
-const PlaylistBuilder = ({match, playlistBuild, playlistSeeds, updatePlaylist, spotifyApi, loadSeeds, loadBuild}) => {
+const PlaylistBuilder = ({match, playlistBuild, updatePlaylist, loadBuild}) => {
   let [{ name }, setName] = useState({ name: playlistBuild.name });
   let [titleEdit, setTitleEdit] = useState(false);
 
@@ -21,7 +20,7 @@ const PlaylistBuilder = ({match, playlistBuild, playlistSeeds, updatePlaylist, s
   };
 
   const keyPress = (e) => {
-    if (e.key == 'Enter') {
+    if (e.key === 'Enter') {
       updatePlaylist(playlistBuild.id, 'name', name);
       setTitleEdit(!titleEdit);
     }
@@ -29,17 +28,17 @@ const PlaylistBuilder = ({match, playlistBuild, playlistSeeds, updatePlaylist, s
 
   // if the user navigates to the builder from the playlists we'll use match
   // if not, the playlistBuild and playlistSeeds will be set from start new action
+  console.log("in builder", playlistBuild)
   useEffect(() => {
     if (match) {
       loadBuild(match.params.id)
-      loadSeeds(playlistBuild.items)
-    }
-  },[playlistBuild])
+      }
+  },[])
 
 
   const renderSeeds = () => {
-    return playlistSeeds.map((seed) => (
-      <PlaylistItem seed={seed} playlistId={playlistBuild.id} />
+    return playlistBuild.items.map((seed) => (
+      <PlaylistItem key={seed.id} seed={seed} playlistId={playlistBuild.id} />
     ));
   };
 
@@ -70,4 +69,4 @@ const PlaylistBuilder = ({match, playlistBuild, playlistSeeds, updatePlaylist, s
   );
 };
 
-export default connect(msp, {updatePlaylist, loadSeeds, loadBuild})(PlaylistBuilder);
+export default connect(msp, {updatePlaylist, loadBuild})(PlaylistBuilder);

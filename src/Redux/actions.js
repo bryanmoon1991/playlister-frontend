@@ -78,8 +78,8 @@ export const startNew = (userId, artist) => {
           description: 'Playlist created with Perfect Playlist',
           href: '',
           spotify_id: '',
-          images: '{}',
-          items: `{${artist.id}}`,
+          images: {},
+          items: [artist], 
           uri: '',
         }),
       }).then((r) => r.json()),
@@ -111,10 +111,6 @@ export const startNew = (userId, artist) => {
             tracks: currentArtistTopTracks.tracks,
           },
         });
-        dispatch({
-          type: 'FIRST_SEED',
-          payload: currentArtist
-        })
       }
     );
   }
@@ -124,8 +120,9 @@ export const startNew = (userId, artist) => {
 export const removeSeed = (seed, playlistId) => {
   return (dispatch, getState) => {
     let removedArray = produce(getState().playlistBuild.items, draft => {
-      const index = draft.findIndex(id => id === seed.id);
+      const index = draft.findIndex(obj => obj.id === seed.id);
       if (index !== -1) draft.splice(index, 1);
+      debugger
     })
     fetch(`http://localhost:3000/api/v1/playlists/${playlistId}`,{
             method: "PATCH",
@@ -134,7 +131,7 @@ export const removeSeed = (seed, playlistId) => {
                 "Accept": "application/json"
             },
             body: JSON.stringify({
-              items: `{${removedArray.join(",")}}`
+              items: removedArray
             })
         })
         .then(r => r.json())
@@ -143,10 +140,6 @@ export const removeSeed = (seed, playlistId) => {
           dispatch({
             type: 'PLAYLIST_BUILD',
             payload: data
-          })
-          dispatch({
-            type: 'REMOVE_SEED',
-            payload: seed
           })
         })
   }
@@ -165,36 +158,6 @@ export const loadBuild = (id) => {
   };
 };
 
-export const loadSeeds = (seeds) => {
-  if (seeds.length === 1) {
-    return (dispatch, getState) => {
-      getState().spotifyApi.getArtist(seeds[0])
-      .then(data => {
-        dispatch({
-          type: 'FIRST_SEED',
-          payload: data
-        })
-      })
-    }
-  } else if (seeds.length === 0) {
-    return dispatch => {
-    dispatch({
-      type: 'NO_SEEDS',
-      payload: []
-    })
-  }
-  } else {
-    return (dispatch, getState) => {
-      getState().spotifyApi.getArtists(seeds.join())
-      .then(data => {
-        dispatch({
-          type: 'CREATE_SEEDS',
-          payload: data
-        })
-      })
-    }
-  }
-}
 
 export const updatePlaylist = (id, attribute, value) => {
   let body = {}
