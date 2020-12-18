@@ -1,6 +1,9 @@
 import { combineReducers } from 'redux';
 import produce from 'immer';
 
+import { persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+
 const defaultState = {
   user: null,
   spotifyApi: null,
@@ -108,6 +111,22 @@ const currentArtistReducer = (state = defaultState.currentArtist, action) => {
   }
 };
 
+const persistConfig = {
+  key: 'root',
+  storage,
+  whitelist: [
+    'user',
+    'spotifyApi',
+    'searchResults',
+    'recommended',
+    'playlistBuild',
+    'relatedArtists',
+    'currentArtist',
+    'playlists',
+  ],
+};
+
+
 const rootReducer = combineReducers({
   user: currentUserReducer,
   spotifyApi: spotifyApiReducer,
@@ -119,4 +138,4 @@ const rootReducer = combineReducers({
   playlists: currentUsersPlaylistsReducer,
 });
 
-export default rootReducer;
+export default persistReducer(persistConfig, rootReducer);

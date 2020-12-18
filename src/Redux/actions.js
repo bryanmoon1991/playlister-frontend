@@ -14,10 +14,10 @@ export const fetchCurrentUser = id => {
     }
 };
 
-export const fetchCurrentUsersPlaylists = userId => {
-  return (dispatch, getState) => {
+export const fetchCurrentUsersPlaylists = (userId, spotifyApi) => {
+  return dispatch => {
     Promise.all([
-      getState().spotifyApi.getUserPlaylists(),
+      spotifyApi.getUserPlaylists(),
       fetch(`http://localhost:3000/api/v1/users/${userId}/playlists`)
         .then(response => response.json())
     ])
@@ -31,11 +31,11 @@ export const fetchCurrentUsersPlaylists = userId => {
   }
 }
 
-export const fetchSearch = query => {
-    return (dispatch, getState) => {
+export const fetchSearch = (query, spotifyApi) => {
+    return dispatch => {
       Promise.all([
-        getState().spotifyApi.searchArtists(query, { limit: 5 }),
-        getState().spotifyApi.searchTracks(query, { limit: 5 }),
+        spotifyApi.searchArtists(query, { limit: 5 }),
+        spotifyApi.searchTracks(query, { limit: 5 }),
         ])
           .then(([data1, relatedArtists]) => {
             console.log(data1, relatedArtists);
@@ -47,11 +47,11 @@ export const fetchSearch = query => {
     }
 }
 
-export const fetchRecommended = () => {
-  return (dispatch, getState) => {
+export const fetchRecommended = (spotifyApi) => {
+  return dispatch => {
     Promise.all([
-      getState().spotifyApi.getMyTopArtists({ limit: 5 }),
-      getState().spotifyApi.getMyTopTracks({ limit: 5 }),
+      spotifyApi.getMyTopArtists({ limit: 5 }),
+      spotifyApi.getMyTopTracks({ limit: 5 }),
     ]).then(([data1, relatedArtists]) => {
       console.log(data1, relatedArtists);
       dispatch({
@@ -62,14 +62,14 @@ export const fetchRecommended = () => {
   };
 }
 
-export const startNew = (userId, artist) => {
-  return (dispatch, getState) => {
+export const startNew = (userId, artist, spotifyApi) => {
+  return dispatch => {
     Promise.all([
       fetch('http://localhost:3000/api/v1/playlists', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Accept: 'application/json',
+          'Accept': 'application/json',
         },
         body: JSON.stringify({
           user_id: userId,
@@ -83,10 +83,10 @@ export const startNew = (userId, artist) => {
           uri: '',
         }),
       }).then((r) => r.json()),
-      getState().spotifyApi.getArtistRelatedArtists(artist.id),
-      getState().spotifyApi.getArtist(artist.id),
-      getState().spotifyApi.getArtistAlbums(artist.id),
-      getState().spotifyApi.getArtistTopTracks(artist.id, 'US'),
+      spotifyApi.getArtistRelatedArtists(artist.id),
+      spotifyApi.getArtist(artist.id),
+      spotifyApi.getArtistAlbums(artist.id),
+      spotifyApi.getArtistTopTracks(artist.id, 'US'),
     ]).then(
       ([
         playlistBuild,
@@ -111,18 +111,18 @@ export const startNew = (userId, artist) => {
             tracks: currentArtistTopTracks.tracks,
           },
         });
+        
       }
     );
   }
 };
 
-
+// think about refactoring this so it receives playlist build in props instead so you can remove getstate()
 export const removeSeed = (seed, playlistId) => {
   return (dispatch, getState) => {
     let removedArray = produce(getState().playlistBuild.items, draft => {
       const index = draft.findIndex(obj => obj.id === seed.id);
       if (index !== -1) draft.splice(index, 1);
-      debugger
     })
     fetch(`http://localhost:3000/api/v1/playlists/${playlistId}`,{
             method: "PATCH",

@@ -34,10 +34,10 @@ const variants = {
 };
 
 
-const RecommendedContainer = ({user, recommended, fetchRecommended}) => {
+const RecommendedContainer = ({user, recommended, fetchRecommended, spotifyApi}) => {
     
   useEffect(() => {
-    fetchRecommended()
+    fetchRecommended(spotifyApi)
   }, [])
 
   

@@ -9,14 +9,14 @@ const msp = state => {
     }
 }
 
-const ResultsContainer = ({searchResults}) => {
+const ResultsContainer = ({searchResults, spotifyApi}) => {
 
     const renderArtists = () => {
-        return searchResults.artists.map(artist => <Result key={artist.id} artist={artist} />)
+        return searchResults.artists.map(artist => <Result key={artist.id} artist={artist} spotifyApi={spotifyApi}/>)
     }
 
     const renderTracks = () => {
-        return searchResults.tracks.map(track => <Result key={track.id} track={track} />)
+        return searchResults.tracks.map(track => <Result key={track.id} track={track} spotifyApi={spotifyApi}/>)
     }
 
     return (

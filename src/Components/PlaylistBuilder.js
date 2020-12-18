@@ -7,11 +7,10 @@ const msp = (state) => {
   return {
     user: state.user,
     playlistBuild: state.playlistBuild,
-    spotifyApi: state.spotifyApi
   };
 };
 
-const PlaylistBuilder = ({match, history, user, playlistBuild, updatePlaylist, loadBuild, deleteBuild}) => {
+const PlaylistBuilder = ({match, history, user, spotifyApi, playlistBuild, updatePlaylist, loadBuild, deleteBuild}) => {
   let [{ name }, setName] = useState({ name: playlistBuild.name });
   let [titleEdit, setTitleEdit] = useState(false);
 
@@ -29,7 +28,6 @@ const PlaylistBuilder = ({match, history, user, playlistBuild, updatePlaylist, l
 
   // if the user navigates to the builder from the playlists we'll use match
   // if not, the playlistBuild and playlistSeeds will be set from start new action
-  console.log("in builder", playlistBuild)
   useEffect(() => {
     if (match) {
       loadBuild(match.params.id)

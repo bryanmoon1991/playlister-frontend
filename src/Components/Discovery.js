@@ -13,7 +13,8 @@ const msp = state => {
     }
 }
 
-const Discovery = ({user, playlistBuild, relatedArtists, currentArtist}) => {
+const Discovery = ({user, playlistBuild, relatedArtists, currentArtist, spotifyApi}) => {
+    console.log("in discovery", spotifyApi)
 
     const renderArtistBubbles = () => {
         let results = [] 
@@ -21,7 +22,7 @@ const Discovery = ({user, playlistBuild, relatedArtists, currentArtist}) => {
         for (let i = 0; i < j; i++) {
            let artist = relatedArtists.artists[i] 
            artist.images ?
-           results.push(<ArtistBubble artist={artist} key={artist.id}/>) :
+           results.push(<ArtistBubble artist={artist} key={artist.id} spotifyApi={spotifyApi}/>) :
            j++
         }
         return results
@@ -33,7 +34,7 @@ const Discovery = ({user, playlistBuild, relatedArtists, currentArtist}) => {
             {relatedArtists.artists ? 
             <>
             <div className="artist-card">
-                <ArtistCard/>
+                <ArtistCard spotifyApi={spotifyApi}/>
             </div>
             <div className="bubbles">
                 {renderArtistBubbles()} 

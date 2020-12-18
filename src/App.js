@@ -4,10 +4,11 @@ import UsersContainer from './Components/UsersContainer'
 import {connect} from 'react-redux';
 import './App.css';
 
-const App = ({user}) => {
 
-    return (
-      <>
+const App = ({user}) => {
+  
+  return (
+    <>
         {user ? (
           <>
             <a href="http://spotify.com/logout">Logout</a>
@@ -18,7 +19,7 @@ const App = ({user}) => {
           </>
         ) : (
           <a href="http://localhost:3000/api/v1/login">OAUTH LOGIN</a>
-        )}
+          )}
         <Route 
         path="/users"
         component={UsersContainer}

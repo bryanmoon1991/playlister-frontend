@@ -42,7 +42,7 @@ const Result = (props) => {
           <div className="artist">
             <h3
               onClick={() =>
-                props.startNew(props.user.id, props.artist)
+                props.startNew(props.user.id, props.artist, props.spotifyApi)
               }
             >
               <Link to={`/users/${props.user.id}/new`}>
@@ -57,7 +57,7 @@ const Result = (props) => {
           <div className="track">
             <li
               onClick={() =>
-                props.startNew(props.user.id, props.track.artists[0])
+                props.startNew(props.user.id, props.track.artists[0], props.spotifyApi)
               }
             >
               <Link to={`/users/${props.user.id}/new`}>{props.track.name}</Link>

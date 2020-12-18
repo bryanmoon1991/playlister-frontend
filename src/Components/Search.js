@@ -4,7 +4,7 @@ import {fetchSearch} from '../Redux/actions'
 import ResultsContainer from './ResultsContainer';
 
 
-const Search = ({fetchSearch}) => {
+const Search = ({fetchSearch, spotifyApi}) => {
     const [query, setQuery] = useState({search: ''})
 
     const handleChange = (event) => {
@@ -16,7 +16,7 @@ const Search = ({fetchSearch}) => {
       if (query.search === '') {
         console.log("empty search field")
       } else {
-        fetchSearch(query.search)
+        fetchSearch(query.search, spotifyApi)
       }
     }, [query, fetchSearch])
 
@@ -35,7 +35,7 @@ const Search = ({fetchSearch}) => {
           />
         </form>
 
-        <ResultsContainer/> 
+        <ResultsContainer spotifyApi={spotifyApi}/> 
       </>
     );
 }

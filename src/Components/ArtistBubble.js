@@ -1,20 +1,21 @@
 import React, {useEffect, useState} from 'react'
 import { connect } from 'react-redux';
-
+// var Spotify = require('spotify-web-api-js');
+// var spotifyApi = new Spotify();
+// spotifyApi.setAccessToken(user.access_token)
 
 const msp = state => {
     return {
         user: state.user,
-        spotifyApi: state.spotifyApi,
     }
 }
 
-const ArtistBubble = ({artist, user, spotifyApi}) => {
+const ArtistBubble = ({user, artist, spotifyApi}) => {
     let [track, setTrack] = useState(undefined)
 
     useEffect(() => {
-       spotifyApi.getArtistTopTracks(artist.id, "US")
-       .then(data => setTrack(new Audio(data.tracks[0].preview_url))) 
+        spotifyApi.getArtistTopTracks(artist.id, "US")
+        .then(data => setTrack(new Audio(data.tracks[0].preview_url))) 
     }, [artist.id])
 
     const playPreview = () => {
