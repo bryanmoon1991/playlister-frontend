@@ -1,16 +1,17 @@
 import React, {useState, useEffect} from 'react';
 import { connect } from 'react-redux';
 import PlaylistItem from './PlaylistItem';
-import {updatePlaylist, loadBuild} from '../Redux/actions'
+import {updatePlaylist, loadBuild, deleteBuild} from '../Redux/actions'
 
 const msp = (state) => {
   return {
+    user: state.user,
     playlistBuild: state.playlistBuild,
     spotifyApi: state.spotifyApi
   };
 };
 
-const PlaylistBuilder = ({match, playlistBuild, updatePlaylist, loadBuild}) => {
+const PlaylistBuilder = ({match, history, user, playlistBuild, updatePlaylist, loadBuild, deleteBuild}) => {
   let [{ name }, setName] = useState({ name: playlistBuild.name });
   let [titleEdit, setTitleEdit] = useState(false);
 
@@ -42,6 +43,11 @@ const PlaylistBuilder = ({match, playlistBuild, updatePlaylist, loadBuild}) => {
     ));
   };
 
+  const handleDelete = (id) => {
+    deleteBuild(id)
+    history.push(`/users/${user.id}`) 
+  }
+
   return (
     <>
       <div className="builder">
@@ -60,6 +66,11 @@ const PlaylistBuilder = ({match, playlistBuild, updatePlaylist, loadBuild}) => {
               </h3>
             )}
             {renderSeeds()}
+            {match ? (
+              <button onClick={() => handleDelete(playlistBuild.id)}>
+                Delete this build
+              </button>
+            ) : undefined}
           </>
         ) : (
           <h3>loading playlist builder</h3>
@@ -69,4 +80,4 @@ const PlaylistBuilder = ({match, playlistBuild, updatePlaylist, loadBuild}) => {
   );
 };
 
-export default connect(msp, {updatePlaylist, loadBuild})(PlaylistBuilder);
+export default connect(msp, {updatePlaylist, loadBuild, deleteBuild})(PlaylistBuilder);

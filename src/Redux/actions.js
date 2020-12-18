@@ -158,6 +158,19 @@ export const loadBuild = (id) => {
   };
 };
 
+export const deleteBuild = (id) => {
+  return dispatch => {
+    fetch(`http://localhost:3000/api/v1/playlists/${id}`, {
+      method: 'DELETE'})
+      .then(() => {
+        dispatch({
+          type: 'DELETE_BUILD',
+          payload: {},
+        });
+      });
+  }
+}
+
 
 export const updatePlaylist = (id, attribute, value) => {
   let body = {}

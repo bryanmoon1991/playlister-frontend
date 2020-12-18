@@ -61,6 +61,8 @@ const playlistBuildReducer = (state = defaultState.playlistBuild, action) => {
   switch (action.type) {
     case 'PLAYLIST_BUILD':
       return action.payload;
+    case 'DELETE_BUILD':
+      return action.payload;
     default:
       return state;
   }
