@@ -148,6 +148,32 @@ export const createNext = (artist, spotifyApi) => {
   } 
 }
 
+export const addSeed = (artist) => {
+  return (dispatch, getState) => {
+    let id = getState().playlistBuild.id
+    let newItems = produce(getState().playlistBuild.items, draft => {
+      draft.push(artist)
+    })
+    fetch(`http://localhost:3000/api/v1/playlists/${id}`,{
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+              items: newItems
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+          dispatch({
+            type: 'PLAYLIST_BUILD',
+            payload: data
+          })
+        })
+  }
+}
+
 // think about refactoring this so it receives playlist build in props instead so you can remove getstate()
 export const removeSeed = (seed, playlistId) => {
   return (dispatch, getState) => {

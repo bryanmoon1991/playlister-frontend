@@ -1,6 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import {addSeed} from '../Redux/actions';
 import './ArtistCard.css'
+
 
 const msp = state => {
     return {
@@ -8,7 +10,7 @@ const msp = state => {
     }
 }
 
-const ArtistCard = ({currentArtist}) => {
+const ArtistCard = ({currentArtist, addSeed}) => {
     console.log("artist card", currentArtist)
 
     const renderGenres = () => {
@@ -25,7 +27,7 @@ const ArtistCard = ({currentArtist}) => {
                 alt="artist"
                 className="artist-picture"
                 />
-                <button>
+                <button onClick={() => addSeed(currentArtist.info)}>
                     Add
                 </button>
                 <div className="info">
@@ -41,4 +43,4 @@ const ArtistCard = ({currentArtist}) => {
     )
 }
 
-export default connect(msp)(ArtistCard);
+export default connect(msp, {addSeed})(ArtistCard);
