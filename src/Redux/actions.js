@@ -117,6 +117,37 @@ export const startNew = (userId, artist, spotifyApi) => {
   }
 };
 
+export const createNext = (artist, spotifyApi) => {
+  return dispatch => {
+    Promise.all([
+      spotifyApi.getArtist(artist.id),
+      spotifyApi.getArtistAlbums(artist.id),
+      spotifyApi.getArtistTopTracks(artist.id, 'US'),
+      spotifyApi.getArtistRelatedArtists(artist.id)
+    ])
+    .then(([
+      currentArtist,
+      currentArtistAlbums,
+      currentArtistTopTracks,
+      relatedArtists,
+    ]) => {
+      dispatch({
+        type: 'RELATED_ARTISTS',
+        payload: relatedArtists
+      });
+      dispatch({
+        type: 'CURRENT_ARTIST',
+        payload: {
+          info: currentArtist,
+          albums: currentArtistAlbums.items,
+          tracks: currentArtistTopTracks.tracks,
+        }
+      })
+    })
+
+  } 
+}
+
 // think about refactoring this so it receives playlist build in props instead so you can remove getstate()
 export const removeSeed = (seed, playlistId) => {
   return (dispatch, getState) => {

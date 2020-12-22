@@ -1,16 +1,8 @@
 import React, {useEffect, useState} from 'react'
-import { connect } from 'react-redux';
-// var Spotify = require('spotify-web-api-js');
-// var spotifyApi = new Spotify();
-// spotifyApi.setAccessToken(user.access_token)
+import {connect} from 'react-redux';
+import {createNext} from '../Redux/actions';
 
-const msp = state => {
-    return {
-        user: state.user,
-    }
-}
-
-const ArtistBubble = ({user, artist, spotifyApi}) => {
+const ArtistBubble = ({artist, spotifyApi, createNext}) => {
     let [track, setTrack] = useState(undefined)
 
     useEffect(() => {
@@ -38,8 +30,12 @@ const ArtistBubble = ({user, artist, spotifyApi}) => {
         src={artist.images[0].url}
         width="150"
         height="150"
+        onClick={() => {
+            createNext(artist, spotifyApi)
+            stopPreview()
+        }}
       />
     );
 }
 
-export default connect(msp)(ArtistBubble);
+export default connect(null, {createNext})(ArtistBubble);

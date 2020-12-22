@@ -14,7 +14,7 @@ import { persistStore } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 
 
-const store = createStore(persistReducer, applyMiddleware(thunk))
+const store = createStore(rootReducer, applyMiddleware(thunk))
 const persistor = persistStore(store);
 
 ReactDOM.render(

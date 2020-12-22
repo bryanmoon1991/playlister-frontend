@@ -6,14 +6,11 @@ import './Discovery.css'
 
 const msp = state => {
     return {
-        user: state.user,
-        playlistBuild: state.playlistBuild,
         relatedArtists: state.relatedArtists,
-        currentArtist: state.currentArtist
     }
 }
 
-const Discovery = ({user, playlistBuild, relatedArtists, currentArtist, spotifyApi}) => {
+const Discovery = ({relatedArtists, spotifyApi}) => {
     console.log("in discovery", spotifyApi)
 
     const renderArtistBubbles = () => {

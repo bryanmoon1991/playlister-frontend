@@ -25,6 +25,9 @@ const ArtistCard = ({currentArtist}) => {
                 alt="artist"
                 className="artist-picture"
                 />
+                <button>
+                    Add
+                </button>
                 <div className="info">
                     <h3>{currentArtist.info.name}</h3>
                     <h4>Followers: {currentArtist.info.followers.total}</h4>

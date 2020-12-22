@@ -1,7 +1,7 @@
-import React from 'react'
+import React, {useEffect, useCallback} from 'react'
 import {Switch, Route} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {fetchCurrentUser, fetchCurrentUsersPlaylists, loadBuild} from '../Redux/actions'
+import {fetchCurrentUser, fetchCurrentUsersPlaylists} from '../Redux/actions'
 import Search from './Search'
 import RecommendedContainer from './RecommendedContainer';
 import Discovery from './Discovery';
@@ -17,9 +17,28 @@ const msp = (state) => {
     }
 }
 
-const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersPlaylists, loadBuild}) => {
-  var spotifyApi = new Spotify();
-  spotifyApi.setAccessToken(user.access_token)
+const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersPlaylists}) => {
+  let spotifyApi = new Spotify();
+  // if (user) {
+  //   spotifyApi.setAccessToken(user.access_token)
+  // }
+
+  const refreshUser = useCallback(() => {
+    console.log("use callback, refresh user occured")
+    if (user) {
+      fetchCurrentUser(user.id)
+      setTimeout(refreshUser, 1800000);
+    }
+  }, [])
+  
+  useEffect(() => {
+    if (user) {
+      spotifyApi.setAccessToken(user.access_token)
+    } else {
+      refreshUser()
+    }
+  }, [user])
+
   console.log('in user container:', spotifyApi);
   // const createPlaylist = () => {
   //     spotifyApi.createPlaylist(user.spotify_id, {
@@ -95,4 +114,4 @@ const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersPlaylists, loa
 }
 
 
-export default connect(msp, {fetchCurrentUser, fetchCurrentUsersPlaylists, loadBuild})(UsersContainer);
+export default connect(msp, {fetchCurrentUser, fetchCurrentUsersPlaylists})(UsersContainer);
