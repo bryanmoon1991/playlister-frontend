@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {connect} from 'react-redux';
-import {fetchSearch} from '../Redux/actions'
-import ResultsContainer from './ResultsContainer';
+import {fetchSearch, clearResults} from '../Redux/actions'
+import ResultsContainer from '../Containers/ResultsContainer';
 
 
 const Search = ({fetchSearch, spotifyApi}) => {
@@ -17,6 +17,10 @@ const Search = ({fetchSearch, spotifyApi}) => {
         console.log("empty search field")
       } else {
         fetchSearch(query.search, spotifyApi)
+      }
+      return () => {
+        // need to fix
+        clearResults();
       }
     }, [query, fetchSearch])
 
@@ -41,4 +45,4 @@ const Search = ({fetchSearch, spotifyApi}) => {
 }
 
 
-export default connect(null, {fetchSearch})(Search);
+export default connect(null, {fetchSearch, clearResults})(Search);

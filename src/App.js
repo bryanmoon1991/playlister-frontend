@@ -1,12 +1,12 @@
 import React from 'react'; 
 import {Route, withRouter, Link} from 'react-router-dom'
-import UsersContainer from './Components/UsersContainer'
+import UsersContainer from './Containers/UsersContainer'
 import {connect} from 'react-redux';
+import {clearResults} from './Redux/actions'
 import './App.css';
 
-
-const App = ({user}) => {
-  
+const App = ({user, clearResults}) => {
+ 
   return (
     <>
         {user ? (
@@ -15,6 +15,11 @@ const App = ({user}) => {
             <Link
             to={`/users/${user.id}/playlists`}>
             My Playlists
+            </Link>
+            <Link
+            to={`/users/${user.id}`}
+            onClick={() => clearResults()}>
+              Home
             </Link>
           </>
         ) : (
@@ -35,4 +40,4 @@ const msp = state => {
 }
 
 
-export default withRouter(connect(msp)(App));
+export default withRouter(connect(msp, {clearResults})(App));

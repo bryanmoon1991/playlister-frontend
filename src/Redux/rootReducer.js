@@ -13,7 +13,7 @@ const defaultState = {
   relatedArtists: {},
   currentArtist: {},
   playlists: {},
-};
+};  
 
 const currentUserReducer = (state = defaultState.user, action) => {
   switch (action.type) {
@@ -22,34 +22,56 @@ const currentUserReducer = (state = defaultState.user, action) => {
     default:
       return state;
   }
-};
+};  
+
+
+// const playlistSeedsReducer = produce((draft, action) => {
+//     switch (action.type) {
+//         case 'FIRST_SEED':
+//             draft.length = 0;
+//             draft.push(action.payload)
+//             return draft
+//         case 'CREATE_SEEDS':
+//             return action.payload
+//         case 'NO_SEEDS':
+//             return action.payload
+//         case 'ADD_SEED':
+//             draft.push(action.payload)
+//             return draft;
+//         case 'REMOVE_SEED':
+//             const index = draft.findIndex(seed => seed.id === action.payload.id)
+//             if (index !== -1) draft.splice(index, 1)
+//     }
+// }, defaultState.playlistSeeds)
 
 const spotifyApiReducer = (state = defaultState.spotifyApi, action) => {
     switch(action.type) {
-        case 'SET_AUTHORIZATION':
+      case 'SET_AUTHORIZATION':
             return action.payload;
-        default:
+        default:  
             return state;
-    }
-}
+    }        
+}    
 
 const currentUsersPlaylistsReducer = (state = defaultState.playlists, action) => {
     switch (action.type) {
         case 'GET_MY_PLAYLISTS':
             return action.payload;
-        default:
+        default:  
             return state;
-    }
-}
+    }        
+}    
 
 const searchReducer = (state = defaultState.searchResults, action) => {
   switch (action.type) {
     case 'TYPE_TO_SEARCH':
       return action.payload;
+    case 'CLEAR_RESULTS':
+      return action.payload;
     default:
       return state;
-  }
-};
+  }    
+};  
 
 const recommendedReducer = (state = defaultState.recommended, action) => {
   switch (action.type) {
@@ -57,8 +79,8 @@ const recommendedReducer = (state = defaultState.recommended, action) => {
       return action.payload;
     default:
       return state;
-  }
-};
+  }    
+};  
 
 const playlistBuildReducer = (state = defaultState.playlistBuild, action) => {
   switch (action.type) {
@@ -68,27 +90,8 @@ const playlistBuildReducer = (state = defaultState.playlistBuild, action) => {
       return action.payload;
     default:
       return state;
-  }
-};
-
-const playlistSeedsReducer = produce((draft, action) => {
-    switch (action.type) {
-        case 'FIRST_SEED':
-            draft.length = 0;
-            draft.push(action.payload)
-            return draft
-        case 'CREATE_SEEDS':
-            return action.payload
-        case 'NO_SEEDS':
-            return action.payload
-        case 'ADD_SEED':
-            draft.push(action.payload)
-            return draft;
-        case 'REMOVE_SEED':
-            const index = draft.findIndex(seed => seed.id === action.payload.id)
-            if (index !== -1) draft.splice(index, 1)
-    }
-}, defaultState.playlistSeeds)
+  }    
+};  
 
 
 
@@ -117,7 +120,6 @@ const persistConfig = {
   whitelist: [
     'user',
     'spotifyApi',
-    'searchResults',
     'recommended',
     'playlistBuild',
     'relatedArtists',

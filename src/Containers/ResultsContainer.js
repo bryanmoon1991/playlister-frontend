@@ -1,7 +1,8 @@
 import React from 'react'
-import Result from './Result'
 import {connect} from 'react-redux';
-import './ResultsContainer.css'
+import {motion} from 'framer-motion';
+import Result from '../Components/Result'
+import '../Styles/ResultsContainer.css'
 
 const msp = state => {
     return {
@@ -23,7 +24,10 @@ const ResultsContainer = ({searchResults, spotifyApi}) => {
         <>
             {searchResults ?
                 <>
-                <div className="results">
+                <motion.div 
+                className="results"
+                animate="open"
+                >
                     <div className="artists-results">
                         <h3>Artists</h3>
                         {renderArtists()}
@@ -32,7 +36,7 @@ const ResultsContainer = ({searchResults, spotifyApi}) => {
                         <h3>Tracks</h3>
                         {renderTracks()}
                     </div>
-                </div>
+                </motion.div>
                 </>
             :
             undefined}

@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux';
 import ArtistBubble from './ArtistBubble';
 import ArtistCard from './ArtistCard'
-import './Discovery.css'
+import '../Styles/Discovery.css'
 
 const msp = state => {
     return {

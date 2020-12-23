@@ -1,21 +1,30 @@
 import produce from 'immer';
 
+
 export const fetchCurrentUser = id => {
-    return dispatch => {
-        fetch(`http://localhost:3000/api/v1/users/${id}`)
-        .then(response => response.json())
-        .then(user => {
-            var Spotify = require('spotify-web-api-js');
-            var spotifyApi = new Spotify();
-            spotifyApi.setAccessToken(user.access_token)
-            dispatch({type: 'FETCH_CURRENT_USER', payload: user})
-            dispatch({type: 'SET_AUTHORIZATION', payload: spotifyApi})
-        })
-    }
+  return dispatch => {
+    fetch(`http://localhost:3000/api/v1/users/${id}`)
+    .then(response => response.json())
+    .then(user => {
+      dispatch({type: 'FETCH_CURRENT_USER', payload: user})
+    })
+  }
 };
 
+const refreshToken = (getState) => {
+  let d1 = new Date(getState().user.updated_at).getTime();
+  let d2 = new Date();
+  let diff = d2 - d1
+  if (diff > 1800000) {
+    fetchCurrentUser(getState().user.id)
+  } else {
+    console.log("user token still good")
+  }
+}
+
 export const fetchCurrentUsersPlaylists = (userId, spotifyApi) => {
-  return dispatch => {
+  return (dispatch, getState) => {
+    spotifyApi.setAccessToken(getState().user.access_token);
     Promise.all([
       spotifyApi.getUserPlaylists(),
       fetch(`http://localhost:3000/api/v1/users/${userId}/playlists`)
@@ -32,7 +41,8 @@ export const fetchCurrentUsersPlaylists = (userId, spotifyApi) => {
 }
 
 export const fetchSearch = (query, spotifyApi) => {
-    return dispatch => {
+    return (dispatch, getState) => {
+      spotifyApi.setAccessToken(getState().user.access_token);
       Promise.all([
         spotifyApi.searchArtists(query, { limit: 5 }),
         spotifyApi.searchTracks(query, { limit: 5 }),
@@ -47,18 +57,31 @@ export const fetchSearch = (query, spotifyApi) => {
     }
 }
 
-export const fetchRecommended = (spotifyApi) => {
+export const clearResults = () => {
   return dispatch => {
-    Promise.all([
-      spotifyApi.getMyTopArtists({ limit: 5 }),
-      spotifyApi.getMyTopTracks({ limit: 5 }),
-    ]).then(([data1, relatedArtists]) => {
-      console.log(data1, relatedArtists);
-      dispatch({
-        type: 'RECOMMENDED_ARTISTS_AND_TRACKS',
-        payload: { artists: data1, tracks: relatedArtists, images:relatedArtists.items.map(item => item.album.images[2])},
+    dispatch({
+      type: 'CLEAR_RESULTS',
+      payload: null
+    })
+  }
+}
+
+export const fetchRecommended = (spotifyApi) => {
+  return (dispatch, getState) => {
+    spotifyApi.setAccessToken(getState().user.access_token)
+      Promise.all([
+        spotifyApi.getMyTopArtists({ limit: 10 }),
+        spotifyApi.getMyTopTracks({ limit: 10 }),
+      ]).then(([artists, relatedArtists]) => {
+        dispatch({
+          type: 'RECOMMENDED_ARTISTS_AND_TRACKS',
+          payload: {
+            artists: artists,
+            tracks: relatedArtists,
+            images: artists.items.map((item) => item.images[1]),
+          },
+        });
       });
-    });
   };
 }
 
@@ -118,7 +141,8 @@ export const startNew = (userId, artist, spotifyApi) => {
 };
 
 export const createNext = (artist, spotifyApi) => {
-  return dispatch => {
+  return (dispatch, getState) => {
+    spotifyApi.setAccessToken(getState().user.access_token);
     Promise.all([
       spotifyApi.getArtist(artist.id),
       spotifyApi.getArtistAlbums(artist.id),
@@ -157,8 +181,8 @@ export const addSeed = (artist) => {
     fetch(`http://localhost:3000/api/v1/playlists/${id}`,{
             method: "PATCH",
             headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
+              "Content-Type": "application/json",
+              "Accept": "application/json"
             },
             body: JSON.stringify({
               items: newItems
@@ -184,8 +208,8 @@ export const removeSeed = (seed, playlistId) => {
     fetch(`http://localhost:3000/api/v1/playlists/${playlistId}`,{
             method: "PATCH",
             headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
+              "Content-Type": "application/json",
+              "Accept": "application/json"
             },
             body: JSON.stringify({
               items: removedArray
@@ -236,8 +260,8 @@ export const updatePlaylist = (id, attribute, value) => {
     fetch(`http://localhost:3000/api/v1/playlists/${id}`,{
             method: "PATCH",
             headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
+              "Content-Type": "application/json",
+              "Accept": "application/json"
             },
             body: JSON.stringify(body)
         })

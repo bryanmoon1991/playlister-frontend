@@ -1,53 +1,37 @@
-import React, {useEffect, useCallback} from 'react'
+import React from 'react'
 import {Switch, Route} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {fetchCurrentUser, fetchCurrentUsersPlaylists} from '../Redux/actions'
-import Search from './Search'
-import RecommendedContainer from './RecommendedContainer';
-import Discovery from './Discovery';
-import PlaylistBuilder from './PlaylistBuilder'
-import './Views.css'
-import UnpublishedContainer from './UnpublishedContainer';
+import Search from '../Components/Search'
+import RecommendedContainer from '../Containers/RecommendedContainer';
+import Discovery from '../Components/Discovery';
+import PlaylistBuilder from '../Components/PlaylistBuilder'
+import UnpublishedContainer from '../Containers/UnpublishedContainer';
+import '../Styles/Views.css'
 var Spotify = require('spotify-web-api-js');
 
 const msp = (state) => {
     return {
-        user: state.user,
-        playlistBuild: state.playlistBuild
+      user: state.user,
+      playlistBuild: state.playlistBuild
     }
 }
 
 const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersPlaylists}) => {
-  let spotifyApi = new Spotify();
-  // if (user) {
-  //   spotifyApi.setAccessToken(user.access_token)
-  // }
+  let spotifyApi = new Spotify()
+  let d1 = new Date(user.updated_at).getTime();
+  let d2 = new Date();
+  let diff = d2 - d1; 
 
-  const refreshUser = useCallback(() => {
-    console.log("use callback, refresh user occured")
-    if (user) {
-      fetchCurrentUser(user.id)
-      setTimeout(refreshUser, 1800000);
-    }
-  }, [])
-  
-  useEffect(() => {
-    if (user) {
-      spotifyApi.setAccessToken(user.access_token)
-    } else {
-      refreshUser()
-    }
-  }, [user])
+  if (diff > 1800000) {
+    fetchCurrentUser(user.id)
+    console.log("refreshing token")
+  }
 
-  console.log('in user container:', spotifyApi);
-  // const createPlaylist = () => {
-  //     spotifyApi.createPlaylist(user.spotify_id, {
-  //         "name": 'New Playlist',
-  //         "description": "New playlist description",
-  //         "public": false
-  //     },
-  //     (err, data) => err ? console.log(err) : console.log(data));
-  // }
+  if (user) {
+    spotifyApi.setAccessToken(user.access_token)
+  }
+ 
 
   return (
     <>
@@ -93,9 +77,6 @@ const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersPlaylists}) =>
                 {user ? (
                   <>
                     <div className="home">
-                      {/* <button onClick={() => createPlaylist()}>
-                            Create Test Playlist
-                          </button> */}
                       <Search spotifyApi={spotifyApi}/>
                       <h2>...a recommended item</h2>
                       <RecommendedContainer spotifyApi={spotifyApi}/>

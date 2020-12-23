@@ -1,9 +1,10 @@
 import {connect} from 'react-redux';
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useRef} from 'react'
 import {fetchRecommended} from '../Redux/actions'
 import { motion, AnimatePresence } from 'framer-motion';
 import { wrap } from 'popmotion';
-import './Recommended.css'
+import '../Styles/Recommended.css'
+import * as BiIcons from 'react-icons/bi'
 
 const msp = state => {
     return {
@@ -35,26 +36,32 @@ const variants = {
 
 
 const RecommendedContainer = ({user, recommended, fetchRecommended, spotifyApi}) => {
+  // mouse over recommended images to pause carousel
+  // const[running, setRunning] = useState(true)
+  // const runningRef = useRef(running)
+  // runningRef.current = running 
+  
     
   useEffect(() => {
     fetchRecommended(spotifyApi)
+    // return function cleanup() {
+    //   setRunning(false)
+    // }
   }, [])
 
-  
+  // paginating the recommended items 
   const [[page, direction], setPage] = useState([0, 0]); 
-
   const imageIndex = recommended.images ? wrap(0, recommended.images.length, page) : console.log('first render')
-  
   const paginate = (newDirection) => {
     setPage([page + newDirection, newDirection]);
   }; 
-  
-  console.log("in container:", recommended)
 
-  const autoFlip = () => {
-    paginate(1)
-    setTimeout(() => autoFlip(), 5000)
-  }
+  // automate flipping through the recommended items
+  // setTimeout(() => {
+  //   if (runningRef.current) {
+  //     paginate(1)
+  //   } 
+  // }, 4000) 
 
   return (
     <>
@@ -62,10 +69,13 @@ const RecommendedContainer = ({user, recommended, fetchRecommended, spotifyApi})
         <>
         <div className="recommended">
           <div className="next" onClick={() => paginate(1)}>
-            {'‣'}
+            {/* {'‣'} */}
+            <BiIcons.BiCaretLeft/>
           </div>
           <AnimatePresence initial={false} custom={direction}>
             <motion.img
+              // onMouseOver={() => setRunning(false)}
+              // onMouseOut={() => setRunning(true)}
               key={page}
               src={recommended.images[imageIndex].url}
               custom={direction}
@@ -80,7 +90,8 @@ const RecommendedContainer = ({user, recommended, fetchRecommended, spotifyApi})
             />
           </AnimatePresence>
           <div className="prev" onClick={() => paginate(-1)}>
-            {'‣'}
+            <BiIcons.BiCaretRight/>
+            {/* {'‣'} */}
           </div>
         </div>
         </>

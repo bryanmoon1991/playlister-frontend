@@ -8,7 +8,11 @@ const ArtistBubble = ({artist, spotifyApi, createNext}) => {
     useEffect(() => {
         spotifyApi.getArtistTopTracks(artist.id, "US")
         .then(data => setTrack(new Audio(data.tracks[0].preview_url))) 
-    }, [artist.id])
+        
+        return () => {
+            setTrack(undefined)
+        }
+    }, [artist.id, spotifyApi])
 
     const playPreview = () => {
         track ? track.play() : console.log("first render")
