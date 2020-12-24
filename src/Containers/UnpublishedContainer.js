@@ -10,26 +10,18 @@ const msp = (state) => {
 };
 
 const UnpublishedContainer = ({ user, playlists }) => {
+
   const renderBuilds = () => {
-    return playlists.unPublished.map((playlist) => {
-      return (
-        <>
-          <li key={playlist.id}>
-            <Link
-              key={playlist.id}
-              to={`/users/${user.id}/playlists/${playlist.id}`}
-            >
-              {playlist.name}
-            </Link>
-          </li>
-        </>
-      );
-    });
+    return playlists.map((playlist) => (
+      <Link key={playlist.id} to={`/users/${user.id}/playlists/${playlist.id}`}>
+        {playlist.name}
+      </Link>
+    ));
   };
 
   return (
     <div>
-      {playlists.unPublished ? renderBuilds() : <h3>loading playlists</h3>}
+      {playlists[0] ? renderBuilds() : <h3>loading playlists</h3>}
     </div>
   );
 };

@@ -7,15 +7,19 @@ const ArtistBubble = ({artist, spotifyApi, createNext}) => {
 
     useEffect(() => {
         spotifyApi.getArtistTopTracks(artist.id, "US")
-        .then(data => setTrack(new Audio(data.tracks[0].preview_url))) 
+        .then(data => {
+            if (data.tracks[0]) {
+                setTrack(new Audio(data.tracks[0].preview_url)) 
+            }
+        })
         
         return () => {
             setTrack(undefined)
         }
-    }, [artist.id, spotifyApi])
+    }, [spotifyApi])
 
     const playPreview = () => {
-        track ? track.play() : console.log("first render")
+        track ? track.play() : console.log("no preview for this artist")
     }
 
     const stopPreview = () => {
@@ -32,8 +36,8 @@ const ArtistBubble = ({artist, spotifyApi, createNext}) => {
         className="bubble"
         alt="related-artist"
         src={artist.images[0].url}
-        width="150"
-        height="150"
+        width="50"
+        height="50"
         onClick={() => {
             createNext(artist, spotifyApi)
             stopPreview()

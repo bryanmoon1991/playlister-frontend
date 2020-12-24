@@ -12,8 +12,8 @@ const defaultState = {
   playlistBuild: {},
   relatedArtists: {},
   currentArtist: {},
-  playlists: {},
-};  
+  playlists: [],
+}; 
 
 const currentUserReducer = (state = defaultState.user, action) => {
   switch (action.type) {

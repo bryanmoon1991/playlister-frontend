@@ -1,5 +1,20 @@
 import produce from 'immer';
 
+const refresh = async (id) => {
+  try {
+    let response = await fetch(`http://localhost:3000/api/v1/users/${id}`)
+
+    if (!response.ok) {
+      throw new Error(`error in fetch. Status: ${response.status}`)
+    } else {
+      let blob = await response.json()
+      console.log("refreshed token:", blob)
+      return blob
+    }
+  } catch(err) {
+    console.log("refresh failed:", err)
+  }
+}
 
 export const fetchCurrentUser = id => {
   return dispatch => {
@@ -11,31 +26,16 @@ export const fetchCurrentUser = id => {
   }
 };
 
-const refreshToken = (getState) => {
-  let d1 = new Date(getState().user.updated_at).getTime();
-  let d2 = new Date();
-  let diff = d2 - d1
-  if (diff > 1800000) {
-    fetchCurrentUser(getState().user.id)
-  } else {
-    console.log("user token still good")
-  }
-}
 
-export const fetchCurrentUsersPlaylists = (userId, spotifyApi) => {
-  return (dispatch, getState) => {
-    spotifyApi.setAccessToken(getState().user.access_token);
-    Promise.all([
-      spotifyApi.getUserPlaylists(),
+export const fetchCurrentUsersBuilds = userId => {
+  return dispatch => {
       fetch(`http://localhost:3000/api/v1/users/${userId}/playlists`)
-        .then(response => response.json())
-    ])
-    .then(([data1, data2]) => {
-      console.log("playlists:", data1, data2)
-      dispatch({
-        type: 'GET_MY_PLAYLISTS',
-        payload: { published: data1, unPublished: data2 }
-      });
+      .then(response => response.json())
+      .then(data1 => {
+        dispatch({
+          type: 'GET_MY_PLAYLISTS',
+          payload: data1
+        });
     });
   }
 }
@@ -48,12 +48,25 @@ export const fetchSearch = (query, spotifyApi) => {
         spotifyApi.searchTracks(query, { limit: 5 }),
         ])
           .then(([data1, relatedArtists]) => {
-            console.log(data1, relatedArtists);
             dispatch({
               type: 'TYPE_TO_SEARCH',
-              payload: { artists: data1.artists.items, tracks: relatedArtists.tracks.items },
+              payload: {
+                artists: data1.artists.items,
+                tracks: relatedArtists.tracks.items,
+              },
             });
-          });
+          },
+            (err) => {
+              console.log('error', err);
+              refresh(getState().user.id).then((data) => {
+                dispatch({
+                  type: 'FETCH_CURRENT_USER',
+                  payload: data,
+                });
+                spotifyApi.setAccessToken(data.access_token)
+                fetchSearch(query, spotifyApi);
+              });
+            });
     }
 }
 
@@ -66,22 +79,34 @@ export const clearResults = () => {
   }
 }
 
-export const fetchRecommended = (spotifyApi) => {
-  return (dispatch, getState) => {
-    spotifyApi.setAccessToken(getState().user.access_token)
-      Promise.all([
-        spotifyApi.getMyTopArtists({ limit: 10 }),
-        spotifyApi.getMyTopTracks({ limit: 10 }),
-      ]).then(([artists, relatedArtists]) => {
+
+
+  
+  export const fetchRecommended = (spotifyApi) => {
+    return (dispatch, getState) => {
+      spotifyApi.setAccessToken(getState().user.access_token)
+      spotifyApi.getMyTopArtists({ limit: 10 }) 
+      .then(artists => {
         dispatch({
           type: 'RECOMMENDED_ARTISTS_AND_TRACKS',
           payload: {
             artists: artists,
-            tracks: relatedArtists,
             images: artists.items.map((item) => item.images[1]),
           },
         });
-      });
+      }, err => {
+        console.log("error", err)
+        refresh(getState().user.id)
+        .then(data => {
+          dispatch({
+            type: 'FETCH_CURRENT_USER',
+            payload: data
+          })
+          spotifyApi.setAccessToken(data.access_token)
+          fetchRecommended(spotifyApi)
+        })
+        
+      })
   };
 }
 
@@ -135,6 +160,18 @@ export const startNew = (userId, artist, spotifyApi) => {
           },
         });
         
+      }, err => {
+        console.log("error", err)
+        refresh(userId)
+        .then(data => {
+          dispatch({
+            type: 'FETCH_CURRENT_USER',
+            payload: data
+          })
+          spotifyApi.setAccessToken(data.access_token)
+          startNew(userId, artist, spotifyApi)
+        })
+        
       }
     );
   }
@@ -157,7 +194,7 @@ export const createNext = (artist, spotifyApi) => {
     ]) => {
       dispatch({
         type: 'RELATED_ARTISTS',
-        payload: relatedArtists
+        payload: relatedArtists,
       });
       dispatch({
         type: 'CURRENT_ARTIST',
@@ -165,9 +202,20 @@ export const createNext = (artist, spotifyApi) => {
           info: currentArtist,
           albums: currentArtistAlbums.items,
           tracks: currentArtistTopTracks.tracks,
-        }
+        },
+      });
+    },
+      (err) => {
+        console.log('error', err);
+        refresh(getState().user.id).then((data) => {
+          dispatch({
+            type: 'FETCH_CURRENT_USER',
+            payload: data,
+          });
+          spotifyApi.setAccessToken(data.access_token);
+          startNew(artist, spotifyApi);
+        });
       })
-    })
 
   } 
 }

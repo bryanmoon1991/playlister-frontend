@@ -1,5 +1,5 @@
 import {connect} from 'react-redux';
-import React, {useEffect, useState, useRef} from 'react'
+import React, {useEffect, useState} from 'react'
 import {fetchRecommended} from '../Redux/actions'
 import { motion, AnimatePresence } from 'framer-motion';
 import { wrap } from 'popmotion';
@@ -69,7 +69,6 @@ const RecommendedContainer = ({user, recommended, fetchRecommended, spotifyApi})
         <>
         <div className="recommended">
           <div className="next" onClick={() => paginate(1)}>
-            {/* {'‣'} */}
             <BiIcons.BiCaretLeft/>
           </div>
           <AnimatePresence initial={false} custom={direction}>
@@ -91,7 +90,6 @@ const RecommendedContainer = ({user, recommended, fetchRecommended, spotifyApi})
           </AnimatePresence>
           <div className="prev" onClick={() => paginate(-1)}>
             <BiIcons.BiCaretRight/>
-            {/* {'‣'} */}
           </div>
         </div>
         </>

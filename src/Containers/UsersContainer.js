@@ -1,7 +1,7 @@
 import React from 'react'
 import {Switch, Route} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {fetchCurrentUser, fetchCurrentUsersPlaylists} from '../Redux/actions'
+import {fetchCurrentUser, fetchCurrentUsersBuilds} from '../Redux/actions'
 import Search from '../Components/Search'
 import RecommendedContainer from '../Containers/RecommendedContainer';
 import Discovery from '../Components/Discovery';
@@ -17,22 +17,13 @@ const msp = (state) => {
     }
 }
 
-const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersPlaylists}) => {
+const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersBuilds}) => {
   let spotifyApi = new Spotify()
-  let d1 = new Date(user.updated_at).getTime();
-  let d2 = new Date();
-  let diff = d2 - d1; 
-
-  if (diff > 1800000) {
-    fetchCurrentUser(user.id)
-    console.log("refreshing token")
-  }
 
   if (user) {
     spotifyApi.setAccessToken(user.access_token)
   }
  
-
   return (
     <>
       <Switch>
@@ -40,8 +31,7 @@ const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersPlaylists}) =>
         <Route
           path="/users/:id/playlists"
           render={({ match }) => {
-            fetchCurrentUsersPlaylists(match.params.id, spotifyApi);
-            console.log('test');
+            fetchCurrentUsersBuilds(match.params.id);
             return (
               <>
                 <div className="playlists">
@@ -95,4 +85,4 @@ const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersPlaylists}) =>
 }
 
 
-export default connect(msp, {fetchCurrentUser, fetchCurrentUsersPlaylists})(UsersContainer);
+export default connect(msp, {fetchCurrentUser, fetchCurrentUsersBuilds})(UsersContainer);

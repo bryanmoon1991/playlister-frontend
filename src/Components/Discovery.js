@@ -14,15 +14,22 @@ const Discovery = ({relatedArtists, spotifyApi}) => {
     console.log("in discovery", spotifyApi)
 
     const renderArtistBubbles = () => {
-        let results = [] 
-        let j = 5
-        for (let i = 0; i < j; i++) {
-           let artist = relatedArtists.artists[i] 
-           artist.images ?
-           results.push(<ArtistBubble artist={artist} key={artist.id} spotifyApi={spotifyApi}/>) :
-           j++
-        }
-        return results
+        // let results = [] 
+        // let j = 5
+        // for (let i = 0; i < j; i++) {
+        //    let artist = relatedArtists.artists[i] 
+        //    artist.images ?
+        //    results.push(<ArtistBubble artist={artist} key={artist.id} spotifyApi={spotifyApi}/>) :
+        //    j++
+        // }
+        // return results
+        return relatedArtists.artists.map((artist) => (
+          <ArtistBubble
+            artist={artist}
+            key={artist.id}
+            spotifyApi={spotifyApi}
+          />
+        ));
     }
 
     return (
