@@ -11,7 +11,7 @@ const defaultState = {
   recommended: [],
   playlistBuild: {},
   relatedArtists: {},
-  currentArtist: {},
+  currentSelection: {},
   playlists: [],
 }; 
 
@@ -105,7 +105,7 @@ const relatedArtistsReducer = (state = defaultState.relatedArtists, action) => {
   }
 };
 
-const currentArtistReducer = (state = defaultState.currentArtist, action) => {
+const currentSelectionReducer = (state = defaultState.currentSelection, action) => {
   switch (action.type) {
     case 'CURRENT_ARTIST':
       return action.payload;
@@ -123,7 +123,7 @@ const persistConfig = {
     'recommended',
     'playlistBuild',
     'relatedArtists',
-    'currentArtist',
+    'currentSelection',
     'playlists',
   ],
 };
@@ -136,7 +136,7 @@ const rootReducer = combineReducers({
   recommended: recommendedReducer,
   playlistBuild: playlistBuildReducer,
   relatedArtists: relatedArtistsReducer,
-  currentArtist: currentArtistReducer,
+  currentSelection: currentSelectionReducer,
   playlists: currentUsersPlaylistsReducer,
 });
 

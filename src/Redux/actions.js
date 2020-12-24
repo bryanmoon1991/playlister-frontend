@@ -7,12 +7,12 @@ const refresh = async (id) => {
     if (!response.ok) {
       throw new Error(`error in fetch. Status: ${response.status}`)
     } else {
-      let blob = await response.json()
-      console.log("refreshed token:", blob)
-      return blob
+      let newUser = await response.json()
+      console.log("REFRESHED THE TOKEN:", newUser)
+      return newUser
     }
   } catch(err) {
-    console.log("refresh failed:", err)
+    console.log("REFRESH FAILED:", err)
   }
 }
 

@@ -8,23 +8,25 @@
 
 
 
-
 /* discovery page */
-
 .discover {
-    display: grid;
-    grid-template-columns: 0.5fr, 2fr;
-    gap: 80px;
+  display: grid;
+  grid-template-columns: 0.7fr 0.6fr 1.5fr 1.2fr;
+  grid-template-rows: 1fr;
+  gap: 40px 0px;
+  grid-template-areas:
+    ". builder discovery preview";
 }
 
-.discover .builder {
-    grid-column: 1/2;
-    justify-self: end;
+.builder {
+    grid-area: builder; 
 }
 
-.discover .discovery-tool {
-    grid-column: 2/3; 
-
+.discovery-tool {
+    grid-area: discovery; 
 }
 
+.preview {
+    grid-area: preview; 
+}
 

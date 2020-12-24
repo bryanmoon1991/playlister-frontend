@@ -18,8 +18,9 @@ const msp = (state) => {
 }
 
 const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersBuilds}) => {
+  // instantiating spotify api wrapper
   let spotifyApi = new Spotify()
-
+  // initial access token set, refresh token handled in actions 
   if (user) {
     spotifyApi.setAccessToken(user.access_token)
   }

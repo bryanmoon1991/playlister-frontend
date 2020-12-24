@@ -1,41 +1,78 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import {addSeed} from '../Redux/actions';
+import Preview from './Preview';
 import '../Styles/ArtistCard.css'
 
-
-
-
-const msp = state => {
-    return {
-        currentArtist: state.currentArtist
-    }
-}
-
-const ArtistCard = ({currentArtist, addSeed}) => {
-    console.log("artist card", currentArtist)
+const ArtistCard = ({artist, addSeed, spotifyApi}) => {
+    console.log("artist card", artist)
 
     const renderGenres = () => {
-        return currentArtist.info.genres.join(", ")
+        return artist.info.genres.join(", ")
+    }
+
+    const renderAlbums = () => {
+        let albums = []
+        let singles = []
+        let appearsOn = []
+        artist.albums.forEach(album => {
+            switch (album.album_group) {
+                case "album":
+                    albums.push(<Preview key={album.id} album={album} spotifyApi={spotifyApi}/>)
+                    break;
+                case "single":
+                    singles.push(<Preview key={album.id} album={album} spotifyApi={spotifyApi}/>)
+                    break;
+                case "appears_on":
+                    appearsOn.push(<Preview key={album.id} album={album} spotifyApi={spotifyApi}/>)
+                    break;
+                default:
+                    console.log(`no match for ${album.album_group}`)
+            } 
+        })
+
+        return (
+            <>
+            {albums.length ? (
+                <div className="albums">
+                    <p>albums:</p>
+                    {albums}
+                </div>
+            ) : undefined}
+            {singles.length ? (
+                <div className="singles">
+                    <p>singles:</p>
+                    {singles}
+                </div>
+            ) : undefined}
+            {appearsOn.length ? (
+                <div className="appears-on">
+                    <p>appears on:</p>
+                    {appearsOn}
+                </div>
+            ) : undefined}
+            </>
+        )
     }
 
     
     return (
         <>
-        {currentArtist.info ? 
+        {artist.info ? 
             <div className='artist-card'>
                 <img 
-                src={currentArtist.info.images[0].url}
+                src={artist.info.images[0].url}
                 alt="artist"
                 className="artist-picture"
                 />
-                <button onClick={() => addSeed(currentArtist.info)}>
+                <button onClick={() => addSeed(artist.info)}>
                     Add
                 </button>
                 <div className="info">
-                    <h3>{currentArtist.info.name}</h3>
-                    <h4>Followers: {currentArtist.info.followers.total}</h4>
+                    <h3>{artist.info.name}</h3>
+                    <h4>Followers: {artist.info.followers.total}</h4>
                     <p>{renderGenres()}</p>
+                </div>
+                <div className="artist-works">
+                    {renderAlbums()}
                 </div>
             </div>
         :
@@ -45,4 +82,4 @@ const ArtistCard = ({currentArtist, addSeed}) => {
     )
 }
 
-export default connect(msp, {addSeed})(ArtistCard);
+export default ArtistCard
