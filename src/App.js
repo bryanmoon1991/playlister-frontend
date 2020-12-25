@@ -23,7 +23,7 @@ const App = ({user, clearResults}) => {
             </Link>
           </>
         ) : (
-          <a href="http://localhost:3000/api/v1/login">OAUTH LOGIN</a>
+            <a href="http://localhost:3000/api/v1/login">OAUTH LOGIN</a>
           )}
         <Route 
         path="/users"
