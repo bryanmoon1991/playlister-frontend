@@ -1,5 +1,6 @@
 import React from 'react'
 import Preview from './Preview';
+import Track from './Track';
 import '../Styles/ArtistCard.css'
 
 const ArtistCard = ({artist, addSeed, spotifyApi}) => {
@@ -10,9 +11,15 @@ const ArtistCard = ({artist, addSeed, spotifyApi}) => {
     }
 
     const renderAlbums = () => {
+        let tracks = []
         let albums = []
         let singles = []
         let appearsOn = []
+
+        artist.tracks.forEach(track => {
+           tracks.push(<Track key={track.id} track={track} />) 
+        })
+        
         artist.albums.forEach(album => {
             switch (album.album_group) {
                 case "album":
@@ -31,24 +38,30 @@ const ArtistCard = ({artist, addSeed, spotifyApi}) => {
 
         return (
             <>
+            {tracks.length ? (
+                <div className="top-tracks">
+                    <p>top tracks:</p>
+                    {tracks}
+                </div>
+            ) : undefined }
             {albums.length ? (
                 <div className="albums">
                     <p>albums:</p>
                     {albums}
                 </div>
-            ) : undefined}
+            ) : undefined }
             {singles.length ? (
                 <div className="singles">
                     <p>singles:</p>
                     {singles}
                 </div>
-            ) : undefined}
+            ) : undefined }
             {appearsOn.length ? (
                 <div className="appears-on">
                     <p>appears on:</p>
                     {appearsOn}
                 </div>
-            ) : undefined}
+            ) : undefined }
             </>
         )
     }

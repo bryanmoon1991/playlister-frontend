@@ -12,6 +12,8 @@ const msp = state => {
 
 const ResultsContainer = ({searchResults, spotifyApi}) => {
 
+    console.log("actual search state:", searchResults)
+
     const renderArtists = () => {
         return searchResults.artists.map(artist => <Result key={artist.id} artist={artist} spotifyApi={spotifyApi}/>)
     }

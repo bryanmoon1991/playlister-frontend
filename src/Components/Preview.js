@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react'
-import { Popup } from 'semantic-ui-react'
+import React, {useEffect, useState} from 'react';
+import { Grid, Popup, Header, Button } from 'semantic-ui-react';
 
 const Preview = ({album, spotifyApi}) => {
 
-    let [track, setTrack] = useState(undefined);
+    let [preview, setPreview] = useState(undefined);
     let [info, setInfo] = useState({ album: "", title: ""})
 
     useEffect(() => {
@@ -11,7 +11,7 @@ const Preview = ({album, spotifyApi}) => {
         for (let i = 0; i < data.items.length; i++) {
             let random = Math.floor(Math.random() * Math.floor(data.items.length));
             if (data.items[random].preview_url) {
-                setTrack(new Audio(data.items[random].preview_url));
+                setPreview(new Audio(data.items[random].preview_url));
                 setInfo({album: album.name, title: data.items[random].name})
                 break;
             }
@@ -19,38 +19,61 @@ const Preview = ({album, spotifyApi}) => {
       });
       
       return () => {
-        setTrack(undefined);
+        setPreview(undefined);
         setInfo({ album: "", title: "" })
       };
     }, [spotifyApi]);
 
     const playPreview = () => {
-      track ? track.play() : console.log('no preview for this artist');
+      preview ? preview.play() : console.log('no preview for this artist');
     };
 
     const stopPreview = () => {
-      if (track) {
-        track.pause();
-        track.currentTime = 0;
+      if (preview) {
+        preview.pause();
+        preview.currentTime = 0;
       }
     };
     
     return (
-        <>
+      <>
         <Popup
-            header={`Album: ${info.album}`}
-            content={`Track: ${info.title}`}
-            size='mini'
-            trigger={
-                <img 
-                onMouseOver={() => playPreview()}
-                onMouseOut={() => stopPreview()}
-                src={album.images[album.images.length - 1].url}
-                alt={album.name} 
+          size="mini"
+          hoverable
+          hideOnScroll
+          trigger={
+            <img
+              onMouseOver={() => playPreview()}
+              onMouseOut={() => stopPreview()}
+              src={album.images[album.images.length - 1].url}
+              alt={album.name}
+            />
+          }
+        >
+          <Grid columns={1}>
+            <Grid.Column textAlign="left">
+              <Header as="h4">{`Album: ${info.album}`}</Header>
+              <p>{`Preview Track: ${info.title}`}</p>
+              <Button.Group>
+                <Popup
+                  mouseEnterDelay={500}
+                  position="bottom center"
+                  size="mini"
+                  content="favorite this track"
+                  trigger={<Button icon="like" size="mini" />}
                 />
-            }
-        />
-        </>
+                <Popup
+                  mouseEnterDelay={500}
+                  position="bottom center"
+                  size="mini"
+                  content="open in spotify"
+                  trigger={<Button icon="external" size="mini" />}
+                />
+              </Button.Group>
+            </Grid.Column>
+          </Grid>
+        </Popup>
+      </>
     );
 }
 

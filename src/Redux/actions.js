@@ -110,7 +110,7 @@ export const clearResults = () => {
   };
 }
 
-export const startNew = (userId, artist, spotifyApi) => {
+export const startNew = (userId, selection, spotifyApi) => {
   return dispatch => {
     Promise.all([
       fetch('http://localhost:3000/api/v1/playlists', {
@@ -127,14 +127,14 @@ export const startNew = (userId, artist, spotifyApi) => {
           href: '',
           spotify_id: '',
           images: {},
-          items: [artist], 
+          items: [selection], 
           uri: '',
         }),
       }).then((r) => r.json()),
-      spotifyApi.getArtistRelatedArtists(artist.id),
-      spotifyApi.getArtist(artist.id),
-      spotifyApi.getArtistAlbums(artist.id),
-      spotifyApi.getArtistTopTracks(artist.id, 'US'),
+      spotifyApi.getArtistRelatedArtists(selection.id),
+      spotifyApi.getArtist(selection.id),
+      spotifyApi.getArtistAlbums(selection.id),
+      spotifyApi.getArtistTopTracks(selection.id, 'US'),
     ]).then(
       ([
         playlistBuild,
@@ -151,11 +151,12 @@ export const startNew = (userId, artist, spotifyApi) => {
           type: 'RELATED_ARTISTS',
           payload: relatedArtists,
         });
+        let usAlbums = currentArtistAlbums.items.filter(item => item.available_markets.includes("US"))
         dispatch({
-          type: 'CURRENT_ARTIST',
+          type: 'SWITCH_CURRENT',
           payload: {
             info: currentArtist,
-            albums: currentArtistAlbums.items,
+            albums: usAlbums,
             tracks: currentArtistTopTracks.tracks,
           },
         });
@@ -169,7 +170,7 @@ export const startNew = (userId, artist, spotifyApi) => {
             payload: data
           })
           spotifyApi.setAccessToken(data.access_token)
-          startNew(userId, artist, spotifyApi)
+          startNew(userId, selection, spotifyApi)
         })
         
       }
@@ -177,14 +178,14 @@ export const startNew = (userId, artist, spotifyApi) => {
   }
 };
 
-export const createNext = (artist, spotifyApi) => {
+export const createNext = (selection, spotifyApi) => {
   return (dispatch, getState) => {
     spotifyApi.setAccessToken(getState().user.access_token);
     Promise.all([
-      spotifyApi.getArtist(artist.id),
-      spotifyApi.getArtistAlbums(artist.id),
-      spotifyApi.getArtistTopTracks(artist.id, 'US'),
-      spotifyApi.getArtistRelatedArtists(artist.id)
+      spotifyApi.getArtist(selection.id),
+      spotifyApi.getArtistAlbums(selection.id),
+      spotifyApi.getArtistTopTracks(selection.id, 'US'),
+      spotifyApi.getArtistRelatedArtists(selection.id)
     ])
     .then(([
       currentArtist,
@@ -196,11 +197,14 @@ export const createNext = (artist, spotifyApi) => {
         type: 'RELATED_ARTISTS',
         payload: relatedArtists,
       });
+      let usAlbums = currentArtistAlbums.items.filter((item) =>
+        item.available_markets.includes('US')
+      );
       dispatch({
-        type: 'CURRENT_ARTIST',
+        type: 'SWITCH_CURRENT',
         payload: {
           info: currentArtist,
-          albums: currentArtistAlbums.items,
+          albums: usAlbums,
           tracks: currentArtistTopTracks.tracks,
         },
       });
@@ -213,7 +217,7 @@ export const createNext = (artist, spotifyApi) => {
             payload: data,
           });
           spotifyApi.setAccessToken(data.access_token);
-          startNew(artist, spotifyApi);
+          startNew(selection, spotifyApi);
         });
       })
 

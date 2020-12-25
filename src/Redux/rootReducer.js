@@ -12,6 +12,7 @@ const defaultState = {
   playlistBuild: {},
   relatedArtists: {},
   currentSelection: {},
+  stack: [],
   playlists: [],
 }; 
 
@@ -25,24 +26,7 @@ const currentUserReducer = (state = defaultState.user, action) => {
 };  
 
 
-// const playlistSeedsReducer = produce((draft, action) => {
-//     switch (action.type) {
-//         case 'FIRST_SEED':
-//             draft.length = 0;
-//             draft.push(action.payload)
-//             return draft
-//         case 'CREATE_SEEDS':
-//             return action.payload
-//         case 'NO_SEEDS':
-//             return action.payload
-//         case 'ADD_SEED':
-//             draft.push(action.payload)
-//             return draft;
-//         case 'REMOVE_SEED':
-//             const index = draft.findIndex(seed => seed.id === action.payload.id)
-//             if (index !== -1) draft.splice(index, 1)
-//     }
-// }, defaultState.playlistSeeds)
+
 
 const spotifyApiReducer = (state = defaultState.spotifyApi, action) => {
     switch(action.type) {
@@ -107,12 +91,43 @@ const relatedArtistsReducer = (state = defaultState.relatedArtists, action) => {
 
 const currentSelectionReducer = (state = defaultState.currentSelection, action) => {
   switch (action.type) {
-    case 'CURRENT_ARTIST':
+    case 'SWITCH_CURRENT':
       return action.payload;
     default:
       return state;
   }
 };
+
+const stackReducer = produce((draft, action) => {
+  switch (action.type) {
+    case 'INITIALIZE':
+      draft.length = 0;
+      draft.push(action.payload)
+      return draft
+  } 
+}, defaultState.stack)
+
+
+// const playlistSeedsReducer = produce((draft, action) => {
+//     switch (action.type) {
+//         case 'FIRST_SEED':
+//             draft.length = 0;
+//             draft.push(action.payload)
+//             return draft
+//         case 'CREATE_SEEDS':
+//             return action.payload
+//         case 'NO_SEEDS':
+//             return action.payload
+//         case 'ADD_SEED':
+//             draft.push(action.payload)
+//             return draft;
+//         case 'REMOVE_SEED':
+//             const index = draft.findIndex(seed => seed.id === action.payload.id)
+//             if (index !== -1) draft.splice(index, 1)
+//     }
+// }, defaultState.playlistSeeds)
+
+
 
 const persistConfig = {
   key: 'root',
@@ -124,6 +139,7 @@ const persistConfig = {
     'playlistBuild',
     'relatedArtists',
     'currentSelection',
+    'stack',
     'playlists',
   ],
 };
@@ -137,6 +153,7 @@ const rootReducer = combineReducers({
   playlistBuild: playlistBuildReducer,
   relatedArtists: relatedArtistsReducer,
   currentSelection: currentSelectionReducer,
+  stack: stackReducer, 
   playlists: currentUsersPlaylistsReducer,
 });
 

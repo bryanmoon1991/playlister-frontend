@@ -13,6 +13,7 @@ const Result = (props) => {
     let preview
     props.track ? (props.track.preview_url ? preview = new Audio(props.track.preview_url) : console.log('track with no preview')) : console.log('no preview')
 
+    console.log("result:", props)
 
     const playPreview = () => {
       if (props.artist) {
