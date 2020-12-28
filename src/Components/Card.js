@@ -2,7 +2,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 import {addSeed} from '../Redux/actions';
 import ArtistCard from './ArtistCard';
-import TrackCard from './TrackCard';
 import AlbumCard from './AlbumCard';
 
 
@@ -13,16 +12,30 @@ const msp = state => {
     }
 }
 
-const Card = ({currentSelection, addSeed, spotifyApi}) => {
+const Card = ({currentSelection, addSeed, spotifyApi, followNotify, favoriteNotify}) => {
 
     const renderComponent = () => {
         switch (currentSelection.info.type) {
           case "artist":
-            return <ArtistCard artist={currentSelection} addSeed={addSeed} spotifyApi={spotifyApi}/>;
+            return (
+              <ArtistCard
+                artist={currentSelection}
+                addSeed={addSeed}
+                spotifyApi={spotifyApi}
+                followNotify={followNotify}
+                favoriteNotify={favoriteNotify}
+              />
+            );
           case "album":
-            return <AlbumCard album={currentSelection} addSeed={addSeed} spotifyApi={spotifyApi}/>;
-          case "track":
-            return <TrackCard album={currentSelection} addSeed={addSeed} spotifyApi={spotifyApi}/>;
+            return (
+              <AlbumCard
+                album={currentSelection}
+                addSeed={addSeed}
+                spotifyApi={spotifyApi}
+                followNotify={followNotify}
+                favoriteNotify={favoriteNotify}
+              />
+            );
           default:
             console.log('no match');
         }

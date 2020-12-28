@@ -89,14 +89,15 @@ const relatedArtistsReducer = (state = defaultState.relatedArtists, action) => {
   }
 };
 
-const currentSelectionReducer = (state = defaultState.currentSelection, action) => {
+const currentSelectionReducer = produce((draft, action) => {
   switch (action.type) {
     case 'SWITCH_CURRENT':
       return action.payload;
-    default:
-      return state;
+    case 'ADD_MORE':
+        draft.albums.push(action.payload).flat()
   }
-};
+}, defaultState.currentSelection);
+
 
 const stackReducer = produce((draft, action) => {
   switch (action.type) {

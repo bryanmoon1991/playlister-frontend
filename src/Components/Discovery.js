@@ -3,6 +3,9 @@ import { connect } from 'react-redux';
 import ArtistBubble from './ArtistBubble';
 import Card from './Card'
 import '../Styles/Discovery.css'
+import toast, { Toaster } from 'react-hot-toast';
+
+
 
 const msp = state => {
     return {
@@ -11,35 +14,41 @@ const msp = state => {
 }
 
 const Discovery = ({relatedArtists, spotifyApi}) => {
-    console.log("in discovery", spotifyApi)
-
+    const favoriteNotify = (item) => toast(`Added ${item} to Favorites!`)
+    const followNotify = (artist) => toast(`Now following ${artist} on Spotify`)
+    
     const renderArtistBubbles = () => {
         return relatedArtists.artists.map((artist) => (
           <ArtistBubble
             artist={artist}
             key={artist.id}
             spotifyApi={spotifyApi}
+            followNotify={followNotify}
           />
         ));
     }
 
     return (
-        <>
+      <>
         <div className="discovery-tool">
-            {relatedArtists.artists ? 
+          {relatedArtists.artists ? (
             <>
-            <div className="stack">
-                <Card spotifyApi={spotifyApi}/>
-            </div>
-            <div className="bubbles">
-                {renderArtistBubbles()} 
-            </div>
-            </> :
+              <div className="stack">
+                <Card
+                  spotifyApi={spotifyApi}
+                  followNotify={followNotify}
+                  favoriteNotify={favoriteNotify}
+                />
+              </div>
+              <div className="bubbles">{renderArtistBubbles()}</div>
+              <Toaster />
+            </>
+          ) : (
             <h2>loading discovery tool</h2>
-            }
+          )}
         </div>
-        </>
-    )
+      </>
+    );
 }
 
 export default connect(msp)(Discovery)

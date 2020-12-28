@@ -1,6 +1,5 @@
 import React from 'react'
 import {connect} from 'react-redux';
-import {motion} from 'framer-motion';
 import Result from '../Components/Result'
 import '../Styles/ResultsContainer.css'
 
@@ -26,9 +25,8 @@ const ResultsContainer = ({searchResults, spotifyApi}) => {
         <>
             {searchResults ?
                 <>
-                <motion.div 
+                <div 
                 className="results"
-                animate="open"
                 >
                     <div className="artists-results">
                         <h3>Artists</h3>
@@ -38,7 +36,7 @@ const ResultsContainer = ({searchResults, spotifyApi}) => {
                         <h3>Tracks</h3>
                         {renderTracks()}
                     </div>
-                </motion.div>
+                </div>
                 </>
             :
             undefined}

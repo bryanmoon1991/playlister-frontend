@@ -16,6 +16,29 @@ const refresh = async (id) => {
   }
 }
 
+const getMore = (next, spotifyApi, dispatch) => {
+    if (next) {
+      fetch(next, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + spotifyApi.getAccessToken(),
+        },
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          dispatch({
+            type: 'ADD_MORE',
+            payload: data.items
+          })
+          if (data.next) {
+            getMore(data.next, spotifyApi, dispatch)
+          }
+        });
+    }
+}
+
 export const fetchCurrentUser = id => {
   return dispatch => {
     fetch(`http://localhost:3000/api/v1/users/${id}`)
@@ -117,7 +140,7 @@ export const startNew = (userId, selection, spotifyApi) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
         body: JSON.stringify({
           user_id: userId,
@@ -127,13 +150,13 @@ export const startNew = (userId, selection, spotifyApi) => {
           href: '',
           spotify_id: '',
           images: {},
-          items: [selection], 
+          items: [selection],
           uri: '',
         }),
       }).then((r) => r.json()),
       spotifyApi.getArtistRelatedArtists(selection.id),
       spotifyApi.getArtist(selection.id),
-      spotifyApi.getArtistAlbums(selection.id),
+      spotifyApi.getArtistAlbums(selection.id, { limit: 50, country: 'US' }),
       spotifyApi.getArtistTopTracks(selection.id, 'US'),
     ]).then(
       ([
@@ -151,28 +174,26 @@ export const startNew = (userId, selection, spotifyApi) => {
           type: 'RELATED_ARTISTS',
           payload: relatedArtists,
         });
-        let usAlbums = currentArtistAlbums.items.filter(item => item.available_markets.includes("US"))
         dispatch({
           type: 'SWITCH_CURRENT',
           payload: {
             info: currentArtist,
-            albums: usAlbums,
+            albums: currentArtistAlbums.items,
             tracks: currentArtistTopTracks.tracks,
           },
         });
-        
-      }, err => {
-        console.log("error", err)
-        refresh(userId)
-        .then(data => {
+        getMore(currentArtistAlbums.next, spotifyApi, dispatch)
+      },
+      (err) => {
+        console.log('error', err);
+        refresh(userId).then((data) => {
           dispatch({
             type: 'FETCH_CURRENT_USER',
-            payload: data
-          })
-          spotifyApi.setAccessToken(data.access_token)
-          startNew(userId, selection, spotifyApi)
-        })
-        
+            payload: data,
+          });
+          spotifyApi.setAccessToken(data.access_token);
+          startNew(userId, selection, spotifyApi);
+        });
       }
     );
   }
@@ -180,49 +201,83 @@ export const startNew = (userId, selection, spotifyApi) => {
 
 export const createNext = (selection, spotifyApi) => {
   return (dispatch, getState) => {
-    spotifyApi.setAccessToken(getState().user.access_token);
-    Promise.all([
-      spotifyApi.getArtist(selection.id),
-      spotifyApi.getArtistAlbums(selection.id),
-      spotifyApi.getArtistTopTracks(selection.id, 'US'),
-      spotifyApi.getArtistRelatedArtists(selection.id)
-    ])
-    .then(([
-      currentArtist,
-      currentArtistAlbums,
-      currentArtistTopTracks,
-      relatedArtists,
-    ]) => {
-      dispatch({
-        type: 'RELATED_ARTISTS',
-        payload: relatedArtists,
-      });
-      let usAlbums = currentArtistAlbums.items.filter((item) =>
-        item.available_markets.includes('US')
-      );
-      dispatch({
-        type: 'SWITCH_CURRENT',
-        payload: {
-          info: currentArtist,
-          albums: usAlbums,
-          tracks: currentArtistTopTracks.tracks,
-        },
-      });
-    },
-      (err) => {
-        console.log('error', err);
-        refresh(getState().user.id).then((data) => {
-          dispatch({
-            type: 'FETCH_CURRENT_USER',
-            payload: data,
-          });
-          spotifyApi.setAccessToken(data.access_token);
-          startNew(selection, spotifyApi);
-        });
-      })
-
-  } 
+    if (selection.type === "artist") {
+        Promise.all([
+          spotifyApi.getArtist(selection.id),
+          spotifyApi.getArtistAlbums(selection.id, { limit: 50, country:"US" }),
+          spotifyApi.getArtistTopTracks(selection.id, 'US'),
+          spotifyApi.getArtistRelatedArtists(selection.id),
+        ]).then(
+          ([
+            currentArtist,
+            currentArtistAlbums,
+            currentArtistTopTracks,
+            relatedArtists,
+          ]) => {
+            dispatch({
+              type: 'RELATED_ARTISTS',
+              payload: relatedArtists,
+            });
+            dispatch({
+              type: 'SWITCH_CURRENT',
+              payload: {
+                info: currentArtist,
+                albums: currentArtistAlbums.items,
+                tracks: currentArtistTopTracks.tracks,
+              },
+            });
+            getMore(currentArtistAlbums.next, spotifyApi, dispatch)
+          },
+          (err) => {
+            console.log('error', err);
+            refresh(getState().user.id).then((data) => {
+              dispatch({
+                type: 'FETCH_CURRENT_USER',
+                payload: data,
+              });
+              spotifyApi.setAccessToken(data.access_token);
+              startNew(selection, spotifyApi);
+            });
+          }
+        );
+    } else if (selection.type === "album") {
+        Promise.all([
+          spotifyApi.getAlbum(selection.id),
+          spotifyApi.getAlbumTracks(selection.id),
+          spotifyApi.getArtists(selection.artists.map(artist => artist.id)), 
+          spotifyApi.getArtistRelatedArtists(selection.artists[0].id),
+        ]).then(
+          ([currentAlbum, currentAlbumTracks, features, relatedArtists]) => {
+            dispatch({
+              type: 'RELATED_ARTISTS',
+              payload: relatedArtists,
+            });
+            dispatch({
+              type: 'SWITCH_CURRENT',
+              payload: {
+                info: currentAlbum,
+                features: features.artists,
+                tracks: currentAlbumTracks.items,
+              },
+            });
+          },
+          (err) => {
+            console.log('error', err);
+            refresh(getState().user.id).then((data) => {
+              dispatch({
+                type: 'FETCH_CURRENT_USER',
+                payload: data,
+              });
+              spotifyApi.setAccessToken(data.access_token);
+              startNew(selection, spotifyApi);
+            });
+          }
+        );
+    }
+  }; 
 }
+
+
 
 export const addSeed = (artist) => {
   return (dispatch, getState) => {

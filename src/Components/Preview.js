@@ -1,7 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import { Grid, Popup, Header, Button } from 'semantic-ui-react';
+import {createNext} from '../Redux/actions';
+import { connect } from 'react-redux'
 
-const Preview = ({album, spotifyApi}) => {
+const Preview = ({album, spotifyApi, createNext}) => {
 
     let [preview, setPreview] = useState(undefined);
     let [info, setInfo] = useState({ album: "", title: ""})
@@ -43,10 +45,14 @@ const Preview = ({album, spotifyApi}) => {
           hideOnScroll
           trigger={
             <img
-              onMouseOver={() => playPreview()}
-              onMouseOut={() => stopPreview()}
               src={album.images[album.images.length - 1].url}
               alt={album.name}
+              onMouseOver={() => playPreview()}
+              onMouseOut={() => stopPreview()}
+              onClick={() => {
+                createNext(album, spotifyApi)
+                stopPreview()
+              }}
             />
           }
         >
@@ -59,7 +65,7 @@ const Preview = ({album, spotifyApi}) => {
                   mouseEnterDelay={500}
                   position="bottom center"
                   size="mini"
-                  content="favorite this track"
+                  content="favorite this album"
                   trigger={<Button icon="like" size="mini" />}
                 />
                 <Popup
@@ -77,4 +83,4 @@ const Preview = ({album, spotifyApi}) => {
     );
 }
 
-export default Preview;
+export default connect(null, {createNext})(Preview);

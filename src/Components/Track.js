@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Grid, Popup, Header, Button } from 'semantic-ui-react';
 
 
-const Track = ({track}) => {
+const TopTrack = ({track, album, favoriteNotify}) => {
     
     let [preview, setPreview] = useState(new Audio(track.preview_url));
-    let [info, setInfo] = useState({ album: track.album.name, title: track.name})
+    let [info, setInfo] = useState({ album: album.name, title: track.name})
 
 
     const playPreview = () => {
@@ -21,45 +21,58 @@ const Track = ({track}) => {
    
 
     return (
-    <>
+      <>
         <Popup
-        size="mini"
-        hoverable
-        hideOnScroll
-        trigger={
+          size="mini"
+          hoverable
+          hideOnScroll
+          trigger={
             <img
-            onMouseOver={() => playPreview()}
-            onMouseOut={() => stopPreview()}
-            src={track.album.images[track.album.images.length - 1].url}
-            alt={track.album.name}
+              onMouseOver={() => playPreview()}
+              onMouseOut={() => stopPreview()}
+              src={album.images[album.images.length - 1].url}
+              alt={album.name}
             />
-        }
+          }
         >
-        <Grid columns={1}>
+          <Grid columns={1}>
             <Grid.Column textAlign="left">
-            <Header as="h4">{`Off the Album: ${info.album}`}</Header>
-            <p>{`Track: ${info.title}`}</p>
-            <Button.Group>
+              <Header as="h4">{`Album: ${info.album}`}</Header>
+              <p>{`Track: ${info.title}`}</p>
+              <Button.Group>
                 <Popup
-                mouseEnterDelay={500}
-                position="bottom center"
-                size="mini"
-                content="favorite this track"
-                trigger={<Button icon="like" size="mini" />}
+                  mouseEnterDelay={500}
+                  position="bottom center"
+                  size="mini"
+                  content="Favorite this Track"
+                  trigger={
+                    <Button
+                      icon="like"
+                      size="mini"
+                      onClick={() => favoriteNotify(info.title)}
+                    />
+                  }
                 />
                 <Popup
-                mouseEnterDelay={500}
-                position="bottom center"
-                size="mini"
-                content="open in spotify"
-                trigger={<Button icon="external" size="mini" />}
+                  mouseEnterDelay={500}
+                  position="bottom center"
+                  size="mini"
+                  content={`Add ${info.title} to Playlist Build`}
+                  trigger={<Button icon="add" size="mini" />}
                 />
-            </Button.Group>
+                <Popup
+                  mouseEnterDelay={500}
+                  position="bottom center"
+                  size="mini"
+                  content="Open in Spotify"
+                  trigger={<Button icon="external" size="mini" />}
+                />
+              </Button.Group>
             </Grid.Column>
-        </Grid>
+          </Grid>
         </Popup>
-    </>
+      </>
     );
 }
 
-export default Track;
+export default TopTrack;
