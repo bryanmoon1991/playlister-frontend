@@ -94,7 +94,7 @@ const currentSelectionReducer = produce((draft, action) => {
     case 'SWITCH_CURRENT':
       return action.payload;
     case 'ADD_MORE':
-        draft.albums.push(action.payload).flat()
+      draft.albums = [...draft.albums, ...action.payload]
   }
 }, defaultState.currentSelection);
 
