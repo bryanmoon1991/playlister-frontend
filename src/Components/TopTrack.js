@@ -2,14 +2,27 @@ import React, { useState } from 'react';
 import { Grid, Popup, Header, Button } from 'semantic-ui-react';
 
 
-const TopTrack = ({track, album, favoriteNotify}) => {
+const TopTrack = ({track, album, favoriteNotify, addToBuildNotify, addSeed}) => {
     
     let [preview, setPreview] = useState(new Audio(track.preview_url));
     let [info, setInfo] = useState({ album: album.name, title: track.name})
 
 
     const playPreview = () => {
-      preview ? preview.play() : console.log('no preview for this artist');
+      if (preview) {
+        let playPromise = preview.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              console.log('playing');
+            })
+            .catch(() => {
+              console.log('no preview available');
+            });
+        }
+      } else {
+        console.log('no preview for this artist');
+      }
     };
 
     const stopPreview = () => {
@@ -28,8 +41,9 @@ const TopTrack = ({track, album, favoriteNotify}) => {
           hideOnScroll
           trigger={
             <img
-              onMouseOver={() => playPreview()}
-              onMouseOut={() => stopPreview()}
+              onMouseEnter={() => playPreview()}
+              onMouseLeave={() => stopPreview()}
+              onWheel={() => stopPreview()}
               src={album.images[album.images.length - 1].url}
               alt={album.name}
             />
@@ -58,7 +72,16 @@ const TopTrack = ({track, album, favoriteNotify}) => {
                   position="bottom center"
                   size="mini"
                   content={`Add ${info.title} to Playlist Build`}
-                  trigger={<Button icon="add" size="mini" />}
+                  trigger={
+                    <Button
+                      icon="add"
+                      size="mini"
+                      onClick={() =>  {
+                        addToBuildNotify(info.title)
+                        addSeed(track)
+                      }}
+                    />
+                  }
                 />
                 <Popup
                   mouseEnterDelay={500}

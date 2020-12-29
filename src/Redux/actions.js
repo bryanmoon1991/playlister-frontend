@@ -28,9 +28,15 @@ const getMore = (next, spotifyApi, dispatch) => {
       })
         .then((r) => r.json())
         .then((data) => {
-          dispatch({
-            type: 'ADD_MORE',
-            payload: data.items
+          spotifyApi.getAlbums(data.items.map(album => album.id))
+          .then(albumObjects => {
+            for (let i = 0; i < data.items.length; i++) {
+              data.items[i]["tracks"] = albumObjects.albums[i].tracks
+            }
+            dispatch({
+              type: 'ADD_MORE',
+              payload: data.items 
+            })
           })
           if (data.next) {
             getMore(data.next, spotifyApi, dispatch)
@@ -105,31 +111,31 @@ export const clearResults = () => {
 
 
   
-  export const fetchRecommended = (spotifyApi) => {
-    return (dispatch, getState) => {
-      spotifyApi.setAccessToken(getState().user.access_token)
-      spotifyApi.getMyTopArtists({ limit: 10 }) 
-      .then(artists => {
+export const fetchRecommended = (spotifyApi) => {
+  return (dispatch, getState) => {
+    spotifyApi.setAccessToken(getState().user.access_token)
+    spotifyApi.getMyTopArtists({ limit: 10 }) 
+    .then(artists => {
+      dispatch({
+        type: 'RECOMMENDED_ARTISTS_AND_TRACKS',
+        payload: {
+          artists: artists,
+          images: artists.items.map((item) => item.images[1]),
+        },
+      });
+    }, err => {
+      console.log("error", err)
+      refresh(getState().user.id)
+      .then(data => {
         dispatch({
-          type: 'RECOMMENDED_ARTISTS_AND_TRACKS',
-          payload: {
-            artists: artists,
-            images: artists.items.map((item) => item.images[1]),
-          },
-        });
-      }, err => {
-        console.log("error", err)
-        refresh(getState().user.id)
-        .then(data => {
-          dispatch({
-            type: 'FETCH_CURRENT_USER',
-            payload: data
-          })
-          spotifyApi.setAccessToken(data.access_token)
-          fetchRecommended(spotifyApi)
+          type: 'FETCH_CURRENT_USER',
+          payload: data
         })
-        
+        spotifyApi.setAccessToken(data.access_token)
+        fetchRecommended(spotifyApi)
       })
+      
+    })
   };
 }
 
@@ -156,7 +162,9 @@ export const startNew = (userId, selection, spotifyApi) => {
       }).then((r) => r.json()),
       spotifyApi.getArtistRelatedArtists(selection.id),
       spotifyApi.getArtist(selection.id),
-      spotifyApi.getArtistAlbums(selection.id, { limit: 50, country: 'US' }),
+      spotifyApi.getArtistAlbums(selection.id, { limit: 20, country: 'US' }),
+       spotifyApi.getArtistAlbums(selection.id, { limit: 20, country: 'US' })
+        .then(albums => spotifyApi.getAlbums(albums.items.map(alb => alb.id))),
       spotifyApi.getArtistTopTracks(selection.id, 'US'),
     ]).then(
       ([
@@ -164,6 +172,7 @@ export const startNew = (userId, selection, spotifyApi) => {
         relatedArtists,
         currentArtist,
         currentArtistAlbums,
+        fullAlbums,
         currentArtistTopTracks,
       ]) => {
         dispatch({
@@ -174,6 +183,9 @@ export const startNew = (userId, selection, spotifyApi) => {
           type: 'RELATED_ARTISTS',
           payload: relatedArtists,
         });
+        for (let i = 0; i < currentArtistAlbums.items.length; i++) {
+          currentArtistAlbums.items[i]["tracks"] = fullAlbums.albums[i].tracks
+        }
         dispatch({
           type: 'SWITCH_CURRENT',
           payload: {
@@ -204,16 +216,22 @@ export const createNext = (selection, spotifyApi) => {
     if (selection.type === "artist") {
         Promise.all([
           spotifyApi.getArtist(selection.id),
-          spotifyApi.getArtistAlbums(selection.id, { limit: 50, country:"US" }),
+          spotifyApi.getArtistAlbums(selection.id, { limit: 20, country:"US" }),
+          spotifyApi.getArtistAlbums(selection.id, { limit: 20, country: 'US' })
+        .then(albums => spotifyApi.getAlbums(albums.items.map(alb => alb.id))),
           spotifyApi.getArtistTopTracks(selection.id, 'US'),
           spotifyApi.getArtistRelatedArtists(selection.id),
         ]).then(
           ([
             currentArtist,
             currentArtistAlbums,
+            fullAlbums,
             currentArtistTopTracks,
             relatedArtists,
           ]) => {
+              for (let i = 0; i < currentArtistAlbums.items.length; i++) {
+                currentArtistAlbums.items[i]["tracks"] = fullAlbums.albums[i].tracks
+              }
             dispatch({
               type: 'RELATED_ARTISTS',
               payload: relatedArtists,
@@ -243,11 +261,10 @@ export const createNext = (selection, spotifyApi) => {
     } else if (selection.type === "album") {
         Promise.all([
           spotifyApi.getAlbum(selection.id),
-          spotifyApi.getAlbumTracks(selection.id),
           spotifyApi.getArtists(selection.artists.map(artist => artist.id)), 
           spotifyApi.getArtistRelatedArtists(selection.artists[0].id),
         ]).then(
-          ([currentAlbum, currentAlbumTracks, features, relatedArtists]) => {
+          ([currentAlbum, features, relatedArtists]) => {
             dispatch({
               type: 'RELATED_ARTISTS',
               payload: relatedArtists,
@@ -257,7 +274,7 @@ export const createNext = (selection, spotifyApi) => {
               payload: {
                 info: currentAlbum,
                 features: features.artists,
-                tracks: currentAlbumTracks.items,
+                tracks: currentAlbum.tracks.items,
               },
             });
           },

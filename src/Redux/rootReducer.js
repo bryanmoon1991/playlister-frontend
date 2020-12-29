@@ -25,9 +25,6 @@ const currentUserReducer = (state = defaultState.user, action) => {
   }
 };  
 
-
-
-
 const spotifyApiReducer = (state = defaultState.spotifyApi, action) => {
     switch(action.type) {
       case 'SET_AUTHORIZATION':
@@ -78,16 +75,15 @@ const playlistBuildReducer = (state = defaultState.playlistBuild, action) => {
 };  
 
 
-
-
-const relatedArtistsReducer = (state = defaultState.relatedArtists, action) => {
+const relatedArtistsReducer = produce((draft, action) => {
   switch (action.type) {
     case 'RELATED_ARTISTS':
       return action.payload;
-    default:
-      return state;
+    case 'ADD_TOP_TRACK':
+      draft.artists[action.index]["track"] = action.payload
+
   }
-};
+}, defaultState.relatedArtists);
 
 const currentSelectionReducer = produce((draft, action) => {
   switch (action.type) {
@@ -97,7 +93,6 @@ const currentSelectionReducer = produce((draft, action) => {
       draft.albums = [...draft.albums, ...action.payload]
   }
 }, defaultState.currentSelection);
-
 
 const stackReducer = produce((draft, action) => {
   switch (action.type) {

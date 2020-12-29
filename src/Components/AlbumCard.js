@@ -5,7 +5,7 @@ import ArtistBubble from './ArtistBubble';
 import TracklistItem from './TracklistItem';
 import { Popup, Button } from 'semantic-ui-react';
 
-const AlbumCard = ({album, addSeed, spotifyApi, createNext, followNotify, favoriteNotify}) => {
+const AlbumCard = ({album, addSeed, spotifyApi, createNext, followNotify, favoriteNotify, addToBuildNotify}) => {
 
 
     console.log("in album card", album)
@@ -27,6 +27,8 @@ const AlbumCard = ({album, addSeed, spotifyApi, createNext, followNotify, favori
             <TracklistItem
             key={track.id}
             track={track}
+            addToBuildNotify={addToBuildNotify}
+            addSeed={addSeed}
             />
         ))
     }
@@ -65,7 +67,10 @@ const AlbumCard = ({album, addSeed, spotifyApi, createNext, followNotify, favori
                     <Button
                       icon="add"
                       size="mini"
-                      onClick={() => addSeed(album.info)}
+                      onClick={() => {
+                        addToBuildNotify(album.info.name)
+                        addSeed(album.info)
+                      }}
                     />
                   }
                 />

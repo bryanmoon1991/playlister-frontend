@@ -9,16 +9,24 @@ const Preview = ({album, spotifyApi, createNext}) => {
     let [info, setInfo] = useState({ album: "", title: ""})
 
     useEffect(() => {
-      spotifyApi.getAlbumTracks(album.id, 'US').then((data) => {
-        for (let i = 0; i < data.items.length; i++) {
-            let random = Math.floor(Math.random() * Math.floor(data.items.length));
-            if (data.items[random].preview_url) {
-                setPreview(new Audio(data.items[random].preview_url));
-                setInfo({album: album.name, title: data.items[random].name})
-                break;
-            }
+      // spotifyApi.getAlbumTracks(album.id, 'US').then((data) => {
+      //   for (let i = 0; i < data.items.length; i++) {
+      //       let random = Math.floor(Math.random() * Math.floor(data.items.length));
+      //       if (data.items[random].preview_url) {
+      //           setPreview(new Audio(data.items[random].preview_url));
+      //           setInfo({album: album.name, title: data.items[random].name})
+      //           break;
+      //       }
+      //   }
+      // });
+      for (let i = 0; i < album.tracks.items.length; i++) {
+        let random = Math.floor(Math.random() * Math.floor(album.tracks.items.length));
+        if (album.tracks.items[random].preview_url) {
+          setPreview(new Audio(album.tracks.items[random].preview_url));
+          setInfo({album: album.name, title: album.tracks.items[random].name})
+          break;
         }
-      });
+      }
       
       return () => {
         setPreview(undefined);
@@ -27,7 +35,20 @@ const Preview = ({album, spotifyApi, createNext}) => {
     }, [spotifyApi]);
 
     const playPreview = () => {
-      preview ? preview.play() : console.log('no preview for this artist');
+      if (preview) {
+        let playPromise = preview.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              console.log('playing');
+            })
+            .catch(() => {
+              console.log('no preview available');
+            });
+        }
+      } else {
+        console.log('no preview for this artist');
+      }
     };
 
     const stopPreview = () => {
@@ -47,11 +68,12 @@ const Preview = ({album, spotifyApi, createNext}) => {
             <img
               src={album.images[album.images.length - 1].url}
               alt={album.name}
-              onMouseOver={() => playPreview()}
-              onMouseOut={() => stopPreview()}
+              onMouseEnter={() => playPreview()}
+              onMouseLeave={() => stopPreview()}
+              onWheel={() => stopPreview()}
               onClick={() => {
-                createNext(album, spotifyApi)
-                stopPreview()
+                createNext(album, spotifyApi);
+                stopPreview();
               }}
             />
           }

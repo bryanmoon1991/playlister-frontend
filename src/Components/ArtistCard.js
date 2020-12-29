@@ -1,99 +1,99 @@
 import React from 'react'
 import Preview from './Preview';
-import TopTrack from './Track';
+import TopTrack from './TopTrack';
 import '../Styles/ArtistCard.css'
 import { Popup, Button } from 'semantic-ui-react';
 
 
-const ArtistCard = ({artist, addSeed, spotifyApi, followNotify, favoriteNotify}) => {
-    console.log("artist card", artist)
-    
-    const renderGenres = () => {
-        return artist.info.genres.join(", ")
-    }
+const ArtistCard = ({artist, addSeed, spotifyApi, followNotify, favoriteNotify, addToBuildNotify}) => {
+  console.log("artist card", artist)
+  
+  const renderGenres = () => {
+    return artist.info.genres.join(", ")
+  }
 
-    const renderAlbums = () => {
-        let tracks = []
-        let albums = []
-        let singles = []
-        let appearsOn = []
+  const renderAlbums = () => {
+    let tracks = [];
+    let albums = [];
+    let singles = [];
+    let compilation = [];
+    let appears = [];
 
-        artist.tracks.forEach(track => {
-            tracks.push(
-                <TopTrack
-                key={track.id}
-                track={track}
-                album={track.album}
-                favoriteNotify={favoriteNotify}
-                />
-            ); 
-        })
-        
-        artist.albums.forEach(album => {
-            switch (album.album_group) {
-                case "album":
-                    albums.push(
-                      <Preview
-                        key={album.id}
-                        album={album}
-                        spotifyApi={spotifyApi}
-                      />
-                    );
-                    break;
-                case "single":
-                    singles.push(
-                      <Preview
-                        key={album.id}
-                        album={album}
-                        spotifyApi={spotifyApi}
-                        
-                      />
-                    );
-                    break;
-                case "appears_on":
-                    appearsOn.push(
-                      <Preview
-                        key={album.id}
-                        album={album}
-                        spotifyApi={spotifyApi}
-                        
-                      />
-                    );
-                    break;
-                default:
-                    console.log(`no match for ${album.album_group}`)
-            } 
-        })
+    artist.tracks.forEach((track) => {
+      tracks.push(
+        <TopTrack
+          key={track.id}
+          track={track}
+          album={track.album}
+          favoriteNotify={favoriteNotify}
+          addToBuildNotify={addToBuildNotify}
+          addSeed={addSeed}
+        />
+      );
+    });
 
-        return (
-            <>
-            {tracks.length ? (
-                <div className="top-tracks">
-                    <p>top tracks:</p>
-                    {tracks}
-                </div>
-            ) : undefined }
-            {albums.length ? (
-                <div className="albums">
-                    <p>albums:</p>
-                    {albums}
-                </div>
-            ) : undefined }
-            {singles.length ? (
-                <div className="singles">
-                    <p>singles:</p>
-                    {singles}
-                </div>
-            ) : undefined }
-            {appearsOn.length ? (
-                <div className="appears-on">
-                    <p>appears on:</p>
-                    {appearsOn}
-                </div>
-            ) : undefined }
-            </>
-        )
-    }
+    artist.albums.forEach((album) => {
+      switch (album.album_group) {
+        case 'album':
+          albums.push(
+            <Preview key={album.id} album={album} spotifyApi={spotifyApi} />
+          );
+          break;
+        case 'single':
+          singles.push(
+            <Preview key={album.id} album={album} spotifyApi={spotifyApi} />
+          );
+          break;
+        case 'compilation':
+          compilation.push(
+            <Preview key={album.id} album={album} spotifyApi={spotifyApi} />
+          );
+          break;
+        case 'appears_on':
+          appears.push(
+            <Preview key={album.id} album={album} spotifyApi={spotifyApi} />
+          );
+          break;
+        default:
+          console.log(`no match for ${album.album_group}`);
+      }
+    });
+
+    return (
+      <>
+        {tracks.length ? (
+          <div className="top-tracks">
+            <p>top tracks:</p>
+            {tracks}
+          </div>
+        ) : undefined}
+        {albums.length ? (
+          <div className="albums">
+            <p>albums:</p>
+            {albums}
+          </div>
+        ) : undefined}
+        {singles.length ? (
+          <div className="singles">
+            <p>singles:</p>
+            {singles}
+          </div>
+        ) : undefined}
+        {appears.length ? (
+          <div className="appears">
+            <p>appears on:</p>
+            {appears}
+          </div>
+        ) : undefined}
+        {compilation.length ? (
+          <div className="compilation">
+            <p>compilations:</p>
+            {compilation}
+          </div>
+        ) : undefined}
+      </>
+    );
+  }; 
 
     
     return (
@@ -130,7 +130,10 @@ const ArtistCard = ({artist, addSeed, spotifyApi, followNotify, favoriteNotify})
                     <Button
                       icon="add"
                       size="mini"
-                      onClick={() => addSeed(artist.info)}
+                      onClick={() => {
+                        addToBuildNotify(artist.info.name)
+                        addSeed(artist.info)
+                      }}
                     />
                   }
                 />

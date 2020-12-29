@@ -4,14 +4,14 @@ import {connect} from 'react-redux';
 import {createNext} from '../Redux/actions';
 
 const ArtistBubble = ({artist, spotifyApi, createNext, followNotify}) => {
-    let [track, setTrack] = useState(undefined)
+    let [preview, setPreview] = useState(undefined)
     let [info, setInfo] = useState({ name: "", title: "" })
 
     useEffect(() => {
         spotifyApi.getArtistTopTracks(artist.id, "US")
         .then(data => {
           if (data.tracks[0]) {
-            setTrack(new Audio(data.tracks[0].preview_url)) 
+            setPreview(new Audio(data.tracks[0].preview_url)) 
             setInfo({ name: artist.name, title: data.tracks[0].name} )
           } else {
             setInfo({ name: artist.name, title: "Sorry, there is no preview" })
@@ -19,24 +19,40 @@ const ArtistBubble = ({artist, spotifyApi, createNext, followNotify}) => {
         })
         
         return () => {
-          setTrack(undefined)
+          setPreview(undefined)
           setInfo({ name: "", title: "" })
         }
     }, [spotifyApi])
 
     const playPreview = () => {
-      track ? track.play() : console.log("no preview for this artist")
+      if (preview) {
+        let playPromise = preview.play()
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            console.log("playing")
+          })
+          .catch(() => {
+            console.log("no preview available")
+          })
+        }
+      } else {
+        console.log("no preview for this artist")
+      } 
     }
 
     const stopPreview = () => {
-      if (track) {
-        track.pause()
-        track.currentTime = 0
+      if (preview) {
+        preview.pause()
+        preview.currentTime = 0
       }
     }
+
+
+    
     
     return (
       <>
+  
         <Popup
           size="mini"
           position="left center"
@@ -44,8 +60,9 @@ const ArtistBubble = ({artist, spotifyApi, createNext, followNotify}) => {
           hideOnScroll
           trigger={
             <img
-              onMouseOver={() => playPreview()}
-              onMouseOut={() => stopPreview()}
+              onMouseEnter={() => playPreview()}
+              onMouseLeave={() => stopPreview()}
+              onWheel={() => stopPreview()}
               className="bubble"
               alt="related-artist"
               //   sometimes causes an issue

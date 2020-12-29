@@ -12,43 +12,45 @@ const msp = state => {
     }
 }
 
-const Card = ({currentSelection, addSeed, spotifyApi, followNotify, favoriteNotify}) => {
+const Card = ({currentSelection, addSeed, spotifyApi, followNotify, favoriteNotify, addToBuildNotify}) => {
 
-    const renderComponent = () => {
-        switch (currentSelection.info.type) {
-          case "artist":
-            return (
-              <ArtistCard
-                artist={currentSelection}
-                addSeed={addSeed}
-                spotifyApi={spotifyApi}
-                followNotify={followNotify}
-                favoriteNotify={favoriteNotify}
-              />
-            );
-          case "album":
-            return (
-              <AlbumCard
-                album={currentSelection}
-                addSeed={addSeed}
-                spotifyApi={spotifyApi}
-                followNotify={followNotify}
-                favoriteNotify={favoriteNotify}
-              />
-            );
-          default:
-            console.log('no match');
-        }
+  const renderComponent = () => {
+    switch (currentSelection.info.type) {
+      case 'artist':
+        return (
+          <ArtistCard
+            artist={currentSelection}
+            addSeed={addSeed}
+            spotifyApi={spotifyApi}
+            followNotify={followNotify}
+            favoriteNotify={favoriteNotify}
+            addToBuildNotify={addToBuildNotify}
+          />
+        );
+      case 'album':
+        return (
+          <AlbumCard
+            album={currentSelection}
+            addSeed={addSeed}
+            spotifyApi={spotifyApi}
+            followNotify={followNotify}
+            favoriteNotify={favoriteNotify}
+            addToBuildNotify={addToBuildNotify}
+          />
+        );
+      default:
+        console.log('no match');
     }
-    return (
-      <>
-        {currentSelection.info ? (
-            renderComponent()
-        ) : (
-          <h3>Loading Discovery Tool</h3>
-        )}
-      </>
-    );
+  };
+  return (
+    <>
+      {currentSelection.info ? (
+          renderComponent()
+      ) : (
+        <h3>Loading Discovery Tool</h3>
+      )}
+    </>
+  );
 }
 
 export default connect(msp, {addSeed})(Card);

@@ -16,6 +16,7 @@ const msp = state => {
 const Discovery = ({relatedArtists, spotifyApi}) => {
     const favoriteNotify = (item) => toast(`Added ${item} to Favorites!`)
     const followNotify = (artist) => toast(`Now following ${artist} on Spotify`)
+    const addToBuildNotify = (item) => toast(`Added ${item} to Your Current Build!`)
     
     const renderArtistBubbles = () => {
         return relatedArtists.artists.map((artist) => (
@@ -24,11 +25,11 @@ const Discovery = ({relatedArtists, spotifyApi}) => {
             key={artist.id}
             spotifyApi={spotifyApi}
             followNotify={followNotify}
-          />
-        ));
-    }
-
-    return (
+            />
+            ));
+          }
+          
+          return (
       <>
         <div className="discovery-tool">
           {relatedArtists.artists ? (
@@ -38,6 +39,7 @@ const Discovery = ({relatedArtists, spotifyApi}) => {
                   spotifyApi={spotifyApi}
                   followNotify={followNotify}
                   favoriteNotify={favoriteNotify}
+                  addToBuildNotify={addToBuildNotify}
                 />
               </div>
               <div className="bubbles">{renderArtistBubbles()}</div>

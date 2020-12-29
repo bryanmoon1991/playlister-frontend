@@ -1,13 +1,26 @@
 import React, { useState } from 'react';
-import { Grid, Popup, Header, Button } from 'semantic-ui-react';
+import { Grid, Popup, Button } from 'semantic-ui-react';
 
 
-const TracklistItem = ({track}) => {
+const TracklistItem = ({track, addSeed, addToBuildNotify}) => {
     
     let [preview, setPreview] = useState(new Audio(track.preview_url));
 
     const playPreview = () => {
-      preview ? preview.play() : console.log('no preview for this artist');
+      if (preview) {
+        let playPromise = preview.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              console.log('playing');
+            })
+            .catch(() => {
+              console.log('no preview available');
+            });
+        }
+      } else {
+        console.log('no preview for this artist');
+      }
     };
 
     const stopPreview = () => {
@@ -19,50 +32,60 @@ const TracklistItem = ({track}) => {
    
 
     return (
-    <>
+      <>
         <Popup
-        size="mini"
-        position="left center"
-        hoverable
-        hideOnScroll
-        trigger={
+          size="mini"
+          position="left center"
+          hoverable
+          hideOnScroll
+          trigger={
             <h4
-            onMouseOver={() => playPreview()}
-            onMouseOut={() => stopPreview()}
+              onMouseEnter={() => playPreview()}
+              onMouseLeave={() => stopPreview()}
+              onWheel={() => stopPreview()}
             >
-               {track.name} 
+              {track.name}
             </h4>
-        }
+          }
         >
-        <Grid columns={1}>
+          <Grid columns={1}>
             <Grid.Column textAlign="left">
-            <Button.Group>
+              <Button.Group>
                 <Popup
-                mouseEnterDelay={500}
-                position="bottom center"
-                size="mini"
-                content="favorite this track"
-                trigger={<Button icon="like" size="mini" />}
+                  mouseEnterDelay={500}
+                  position="bottom center"
+                  size="mini"
+                  content="favorite this track"
+                  trigger={<Button icon="like" size="mini" />}
                 />
                 <Popup
-                mouseEnterDelay={500}
-                position="bottom center"
-                size="mini"
-                content="open in spotify"
-                trigger={<Button icon="external" size="mini" />}
+                  mouseEnterDelay={500}
+                  position="bottom center"
+                  size="mini"
+                  content="open in spotify"
+                  trigger={<Button icon="external" size="mini" />}
                 />
                 <Popup
-                mouseEnterDelay={500}
-                position="bottom center"
-                size="mini"
-                content="add this track to playlist"
-                trigger={<Button icon="add" size="mini" />}
+                  mouseEnterDelay={500}
+                  position="bottom center"
+                  size="mini"
+                  content="add this track to playlist"
+                  trigger={
+                    <Button
+                      icon="add"
+                      size="mini"
+                      onClick={() => {
+                        addSeed(track)
+                        addToBuildNotify(track.name)
+                      }}
+                    />
+                  }
                 />
-            </Button.Group>
+              </Button.Group>
             </Grid.Column>
-        </Grid>
+          </Grid>
         </Popup>
-    </>
+      </>
     );
 }
 
