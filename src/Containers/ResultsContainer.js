@@ -11,32 +11,20 @@ const msp = state => {
 
 const ResultsContainer = ({searchResults, spotifyApi}) => {
 
-    console.log("actual search state:", searchResults)
-
-    const renderArtists = () => {
-        return searchResults.artists.map(artist => <Result key={artist.id} artist={artist} spotifyApi={spotifyApi}/>)
-    }
-
-    const renderTracks = () => {
-        return searchResults.tracks.map(track => <Result key={track.id} track={track} spotifyApi={spotifyApi}/>)
+    const renderResults = () => {
+        return searchResults.map(artist => <Result key={artist.id} artist={artist} spotifyApi={spotifyApi}/>)
     }
 
     return (
         <>
             {searchResults ?
                 <>
-                <div 
-                className="results"
-                >
-                    <div className="artists-results">
-                        <h3>Artists</h3>
-                        {renderArtists()}
+                    <div className="results">
+                        <div className="artists-results">
+                            <h3>Artists</h3>
+                            {renderResults()}
+                        </div>
                     </div>
-                    <div className="track-results">
-                        <h3>Tracks</h3>
-                        {renderTracks()}
-                    </div>
-                </div>
                 </>
             :
             undefined}

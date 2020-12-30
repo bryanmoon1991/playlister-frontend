@@ -1,16 +1,22 @@
-import React from 'react'
+import React from 'react';
 import Preview from './Preview';
 import TopTrack from './TopTrack';
-import '../Styles/ArtistCard.css'
+import '../Styles/ArtistCard.css';
 import { Popup, Button } from 'semantic-ui-react';
 
+const ArtistCard = ({
+  artist,
+  addSeed,
+  spotifyApi,
+  followNotify,
+  favoriteNotify,
+  addToBuildNotify,
+}) => {
+  console.log('artist card', artist);
 
-const ArtistCard = ({artist, addSeed, spotifyApi, followNotify, favoriteNotify, addToBuildNotify}) => {
-  console.log("artist card", artist)
-  
   const renderGenres = () => {
-    return artist.info.genres.join(", ")
-  }
+    return artist.info.genres.join(', ');
+  };
 
   const renderAlbums = () => {
     let tracks = [];
@@ -93,81 +99,84 @@ const ArtistCard = ({artist, addSeed, spotifyApi, followNotify, favoriteNotify, 
         ) : undefined}
       </>
     );
-  }; 
+  };
 
-    
-    return (
-      <>
-        {artist.info ? (
-          <div className="artist-card">
-            <img
-              src={artist.info.images[0].url}
-              alt="artist"
-              className="artist-picture"
-            />
-            <div className="info">
-              <h3>{artist.info.name}</h3>
-              <Button.Group>
-                <Popup
-                  mouseEnterDelay={500}
-                  position="bottom center"
-                  size="mini"
-                  content={`Follow ${artist.info.name} on Spotify`}
-                  trigger={
-                    <Button
-                      icon="user plus"
-                      size="mini"
-                      onClick={() => followNotify(artist.info.name)}
-                    />
-                  }
-                />
-                <Popup
-                  mouseEnterDelay={500}
-                  position="bottom center"
-                  size="mini"
-                  content={`Add ${artist.info.name} to Playlist Build`}
-                  trigger={
-                    <Button
-                      icon="add"
-                      size="mini"
-                      onClick={() => {
-                        addToBuildNotify(artist.info.name)
-                        addSeed(artist.info)
-                      }}
-                    />
-                  }
-                />
-                <Popup
-                  mouseEnterDelay={500}
-                  position="bottom center"
-                  size="mini"
-                  content={`Add ${artist.info.name} to Favorites`}
-                  trigger={
-                    <Button
-                      icon="heart"
-                      size="mini"
-                      onClick={() => favoriteNotify(artist.info.name)}
-                    />
-                  }
-                />
-                <Popup
-                  mouseEnterDelay={500}
-                  position="bottom center"
-                  size="mini"
-                  content="Open in Spotify"
-                  trigger={<Button icon="external" size="mini" />}
-                />
-              </Button.Group>
-              <h4>Followers: {artist.info.followers.total}</h4>
-              <p>{renderGenres()}</p>
-            </div>
-            <div className="artist-works">{renderAlbums()}</div>
+  return (
+    <>
+      {artist.info ? (
+        <div className="artist-card">
+          <img
+            src={
+              artist.info.images[0]
+                ? artist.info.images[0].url
+                : 'https://reactnativecode.com/wp-content/uploads/2018/02/Default_Image_Thumbnail.png'
+            }
+            alt="artist"
+            className="artist-picture"
+          />
+          <div className="info">
+            <h3>{artist.info.name}</h3>
+            <Button.Group>
+              <Popup
+                mouseEnterDelay={500}
+                position="bottom center"
+                size="mini"
+                content={`Follow ${artist.info.name} on Spotify`}
+                trigger={
+                  <Button
+                    icon="user plus"
+                    size="mini"
+                    onClick={() => followNotify(artist.info.name)}
+                  />
+                }
+              />
+              <Popup
+                mouseEnterDelay={500}
+                position="bottom center"
+                size="mini"
+                content={`Add ${artist.info.name} to Playlist Build`}
+                trigger={
+                  <Button
+                    icon="add"
+                    size="mini"
+                    onClick={() => {
+                      addToBuildNotify(artist.info.name);
+                      addSeed(artist.info);
+                    }}
+                  />
+                }
+              />
+              <Popup
+                mouseEnterDelay={500}
+                position="bottom center"
+                size="mini"
+                content={`Add ${artist.info.name} to Favorites`}
+                trigger={
+                  <Button
+                    icon="heart"
+                    size="mini"
+                    onClick={() => favoriteNotify(artist.info.name)}
+                  />
+                }
+              />
+              <Popup
+                mouseEnterDelay={500}
+                position="bottom center"
+                size="mini"
+                content="Open in Spotify"
+                trigger={<Button icon="external" size="mini" />}
+              />
+            </Button.Group>
+            <h4>Followers: {artist.info.followers.total}</h4>
+            <p>{renderGenres()}</p>
           </div>
-        ) : (
-          <h3>Loading Discovery Tool</h3>
-        )}
-      </>
-    );
-}
+          <div className="artist-works">{renderAlbums()}</div>
+        </div>
+      ) : (
+        <h3>Loading Discovery Tool</h3>
+      )}
+    </>
+  );
+};
 
-export default ArtistCard
+export default ArtistCard;
