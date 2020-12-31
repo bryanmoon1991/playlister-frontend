@@ -99,7 +99,7 @@ const ArtistBubble = ({ artist, spotifyApi, createNext, followNotify }) => {
                 position="bottom center"
                 size="mini"
                 content="Open in Spotify"
-                trigger={<Button icon="external" size="mini" />}
+                trigger={<Button icon="spotify" size="mini" />}
               />
             </Button.Group>
           </Grid.Column>

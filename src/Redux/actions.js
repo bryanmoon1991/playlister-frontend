@@ -28,8 +28,8 @@ const getMore = (next, spotifyApi, dispatch) => {
     })
       .then((r) => r.json())
       .then((data) => {
-        spotifyApi
-          .getAlbums(data.items.map((album) => album.id))
+        // prettier-ignore
+        spotifyApi.getAlbums(data.items.map((album) => album.id))
           .then((albumObjects) => {
             for (let i = 0; i < data.items.length; i++) {
               data.items[i]['tracks'] = albumObjects.albums[i].tracks;
@@ -154,8 +154,8 @@ export const startNew = (userId, selection, spotifyApi) => {
       spotifyApi.getArtistRelatedArtists(selection.id),
       spotifyApi.getArtist(selection.id),
       spotifyApi.getArtistAlbums(selection.id, { limit: 20, country: 'US' }),
-      spotifyApi
-        .getArtistAlbums(selection.id, { limit: 20, country: 'US' })
+      // prettier-ignore
+      spotifyApi.getArtistAlbums(selection.id, { limit: 20, country: 'US' })
         .then((albums) =>
           spotifyApi.getAlbums(albums.items.map((alb) => alb.id))
         ),
@@ -211,8 +211,8 @@ export const createNext = (selection, spotifyApi) => {
       Promise.all([
         spotifyApi.getArtist(selection.id),
         spotifyApi.getArtistAlbums(selection.id, { limit: 20, country: 'US' }),
-        spotifyApi
-          .getArtistAlbums(selection.id, { limit: 20, country: 'US' })
+        // prettier-ignore
+        spotifyApi.getArtistAlbums(selection.id, { limit: 20, country: 'US' })
           .then((albums) =>
             spotifyApi.getAlbums(albums.items.map((alb) => alb.id))
           ),
@@ -270,7 +270,6 @@ export const createNext = (selection, spotifyApi) => {
             );
             let filteredArtists = [...new Set(allArtists)];
             spotifyApi.getArtists(filteredArtists).then((data) => {
-              // debugger;
               dispatch({
                 type: 'SWITCH_CURRENT',
                 payload: {
@@ -317,12 +316,22 @@ export const createNext = (selection, spotifyApi) => {
   };
 };
 
-export const addSeed = (artist) => {
+export const addSeed = (item, images = null) => {
   return (dispatch, getState) => {
+    let newItems;
     let id = getState().playlistBuild.id;
-    let newItems = produce(getState().playlistBuild.items, (draft) => {
-      draft.push(artist);
-    });
+    if (item.type === 'track') {
+      let newTrack = produce(item, (draft) => {
+        draft['images'] = images;
+      });
+      newItems = produce(getState().playlistBuild.items, (draft) => {
+        draft.push(newTrack);
+      });
+    } else {
+      newItems = produce(getState().playlistBuild.items, (draft) => {
+        draft.push(item);
+      });
+    }
     fetch(`http://localhost:3000/api/v1/playlists/${id}`, {
       method: 'PATCH',
       headers: {

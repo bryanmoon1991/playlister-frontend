@@ -1,101 +1,103 @@
 import React, { useState } from 'react';
 import { Grid, Popup, Header, Button } from 'semantic-ui-react';
 
+const TopTrack = ({
+  track,
+  album,
+  favoriteNotify,
+  addToBuildNotify,
+  addSeed,
+}) => {
+  let [preview, setPreview] = useState(new Audio(track.preview_url));
+  let [info, setInfo] = useState({ album: album.name, title: track.name });
 
-const TopTrack = ({track, album, favoriteNotify, addToBuildNotify, addSeed}) => {
-    
-    let [preview, setPreview] = useState(new Audio(track.preview_url));
-    let [info, setInfo] = useState({ album: album.name, title: track.name})
+  const playPreview = () => {
+    if (preview) {
+      let playPromise = preview.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            console.log('playing');
+          })
+          .catch(() => {
+            console.log('no preview available');
+          });
+      }
+    } else {
+      console.log('no preview for this artist');
+    }
+  };
 
+  const stopPreview = () => {
+    if (preview) {
+      preview.pause();
+      preview.currentTime = 0;
+    }
+  };
 
-    const playPreview = () => {
-      if (preview) {
-        let playPromise = preview.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              console.log('playing');
-            })
-            .catch(() => {
-              console.log('no preview available');
-            });
+  return (
+    <>
+      <Popup
+        size="mini"
+        hoverable
+        hideOnScroll
+        trigger={
+          <img
+            onMouseEnter={() => playPreview()}
+            onMouseLeave={() => stopPreview()}
+            onWheel={() => stopPreview()}
+            src={album.images[album.images.length - 1].url}
+            alt={album.name}
+          />
         }
-      } else {
-        console.log('no preview for this artist');
-      }
-    };
-
-    const stopPreview = () => {
-      if (preview) {
-        preview.pause();
-        preview.currentTime = 0;
-      }
-    };
-   
-
-    return (
-      <>
-        <Popup
-          size="mini"
-          hoverable
-          hideOnScroll
-          trigger={
-            <img
-              onMouseEnter={() => playPreview()}
-              onMouseLeave={() => stopPreview()}
-              onWheel={() => stopPreview()}
-              src={album.images[album.images.length - 1].url}
-              alt={album.name}
-            />
-          }
-        >
-          <Grid columns={1}>
-            <Grid.Column textAlign="left">
-              <Header as="h4">{`Album: ${info.album}`}</Header>
-              <p>{`Track: ${info.title}`}</p>
-              <Button.Group>
-                <Popup
-                  mouseEnterDelay={500}
-                  position="bottom center"
-                  size="mini"
-                  content="Favorite this Track"
-                  trigger={
-                    <Button
-                      icon="like"
-                      size="mini"
-                      onClick={() => favoriteNotify(info.title)}
-                    />
-                  }
-                />
-                <Popup
-                  mouseEnterDelay={500}
-                  position="bottom center"
-                  size="mini"
-                  content={`Add ${info.title} to Playlist Build`}
-                  trigger={
-                    <Button
-                      icon="add"
-                      size="mini"
-                      onClick={() =>  {
-                        addToBuildNotify(info.title)
-                        addSeed(track)
-                      }}
-                    />
-                  }
-                />
-                <Popup
-                  mouseEnterDelay={500}
-                  position="bottom center"
-                  size="mini"
-                  content="Open in Spotify"
-                  trigger={<Button icon="external" size="mini" />}
-                />
-              </Button.Group>
-            </Grid.Column>
-          </Grid>
-        </Popup>
-      </>
-    );
-}
+      >
+        <Grid columns={1}>
+          <Grid.Column textAlign="left">
+            <Header as="h4">{`Album: ${info.album}`}</Header>
+            <p>{`Track: ${info.title}`}</p>
+            <Button.Group>
+              <Popup
+                mouseEnterDelay={500}
+                position="bottom center"
+                size="mini"
+                content="Favorite this Track"
+                trigger={
+                  <Button
+                    icon="like"
+                    size="mini"
+                    onClick={() => favoriteNotify(info.title)}
+                  />
+                }
+              />
+              <Popup
+                mouseEnterDelay={500}
+                position="bottom center"
+                size="mini"
+                content={`Add ${info.title} to Playlist Build`}
+                trigger={
+                  <Button
+                    icon="add"
+                    size="mini"
+                    onClick={() => {
+                      addToBuildNotify(info.title);
+                      addSeed(track, album.images);
+                    }}
+                  />
+                }
+              />
+              <Popup
+                mouseEnterDelay={500}
+                position="bottom center"
+                size="mini"
+                content="Open in Spotify"
+                trigger={<Button icon="spotify" size="mini" />}
+              />
+            </Button.Group>
+          </Grid.Column>
+        </Grid>
+      </Popup>
+    </>
+  );
+};
 
 export default TopTrack;

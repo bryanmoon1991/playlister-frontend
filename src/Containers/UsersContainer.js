@@ -1,30 +1,34 @@
-import React from 'react'
-import {Switch, Route} from 'react-router-dom';
-import {connect} from 'react-redux';
-import {fetchCurrentUser, fetchCurrentUsersBuilds} from '../Redux/actions'
-import Search from '../Components/Search'
+import React from 'react';
+import { Switch, Route } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { fetchCurrentUser, fetchCurrentUsersBuilds } from '../Redux/actions';
+import Search from '../Components/Search';
 import RecommendedContainer from '../Containers/RecommendedContainer';
 import Discovery from '../Components/Discovery';
-import PlaylistBuilder from '../Components/PlaylistBuilder'
+import PlaylistBuilder from '../Components/PlaylistBuilder';
 import UnpublishedContainer from '../Containers/UnpublishedContainer';
-import '../Styles/Views.css'
+import '../Styles/Views.css';
 var Spotify = require('spotify-web-api-js');
 
 const msp = (state) => {
-    return {
-      user: state.user,
-      playlistBuild: state.playlistBuild
-    }
-}
+  return {
+    user: state.user,
+    playlistBuild: state.playlistBuild,
+  };
+};
 
-const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersBuilds}) => {
+const UsersContainer = ({
+  user,
+  fetchCurrentUser,
+  fetchCurrentUsersBuilds,
+}) => {
   // instantiating spotify api wrapper
-  let spotifyApi = new Spotify()
-  // initial access token set, refresh token handled in actions 
+  let spotifyApi = new Spotify();
+  // initial access token set, refresh token handled in actions
   if (user) {
-    spotifyApi.setAccessToken(user.access_token)
+    spotifyApi.setAccessToken(user.access_token);
   }
- 
+
   return (
     <>
       <Switch>
@@ -49,7 +53,7 @@ const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersBuilds}) => {
             return (
               <>
                 <div className="discover">
-                  <PlaylistBuilder />
+                  <PlaylistBuilder spotifyApi={spotifyApi} />
                   <Discovery spotifyApi={spotifyApi} />
                 </div>
               </>
@@ -68,9 +72,9 @@ const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersBuilds}) => {
                 {user ? (
                   <>
                     <div className="home">
-                      <Search spotifyApi={spotifyApi}/>
+                      <Search spotifyApi={spotifyApi} />
                       <h2>...a recommended item</h2>
-                      <RecommendedContainer spotifyApi={spotifyApi}/>
+                      <RecommendedContainer spotifyApi={spotifyApi} />
                     </div>
                   </>
                 ) : (
@@ -83,7 +87,8 @@ const UsersContainer = ({user, fetchCurrentUser, fetchCurrentUsersBuilds}) => {
       </Switch>
     </>
   );
-}
+};
 
-
-export default connect(msp, {fetchCurrentUser, fetchCurrentUsersBuilds})(UsersContainer);
+export default connect(msp, { fetchCurrentUser, fetchCurrentUsersBuilds })(
+  UsersContainer
+);

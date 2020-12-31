@@ -18,14 +18,18 @@ const AlbumCard = ({
 
   const renderFeatures = () => {
     // debugger;
-    return album.features.map((artist) => (
-      <ArtistBubble
-        key={artist.id}
-        artist={artist}
-        spotifyApi={spotifyApi}
-        createNext={createNext}
-      />
-    ));
+    if (album.info.artists[0].name === 'Various Artists') {
+      return <p>See Related Artists:</p>;
+    } else {
+      return album.features.map((artist) => (
+        <ArtistBubble
+          key={artist.id}
+          artist={artist}
+          spotifyApi={spotifyApi}
+          createNext={createNext}
+        />
+      ));
+    }
   };
 
   const renderTracks = () => {
@@ -33,6 +37,7 @@ const AlbumCard = ({
       <TracklistItem
         key={track.id}
         track={track}
+        images={album.images}
         addToBuildNotify={addToBuildNotify}
         addSeed={addSeed}
       />
@@ -98,7 +103,7 @@ const AlbumCard = ({
                 position="bottom center"
                 size="mini"
                 content="Open in Spotify"
-                trigger={<Button icon="external" size="mini" />}
+                trigger={<Button icon="spotify" size="mini" />}
               />
             </Button.Group>
             <p>Artists on this album:</p>

@@ -164,7 +164,7 @@ const ArtistCard = ({
                 position="bottom center"
                 size="mini"
                 content="Open in Spotify"
-                trigger={<Button icon="external" size="mini" />}
+                trigger={<Button icon="spotify" size="mini" />}
               />
             </Button.Group>
             <h4>Followers: {artist.info.followers.total}</h4>
