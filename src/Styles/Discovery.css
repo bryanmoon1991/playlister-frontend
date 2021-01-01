@@ -1,39 +1,40 @@
 .discovery-tool {
-    display: grid;
-    grid-template-columns: 1fr, 1fr;
+  display: grid;
+  grid-template-columns: 1fr, 1fr;
 }
 
 .stack {
-    grid-column: 1/2;
-    display: grid;
-    grid-template-columns: 1fr;
+  grid-column: 1/2;
+  display: grid;
+  grid-template-columns: 1fr;
 }
 
 .bubbles {
-    grid-column: 2/3;
-    justify-self: start;
-    display: grid;
-    grid-template-columns: 1fr, 1fr;
-    /* gap: 5px; */
+  grid-column: 2/3;
+  justify-self: start;
+  display: grid;
+  grid-template-columns: 1fr, 1fr;
+  grid-template-rows: minmax(50px, 1fr);
+  align-self: start;
+  gap: 5px;
 }
 
-.bubbles img {
-    border-radius: 50%;
+.bubbles > div:nth-child(odd) {
+  grid-column: 1/2;
 }
 
-.bubbles > img:nth-child(odd) {
-    grid-column: 1/2;
-
+.bubbles > div:nth-child(even) {
+  grid-column: 2/3;
 }
 
-.bubbles > img:nth-child(even) {
-    grid-column: 2/3;
-}
-/* 
-.bubbles > img:nth-child(3) {
-    grid-column: 3/4;
+.playlist-container {
+  overflow: hidden;
+  display: grid;
 }
 
-.bubbles > img:nth-child(4) {
-    grid-column: 4/5;
-} */
+.playlist-item {
+  width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -14,7 +14,8 @@ const defaultState = {
   currentSelection: {},
   stack: [],
   playlists: [],
-}; 
+  preview: [],
+};
 
 const currentUserReducer = (state = defaultState.user, action) => {
   switch (action.type) {
@@ -23,25 +24,28 @@ const currentUserReducer = (state = defaultState.user, action) => {
     default:
       return state;
   }
-};  
+};
 
 const spotifyApiReducer = (state = defaultState.spotifyApi, action) => {
-    switch(action.type) {
-      case 'SET_AUTHORIZATION':
-            return action.payload;
-        default:  
-            return state;
-    }        
-}    
+  switch (action.type) {
+    case 'SET_AUTHORIZATION':
+      return action.payload;
+    default:
+      return state;
+  }
+};
 
-const currentUsersPlaylistsReducer = (state = defaultState.playlists, action) => {
-    switch (action.type) {
-        case 'GET_MY_PLAYLISTS':
-            return action.payload;
-        default:  
-            return state;
-    }        
-}    
+const currentUsersPlaylistsReducer = (
+  state = defaultState.playlists,
+  action
+) => {
+  switch (action.type) {
+    case 'GET_MY_PLAYLISTS':
+      return action.payload;
+    default:
+      return state;
+  }
+};
 
 const searchReducer = (state = defaultState.searchResults, action) => {
   switch (action.type) {
@@ -51,8 +55,8 @@ const searchReducer = (state = defaultState.searchResults, action) => {
       return action.payload;
     default:
       return state;
-  }    
-};  
+  }
+};
 
 const recommendedReducer = (state = defaultState.recommended, action) => {
   switch (action.type) {
@@ -60,8 +64,8 @@ const recommendedReducer = (state = defaultState.recommended, action) => {
       return action.payload;
     default:
       return state;
-  }    
-};  
+  }
+};
 
 const playlistBuildReducer = (state = defaultState.playlistBuild, action) => {
   switch (action.type) {
@@ -71,17 +75,16 @@ const playlistBuildReducer = (state = defaultState.playlistBuild, action) => {
       return action.payload;
     default:
       return state;
-  }    
-};  
-
+  }
+};
 
 const relatedArtistsReducer = produce((draft, action) => {
   switch (action.type) {
     case 'RELATED_ARTISTS':
       return action.payload;
     case 'ADD_TOP_TRACK':
-      draft.artists[action.index]["track"] = action.payload
-
+      draft.artists[action.index]['track'] = action.payload;
+      break;
   }
 }, defaultState.relatedArtists);
 
@@ -90,7 +93,8 @@ const currentSelectionReducer = produce((draft, action) => {
     case 'SWITCH_CURRENT':
       return action.payload;
     case 'ADD_MORE':
-      draft.albums = [...draft.albums, ...action.payload]
+      draft.albums = [...draft.albums, ...action.payload];
+      break;
   }
 }, defaultState.currentSelection);
 
@@ -98,11 +102,31 @@ const stackReducer = produce((draft, action) => {
   switch (action.type) {
     case 'INITIALIZE':
       draft.length = 0;
-      draft.push(action.payload)
-      return draft
-  } 
-}, defaultState.stack)
+      draft.push(action.payload);
+      return draft;
+  }
+}, defaultState.stack);
 
+const previewReducer = produce((draft, action) => {
+  switch (action.type) {
+    case 'PREVIEW_TRACKS':
+      let uniqueTracks = [];
+      let uniqueTracksIds = [...new Set(draft.map((track) => track.id))];
+
+      action.payload.forEach((track) => {
+        if (!uniqueTracksIds.includes(track.id)) {
+          uniqueTracks.push(track);
+        }
+      });
+
+      draft = [...draft, ...uniqueTracks];
+      // i guess i need this ?
+      return draft;
+      break;
+    case 'CLEAR_TRACKS':
+      return action.payload;
+  }
+}, defaultState.preview);
 
 // const playlistSeedsReducer = produce((draft, action) => {
 //     switch (action.type) {
@@ -123,8 +147,6 @@ const stackReducer = produce((draft, action) => {
 //     }
 // }, defaultState.playlistSeeds)
 
-
-
 const persistConfig = {
   key: 'root',
   storage,
@@ -137,9 +159,9 @@ const persistConfig = {
     'currentSelection',
     'stack',
     'playlists',
+    'preview',
   ],
 };
-
 
 const rootReducer = combineReducers({
   user: currentUserReducer,
@@ -149,8 +171,9 @@ const rootReducer = combineReducers({
   playlistBuild: playlistBuildReducer,
   relatedArtists: relatedArtistsReducer,
   currentSelection: currentSelectionReducer,
-  stack: stackReducer, 
+  stack: stackReducer,
   playlists: currentUsersPlaylistsReducer,
+  preview: previewReducer,
 });
 
 export default persistReducer(persistConfig, rootReducer);

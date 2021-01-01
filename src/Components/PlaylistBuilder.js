@@ -2,20 +2,28 @@ import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import PlaylistItem from './PlaylistItem';
 import chunk from 'lodash.chunk';
-import { updatePlaylist, loadBuild, deleteBuild } from '../Redux/actions';
+import {
+  updatePlaylist,
+  loadBuild,
+  deleteBuild,
+  addTracksToPreview,
+  clearPreview,
+} from '../Redux/actions';
 import {
   Popup,
   Button,
   Modal,
-  Header,
   List,
   Checkbox,
+  Grid,
+  Segment,
 } from 'semantic-ui-react';
 
 const msp = (state) => {
   return {
     user: state.user,
     playlistBuild: state.playlistBuild,
+    preview: state.preview,
   };
 };
 
@@ -28,20 +36,29 @@ const PlaylistBuilder = ({
   updatePlaylist,
   loadBuild,
   deleteBuild,
+  addTracksToPreview,
+  clearPreview,
+  preview,
 }) => {
-  let [{ name }, setName] = useState({ name: playlistBuild.name });
-  let [titleEdit, setTitleEdit] = useState(false);
+  const [{ name }, setName] = useState({ name: playlistBuild.name });
+  const [titleEdit, setTitleEdit] = useState(false);
 
-  let [{ description }, setDescription] = useState({
+  const [{ description }, setDescription] = useState({
     description: playlistBuild.description,
   });
 
-  let [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
-  let [collaborative, setCollaborative] = useState(false);
-  let [publik, setPublik] = useState(false);
+  const [collaborative, setCollaborative] = useState(false);
+  const [publik, setPublik] = useState(false);
 
-  let [slider, setSlider] = useState({ energy: 0.0, mood: 0.0, vocal: 0.0 });
+  const [slider, setSlider] = useState(() => ({
+    energy: 0.0,
+    mood: 0.0,
+    vocal: 0.0,
+  }));
+  const sliderRef = useRef(slider);
+  sliderRef.current = slider;
 
   const togglePublik = () => {
     if (collaborative) {
@@ -94,6 +111,12 @@ const PlaylistBuilder = ({
     ));
   };
 
+  const renderPreviews = () => {
+    return preview.map((track) => (
+      <PlaylistItem key={track.id} seed={track} playlistId={playlistBuild.id} />
+    ));
+  };
+
   const handleDelete = (id) => {
     deleteBuild(id);
     history.push(`/users/${user.id}`);
@@ -120,6 +143,9 @@ const PlaylistBuilder = ({
   };
 
   const publishBuild = (build) => {
+    // if (!preview.length) {
+    //   clearPreview();
+    // }
     let artistIds = [];
     let trackIds = [];
     playlistBuild.items.forEach((item) => {
@@ -150,18 +176,20 @@ const PlaylistBuilder = ({
           country: 'US',
           seed_artists: chonk,
 
-          target_danceability: 1,
-          target_energy: 1,
-          target_tempo: 1,
-          target_loudness: 1,
+          target_danceability: sliderRef.current.energy,
+          target_energy: sliderRef.current.energy,
+          target_tempo: sliderRef.current.energy,
+          target_loudness: sliderRef.current.energy,
 
-          target_instrumentalness: 1,
-          target_speechiness: 1,
+          target_instrumentalness: sliderRef.current.vocal,
+          target_speechiness: sliderRef.current.vocal,
 
-          target_valence: 0.1,
-          target_mode: 0,
+          target_valence: sliderRef.current.mood,
+          target_mode: sliderRef.current.mood > 0.5 ? 1 : 0,
         })
-        .then((data) => console.log('from artist', data));
+        .then((data) => {
+          addTracksToPreview(data.tracks, spotifyApi);
+        });
     });
 
     trackChunks.forEach((chonk) => {
@@ -171,21 +199,23 @@ const PlaylistBuilder = ({
           country: 'US',
           seed_tracks: chonk,
 
-          target_danceability: 1,
-          target_energy: 1,
-          target_tempo: 1,
-          target_loudness: 1,
+          target_danceability: sliderRef.current.energy,
+          target_energy: sliderRef.current.energy,
+          target_tempo: sliderRef.current.energy,
+          target_loudness: sliderRef.current.energy,
 
-          target_instrumentalness: 1,
-          target_speechiness: 1,
+          target_instrumentalness: sliderRef.current.vocal,
+          target_speechiness: sliderRef.current.vocal,
 
-          target_valence: 0.1,
-          target_mode: 0,
+          target_valence: sliderRef.current.mood,
+          target_mode: sliderRef.current.mood > 0.5 ? 1 : 0,
         })
-        .then((data) => console.log('from tracks', data));
+        .then((data) => {
+          addTracksToPreview(data.tracks, spotifyApi);
+        });
     });
   };
-
+  console.log('preview:', preview);
   return (
     <>
       <div className="builder">
@@ -203,7 +233,7 @@ const PlaylistBuilder = ({
                 {playlistBuild.name}
               </h3>
             )}
-            <List animated verticalAlign="middle">
+            <List className="playlist-container" verticalAlign="middle">
               {renderSeeds()}
             </List>
             <Button.Group>
@@ -275,7 +305,10 @@ const PlaylistBuilder = ({
                 content="Generate Playlist!"
                 trigger={
                   <Button
-                    onClick={() => setOpen(true)}
+                    onClick={() => {
+                      clearPreview();
+                      setOpen(true);
+                    }}
                     icon="itunes note"
                     size="mini"
                   />
@@ -289,88 +322,114 @@ const PlaylistBuilder = ({
               >
                 <Modal.Header>Generate Playlist from this Build</Modal.Header>
                 <Modal.Content>
-                  {/* <Image
-                    size="medium"
-                    src="https://react.semantic-ui.com/images/avatar/large/rachel.png"
-                    wrapped
-                  /> */}
                   <Modal.Description>
-                    <Header>Spotify Settings</Header>
-                    {titleEdit ? (
-                      <>
-                        <input
-                          value={name}
-                          name="name"
-                          onChange={handleChange}
-                          onKeyDown={keyPress}
-                        />
-                        <br />
-                      </>
-                    ) : (
-                      <>
-                        <h3 onClick={() => setTitleEdit(!titleEdit)}>
-                          {playlistBuild.name}
-                        </h3>
-                        <br />
-                      </>
-                    )}
-                    <textarea
-                      placeholder="enter a description of your playlist"
-                      name="description"
-                      onChange={handleChange}
-                    />
-                    <br />
-                    <br />
-                    <Checkbox
-                      toggle
-                      label="public"
-                      onChange={togglePublik}
-                      checked={publik}
-                    />
-                    <br />
-                    <Checkbox
-                      toggle
-                      label="collaborative"
-                      onChange={toggleCollab}
-                      checked={collaborative}
-                    />
-                    <br />
-                    <input
-                      type="range"
-                      name="energy"
-                      min={0.0}
-                      max={1.0}
-                      step={0.1}
-                      value={slider.energy}
-                      onChange={handleChange}
-                    />
-                    <input
-                      type="range"
-                      name="vocal"
-                      min={0.0}
-                      max={1.0}
-                      step={0.1}
-                      value={slider.vocal}
-                      onChange={handleChange}
-                    />
-                    <input
-                      type="range"
-                      name="mood"
-                      min={0.0}
-                      max={1.0}
-                      step={0.1}
-                      value={slider.mood}
-                      onChange={handleChange}
-                    />
+                    <Segment placeholder>
+                      <Grid columns={3} relaxed="very" stackable>
+                        <Grid.Column>
+                          {titleEdit ? (
+                            <>
+                              <input
+                                value={name}
+                                name="name"
+                                onChange={handleChange}
+                                onKeyDown={keyPress}
+                              />
+                              <br />
+                            </>
+                          ) : (
+                            <>
+                              <h3 onClick={() => setTitleEdit(!titleEdit)}>
+                                {playlistBuild.name}
+                              </h3>
+                              <br />
+                            </>
+                          )}
+                          <textarea
+                            placeholder="enter a description of your playlist"
+                            name="description"
+                            onChange={handleChange}
+                          />
+                          <br />
+                          <br />
+                          <Checkbox
+                            toggle
+                            label="public"
+                            onChange={togglePublik}
+                            checked={publik}
+                          />
+                          <br />
+                          <Checkbox
+                            toggle
+                            label="collaborative"
+                            onChange={toggleCollab}
+                            checked={collaborative}
+                          />
+                          <br />
+                        </Grid.Column>
+
+                        <Grid.Column>
+                          <p>Energy:</p>
+                          <input
+                            type="range"
+                            name="energy"
+                            min={0.0}
+                            max={1.0}
+                            step={0.1}
+                            value={slider.energy}
+                            onChange={handleChange}
+                          />
+                          <p>Vocal:</p>
+                          <input
+                            type="range"
+                            name="vocal"
+                            min={0.0}
+                            max={1.0}
+                            step={0.1}
+                            value={slider.vocal}
+                            onChange={handleChange}
+                          />
+                          <p>Mood:</p>
+                          <input
+                            type="range"
+                            name="mood"
+                            min={0.0}
+                            max={1.0}
+                            step={0.1}
+                            value={slider.mood}
+                            onChange={handleChange}
+                          />
+                        </Grid.Column>
+
+                        <Grid.Column>
+                          {preview.length > 0 ? (
+                            <List>{renderPreviews()}</List>
+                          ) : (
+                            <h4>playlist will show here</h4>
+                          )}
+                        </Grid.Column>
+                      </Grid>
+
+                      {/* <Divider vertical>Or</Divider> */}
+                    </Segment>
                   </Modal.Description>
                 </Modal.Content>
                 <Modal.Actions>
                   <Button
-                    content="Generate!"
+                    content="Preview"
+                    labelPosition="right"
+                    icon="sound"
+                    onClick={() => {
+                      publishBuild(playlistBuild);
+                      // setOpen(false);
+                    }}
+                    positive
+                  />
+                  <Button
+                    content="Publish"
                     labelPosition="right"
                     icon="checkmark"
                     onClick={() => {
-                      publishBuild(playlistBuild);
+                      // publishBuild(playlistBuild);
                       setOpen(false);
                     }}
                     positive
@@ -387,6 +446,10 @@ const PlaylistBuilder = ({
   );
 };
 
-export default connect(msp, { updatePlaylist, loadBuild, deleteBuild })(
-  PlaylistBuilder
-);
+export default connect(msp, {
+  updatePlaylist,
+  loadBuild,
+  deleteBuild,
+  addTracksToPreview,
+  clearPreview,
+})(PlaylistBuilder);

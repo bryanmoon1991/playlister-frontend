@@ -4,6 +4,7 @@ import ArtistBubble from './ArtistBubble';
 import Card from './Card';
 import '../Styles/Discovery.css';
 import toast, { Toaster } from 'react-hot-toast';
+import { List } from 'semantic-ui-react';
 
 const msp = (state) => {
   return {
@@ -42,6 +43,7 @@ const Discovery = ({ relatedArtists, spotifyApi }) => {
                 addToBuildNotify={addToBuildNotify}
               />
             </div>
+            {/* <p>Related Artists:</p> */}
             <div className="bubbles">{renderArtistBubbles()}</div>
             <Toaster />
           </>

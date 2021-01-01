@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Grid, Popup, Button, Header } from 'semantic-ui-react';
+import { Grid, Popup, Button, Header, List, Image } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { createNext } from '../Redux/actions';
 
@@ -55,25 +55,62 @@ const ArtistBubble = ({ artist, spotifyApi, createNext, followNotify }) => {
         hoverable
         hideOnScroll
         trigger={
-          <img
+          <div
+            style={{
+              backgroundImage: `url(${
+                artist.images[0]
+                  ? artist.images[0].url
+                  : 'https://reactnativecode.com/wp-content/uploads/2018/02/Default_Image_Thumbnail.png'
+              })`,
+              backgroundSize: 'cover',
+              height: '50px',
+              width: '50px',
+              borderRadius: '50%',
+            }}
             onMouseEnter={() => playPreview()}
             onMouseLeave={() => stopPreview()}
             onWheel={() => stopPreview()}
             className="bubble"
-            alt="related-artist"
-            //   sometimes causes an issue
-            src={
-              artist.images[0]
-                ? artist.images[0].url
-                : 'https://reactnativecode.com/wp-content/uploads/2018/02/Default_Image_Thumbnail.png'
-            }
-            width="50"
-            height="50"
+            // alt="related-artist"
+            // src={
+            //   artist.images[0]
+            //     ? artist.images[0].url
+            //     : 'https://reactnativecode.com/wp-content/uploads/2018/02/Default_Image_Thumbnail.png'
+            // }
+            // width="50"
+            // height="50"
             onClick={() => {
               createNext(artist, spotifyApi);
               stopPreview();
             }}
           />
+
+          // <List.Item
+          //   onClick={() => {
+          //     createNext(artist, spotifyApi);
+          //     stopPreview();
+          //   }}
+          //   onMouseEnter={() => playPreview()}
+          //   onMouseLeave={() => stopPreview()}
+          //   onWheel={() => stopPreview()}
+          //   className="bubble"
+          // >
+          //   <Image
+          //     avatar
+          //     src={
+          //       artist.images[0]
+          //         ? artist.images[0].url
+          //         : 'https://reactnativecode.com/wp-content/uploads/2018/02/Default_Image_Thumbnail.png'
+          //     }
+          //     onClick={() => {
+          //       createNext(artist, spotifyApi);
+          //       stopPreview();
+          //     }}
+          //   />
+          //   <List.Content>
+          //     <List.Header>{artist.name}</List.Header>
+          //   </List.Content>
+          // </List.Item>
         }
       >
         <Grid columns={1}>

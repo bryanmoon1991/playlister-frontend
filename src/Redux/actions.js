@@ -427,3 +427,28 @@ export const updatePlaylist = (id, attribute, value) => {
       });
   };
 };
+
+export const addTracksToPreview = (tracks, spotifyApi) => {
+  return (dispatch) => {
+    spotifyApi
+      .getArtists(tracks.map((track) => track.artists[0].id))
+      .then((data) => {
+        for (let i = 0; i < data.artists.length; i++) {
+          tracks[i]['artists'] = [data.artists[i]];
+        }
+        dispatch({
+          type: 'PREVIEW_TRACKS',
+          payload: tracks,
+        });
+      });
+  };
+};
+
+export const clearPreview = () => {
+  return (dispatch) => {
+    dispatch({
+      type: 'CLEAR_TRACKS',
+      payload: [],
+    });
+  };
+};
