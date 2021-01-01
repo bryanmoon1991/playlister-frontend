@@ -56,6 +56,7 @@ const PlaylistBuilder = ({
     energy: 0.0,
     mood: 0.0,
     vocal: 0.0,
+    size: 20,
   }));
   const sliderRef = useRef(slider);
   sliderRef.current = slider;
@@ -81,9 +82,14 @@ const PlaylistBuilder = ({
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    event.target.type === 'range'
-      ? setSlider((prevState) => ({ ...prevState, [name]: value }))
-      : setName((prevState) => ({ ...prevState, [name]: value }));
+    switch (event.target.type) {
+      case 'range':
+        setSlider((prevState) => ({ ...prevState, [name]: value }));
+        break;
+      case 'text':
+        setName((prevState) => ({ ...prevState, [name]: value }));
+        break;
+    }
   };
 
   const keyPress = (e) => {
@@ -107,13 +113,23 @@ const PlaylistBuilder = ({
 
   const renderSeeds = () => {
     return playlistBuild.items.map((seed) => (
-      <PlaylistItem key={seed.id} seed={seed} playlistId={playlistBuild.id} />
+      <PlaylistItem
+        key={seed.id}
+        seed={seed}
+        playlistId={playlistBuild.id}
+        fromPreview={false}
+      />
     ));
   };
 
   const renderPreviews = () => {
     return preview.map((track) => (
-      <PlaylistItem key={track.id} seed={track} playlistId={playlistBuild.id} />
+      <PlaylistItem
+        key={track.id}
+        seed={track}
+        playlistId={playlistBuild.id}
+        fromPreview={true}
+      />
     ));
   };
 
@@ -143,17 +159,19 @@ const PlaylistBuilder = ({
   };
 
   const publishBuild = (build) => {
-    // if (!preview.length) {
-    //   clearPreview();
-    // }
+    if (!preview.length) {
+      clearPreview();
+    }
     let artistIds = [];
     let trackIds = [];
+    let chosenOnes = [];
     playlistBuild.items.forEach((item) => {
       switch (item.type) {
         case 'artist':
           artistIds.push(item.id);
           break;
         case 'track':
+          chosenOnes.push(item);
           trackIds.push(item.id);
           break;
         case 'album':
@@ -168,11 +186,21 @@ const PlaylistBuilder = ({
 
     let artistChunks = chunk(shuffledArtists, 5);
     let trackChunks = chunk(shuffledTracks, 5);
+    let limit;
+    let totalChunks = artistChunks.length + trackChunks.length;
 
+    if (totalChunks > sliderRef.current.size) {
+      limit = Math.ceil(totalChunks / sliderRef.current.size);
+    } else if (totalChunks < sliderRef.current.size) {
+      limit = Math.ceil(sliderRef.current.size / totalChunks);
+    } else if (totalChunks === sliderRef.current.size) {
+      limit = 1;
+    }
+    console.log(sliderRef.current);
     artistChunks.forEach((chonk) => {
       spotifyApi
         .getRecommendations({
-          limit: 10,
+          limit: limit,
           country: 'US',
           seed_artists: chonk,
 
@@ -182,7 +210,7 @@ const PlaylistBuilder = ({
           target_loudness: sliderRef.current.energy,
 
           target_instrumentalness: sliderRef.current.vocal,
-          target_speechiness: sliderRef.current.vocal,
+          // target_speechiness: sliderRef.current.vocal,
 
           target_valence: sliderRef.current.mood,
           target_mode: sliderRef.current.mood > 0.5 ? 1 : 0,
@@ -195,7 +223,7 @@ const PlaylistBuilder = ({
     trackChunks.forEach((chonk) => {
       spotifyApi
         .getRecommendations({
-          limit: 10,
+          limit: limit,
           country: 'US',
           seed_tracks: chonk,
 
@@ -205,13 +233,17 @@ const PlaylistBuilder = ({
           target_loudness: sliderRef.current.energy,
 
           target_instrumentalness: sliderRef.current.vocal,
-          target_speechiness: sliderRef.current.vocal,
+          // target_speechiness: sliderRef.current.vocal,
 
           target_valence: sliderRef.current.mood,
           target_mode: sliderRef.current.mood > 0.5 ? 1 : 0,
         })
         .then((data) => {
-          addTracksToPreview(data.tracks, spotifyApi);
+          let total = [];
+          if (chosenOnes.length) {
+            total = [...chosenOnes, ...data.tracks];
+          }
+          addTracksToPreview(total, spotifyApi);
         });
     });
   };
@@ -224,6 +256,7 @@ const PlaylistBuilder = ({
             {titleEdit ? (
               <input
                 value={name}
+                type="text"
                 name="name"
                 onChange={handleChange}
                 onKeyDown={keyPress}
@@ -396,6 +429,15 @@ const PlaylistBuilder = ({
                             max={1.0}
                             step={0.1}
                             value={slider.mood}
+                            onChange={handleChange}
+                          />
+                          <p>Length in tracks:</p>
+                          <input
+                            type="range"
+                            name="size"
+                            min={20}
+                            max={100}
+                            value={slider.size}
                             onChange={handleChange}
                           />
                         </Grid.Column>

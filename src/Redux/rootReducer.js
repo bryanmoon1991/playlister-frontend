@@ -122,7 +122,10 @@ const previewReducer = produce((draft, action) => {
       draft = [...draft, ...uniqueTracks];
       // i guess i need this ?
       return draft;
-      break;
+    case 'REMOVE_PREVIEW':
+      let index = draft.findIndex((track) => track.id === action.payload.id);
+      draft.splice(index, 1);
+      return draft;
     case 'CLEAR_TRACKS':
       return action.payload;
   }

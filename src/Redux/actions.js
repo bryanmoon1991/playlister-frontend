@@ -1,4 +1,5 @@
 import produce from 'immer';
+import chunk from 'lodash.chunk';
 
 const refresh = async (id) => {
   try {
@@ -430,17 +431,38 @@ export const updatePlaylist = (id, attribute, value) => {
 
 export const addTracksToPreview = (tracks, spotifyApi) => {
   return (dispatch) => {
-    spotifyApi
-      .getArtists(tracks.map((track) => track.artists[0].id))
-      .then((data) => {
-        for (let i = 0; i < data.artists.length; i++) {
-          tracks[i]['artists'] = [data.artists[i]];
-        }
-        dispatch({
-          type: 'PREVIEW_TRACKS',
-          payload: tracks,
-        });
+    if (tracks.length > 50) {
+      let chunks = chunk(tracks, 50);
+      chunks.forEach((chonk) => {
+        spotifyApi
+          .getArtists(chonk.map((track) => track.artists[0].id))
+          .then((data) => {
+            let mutated = JSON.parse(JSON.stringify(chonk));
+            mutated.defaultForm = true;
+            for (let i = 0; i < data.artists.length; i++) {
+              mutated[i]['artists'] = [data.artists[i]];
+            }
+            dispatch({
+              type: 'PREVIEW_TRACKS',
+              payload: mutated,
+            });
+          });
       });
+    } else {
+      spotifyApi
+        .getArtists(tracks.map((track) => track.artists[0].id))
+        .then((data) => {
+          let mutated = JSON.parse(JSON.stringify(tracks));
+          mutated.defaultForm = true;
+          for (let i = 0; i < data.artists.length; i++) {
+            mutated[i]['artists'] = [data.artists[i]];
+          }
+          dispatch({
+            type: 'PREVIEW_TRACKS',
+            payload: mutated,
+          });
+        });
+    }
   };
 };
 
@@ -449,6 +471,15 @@ export const clearPreview = () => {
     dispatch({
       type: 'CLEAR_TRACKS',
       payload: [],
+    });
+  };
+};
+
+export const removePreview = (seed) => {
+  return (dispatch) => {
+    dispatch({
+      type: 'REMOVE_PREVIEW',
+      payload: seed,
     });
   };
 };

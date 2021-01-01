@@ -37,7 +37,7 @@ const AlbumCard = ({
       <TracklistItem
         key={track.id}
         track={track}
-        images={album.images}
+        images={album.info.images}
         addToBuildNotify={addToBuildNotify}
         addSeed={addSeed}
       />
