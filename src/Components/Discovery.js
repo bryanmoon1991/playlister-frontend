@@ -4,7 +4,6 @@ import ArtistBubble from './ArtistBubble';
 import Card from './Card';
 import '../Styles/Discovery.css';
 import toast, { Toaster } from 'react-hot-toast';
-import { List } from 'semantic-ui-react';
 
 const msp = (state) => {
   return {
@@ -19,13 +18,13 @@ const Discovery = ({ relatedArtists, spotifyApi }) => {
     toast(`Added ${item} to Your Current Build!`);
 
   const renderArtistBubbles = () => {
-    // debugger;
-    return relatedArtists.artists.map((artist) => (
+    return relatedArtists.artists.map((artist, i) => (
       <ArtistBubble
         artist={artist}
         key={artist.id}
         spotifyApi={spotifyApi}
         followNotify={followNotify}
+        position={i}
       />
     ));
   };
@@ -43,8 +42,10 @@ const Discovery = ({ relatedArtists, spotifyApi }) => {
                 addToBuildNotify={addToBuildNotify}
               />
             </div>
-            {/* <p>Related Artists:</p> */}
-            <div className="bubbles">{renderArtistBubbles()}</div>
+            <div className="bubbles">
+              <p>Related Artists:</p>
+              {renderArtistBubbles()}
+            </div>
             <Toaster />
           </>
         ) : (

@@ -1,8 +1,28 @@
 .artist-card {
-
 }
 
-
 .artist-picture {
-    max-height: 300px;
-} 
+  max-height: 300px;
+}
+
+.top-tracks,
+.albums,
+.singles {
+  display: grid;
+  grid-template-columns: repeat(10, 64px);
+}
+
+.appears,
+.compilations {
+  display: grid;
+  grid-template-columns: repeat(20, 32px);
+}
+
+.album-preview {
+  cursor: pointer;
+}
+
+.album-preview:hover {
+  opacity: 0.8;
+  filter: alpha(opacity=80);
+}

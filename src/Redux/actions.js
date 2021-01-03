@@ -35,9 +35,18 @@ const getMore = (next, spotifyApi, dispatch) => {
             for (let i = 0; i < data.items.length; i++) {
               data.items[i]['tracks'] = albumObjects.albums[i].tracks;
             }
+            let firstFiltered = data.items.filter(album => album.images.length > 0)
+            let names = []
+            let filtered = []
+            firstFiltered.forEach(album => {
+              if (!names.includes(album.name)) {
+                filtered.push(album)
+                names.push(album.name)
+              }
+            })
             dispatch({
               type: 'ADD_MORE',
-              payload: data.items,
+              payload: filtered,
             });
           });
         if (data.next) {
@@ -100,6 +109,22 @@ export const clearResults = () => {
       type: 'CLEAR_RESULTS',
       payload: null,
     });
+    dispatch({
+      type: 'CLEAR_TRACKS',
+      payload: [],
+    });
+    dispatch({
+      type: 'RELATED_ARTISTS',
+      payload: {},
+    });
+    dispatch({
+      type: 'PLAYLIST_BUILD',
+      payload: {},
+    });
+    dispatch({
+      type: 'SWITCH_CURRENT',
+      payload: {},
+    });
   };
 };
 
@@ -143,7 +168,8 @@ export const startNew = (userId, selection, spotifyApi) => {
         body: JSON.stringify({
           user_id: userId,
           name: 'newPlaylist',
-          private: false,
+          public: false,
+          collaborative: false,
           description: 'Playlist created with Perfect Playlist',
           href: '',
           spotify_id: '',
@@ -181,11 +207,22 @@ export const startNew = (userId, selection, spotifyApi) => {
         for (let i = 0; i < currentArtistAlbums.items.length; i++) {
           currentArtistAlbums.items[i]['tracks'] = fullAlbums.albums[i].tracks;
         }
+        let firstFiltered = currentArtistAlbums.items.filter(
+          (album) => album.images.length > 0
+        );
+        let names = [];
+        let filtered = [];
+        firstFiltered.forEach((album) => {
+          if (!names.includes(album.name)) {
+            filtered.push(album);
+            names.push(album.name);
+          }
+        });
         dispatch({
           type: 'SWITCH_CURRENT',
           payload: {
             info: currentArtist,
-            albums: currentArtistAlbums.items,
+            albums: filtered,
             tracks: currentArtistTopTracks.tracks,
           },
         });
@@ -231,6 +268,18 @@ export const createNext = (selection, spotifyApi) => {
             currentArtistAlbums.items[i]['tracks'] =
               fullAlbums.albums[i].tracks;
           }
+          let firstFiltered = currentArtistAlbums.items.filter(
+            (album) => album.images.length > 0
+          );
+          let names = [];
+          let filtered = [];
+          firstFiltered.forEach((album) => {
+            if (!names.includes(album.name)) {
+              filtered.push(album);
+              names.push(album.name);
+            }
+          });
+
           dispatch({
             type: 'RELATED_ARTISTS',
             payload: relatedArtists,
@@ -239,7 +288,7 @@ export const createNext = (selection, spotifyApi) => {
             type: 'SWITCH_CURRENT',
             payload: {
               info: currentArtist,
-              albums: currentArtistAlbums.items,
+              albums: filtered,
               tracks: currentArtistTopTracks.tracks,
             },
           });
@@ -483,3 +532,5 @@ export const removePreview = (seed) => {
     });
   };
 };
+
+export const publishBuild = (id, tracks, spotifyApi) => {};

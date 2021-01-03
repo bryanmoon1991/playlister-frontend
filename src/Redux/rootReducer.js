@@ -6,7 +6,6 @@ import storage from 'redux-persist/lib/storage';
 
 const defaultState = {
   user: null,
-  spotifyApi: null,
   searchResults: null,
   recommended: [],
   playlistBuild: {},
@@ -20,15 +19,6 @@ const defaultState = {
 const currentUserReducer = (state = defaultState.user, action) => {
   switch (action.type) {
     case 'FETCH_CURRENT_USER':
-      return action.payload;
-    default:
-      return state;
-  }
-};
-
-const spotifyApiReducer = (state = defaultState.spotifyApi, action) => {
-  switch (action.type) {
-    case 'SET_AUTHORIZATION':
       return action.payload;
     default:
       return state;
@@ -155,7 +145,6 @@ const persistConfig = {
   storage,
   whitelist: [
     'user',
-    'spotifyApi',
     'recommended',
     'playlistBuild',
     'relatedArtists',
@@ -168,7 +157,6 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   user: currentUserReducer,
-  spotifyApi: spotifyApiReducer,
   searchResults: searchReducer,
   recommended: recommendedReducer,
   playlistBuild: playlistBuildReducer,

@@ -68,33 +68,33 @@ const ArtistCard = ({
     return (
       <>
         {tracks.length ? (
-          <div className="top-tracks">
+          <div>
             <p>top tracks:</p>
-            {tracks}
+            <div className="top-tracks">{tracks}</div>
           </div>
         ) : undefined}
         {albums.length ? (
-          <div className="albums">
+          <div>
             <p>albums:</p>
-            {albums}
+            <div className="albums">{albums}</div>
           </div>
         ) : undefined}
         {singles.length ? (
-          <div className="singles">
+          <div>
             <p>singles:</p>
-            {singles}
+            <div className="singles">{singles}</div>
           </div>
         ) : undefined}
         {appears.length ? (
-          <div className="appears">
+          <div>
             <p>appears on:</p>
-            {appears}
+            <div className="appears">{appears}</div>
           </div>
         ) : undefined}
         {compilation.length ? (
-          <div className="compilation">
+          <div>
             <p>compilations:</p>
-            {compilation}
+            <div className="compilations">{compilation}</div>
           </div>
         ) : undefined}
       </>

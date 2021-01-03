@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import PlaylistItem from './PlaylistItem';
 import chunk from 'lodash.chunk';
 import {
@@ -17,6 +18,8 @@ import {
   Checkbox,
   Grid,
   Segment,
+  Divider,
+  Icon,
 } from 'semantic-ui-react';
 
 const msp = (state) => {
@@ -40,56 +43,67 @@ const PlaylistBuilder = ({
   clearPreview,
   preview,
 }) => {
-  const [{ name }, setName] = useState({ name: playlistBuild.name });
-  const [titleEdit, setTitleEdit] = useState(false);
-
-  const [{ description }, setDescription] = useState({
-    description: playlistBuild.description,
-  });
-
-  const [open, setOpen] = useState(false);
-
-  const [collaborative, setCollaborative] = useState(false);
-  const [publik, setPublik] = useState(false);
-
-  const [slider, setSlider] = useState(() => ({
+  const [state, setState] = useState({
+    name: '',
+    titleEdit: false,
+    description: '',
+    open: false,
+    collaborative: false,
+    publik: false,
     energy: 0.0,
     mood: 0.0,
     vocal: 0.0,
     size: 20,
-  }));
-  const sliderRef = useRef(slider);
-  sliderRef.current = slider;
+  });
+
+  const stateRef = useRef(state);
+  stateRef.current = state;
+
+  useEffect(() => {
+    if (playlistBuild.name) {
+      setState((prevState) => ({ ...prevState, name: playlistBuild.name }));
+      setState((prevState) => ({
+        ...prevState,
+        description: playlistBuild.description,
+      }));
+    }
+  }, []);
+
+  let {
+    name,
+    titleEdit,
+    description,
+    open,
+    collaborative,
+    publik,
+    energy,
+    mood,
+    vocal,
+    size,
+  } = stateRef.current;
 
   const togglePublik = () => {
-    if (collaborative) {
+    if (stateRef.current.collaborative) {
       window.alert('Cannot be public if collaborative');
     } else {
-      setPublik(!publik);
+      setState((prevState) => ({ ...prevState, publik: !state.publik }));
     }
   };
 
   const toggleCollab = () => {
-    if (collaborative) {
-      setCollaborative(false);
+    if (stateRef.current.collaborative) {
+      setState((prevState) => ({ ...prevState, collaborative: false }));
     } else {
-      if (publik) {
+      if (stateRef.current.publik) {
         togglePublik();
       }
-      setCollaborative(true);
+      setState((prevState) => ({ ...prevState, collaborative: true }));
     }
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    switch (event.target.type) {
-      case 'range':
-        setSlider((prevState) => ({ ...prevState, [name]: value }));
-        break;
-      case 'text':
-        setName((prevState) => ({ ...prevState, [name]: value }));
-        break;
-    }
+    setState((prevState) => ({ ...prevState, [name]: value }));
   };
 
   const keyPress = (e) => {
@@ -98,13 +112,14 @@ const PlaylistBuilder = ({
         window.alert('Playlist name cannot be blank');
       } else {
         updatePlaylist(playlistBuild.id, 'name', name);
-        setTitleEdit(!titleEdit);
+        setState((prevState) => ({
+          ...prevState,
+          titleEdit: !stateRef.current.titleEdit,
+        }));
       }
     }
   };
 
-  // if the user navigates to the builder from the playlists we'll use match
-  // if not, the playlistBuild and playlistSeeds will be set from start new action
   useEffect(() => {
     if (match) {
       loadBuild(match.params.id);
@@ -158,7 +173,7 @@ const PlaylistBuilder = ({
     return array;
   };
 
-  const publishBuild = (build) => {
+  const buildPreview = (build) => {
     if (!preview.length) {
       clearPreview();
     }
@@ -189,14 +204,13 @@ const PlaylistBuilder = ({
     let limit;
     let totalChunks = artistChunks.length + trackChunks.length;
 
-    if (totalChunks > sliderRef.current.size) {
-      limit = Math.ceil(totalChunks / sliderRef.current.size);
-    } else if (totalChunks < sliderRef.current.size) {
-      limit = Math.ceil(sliderRef.current.size / totalChunks);
-    } else if (totalChunks === sliderRef.current.size) {
+    if (totalChunks > size) {
+      limit = Math.ceil(totalChunks / size);
+    } else if (totalChunks < size) {
+      limit = Math.ceil(size / totalChunks);
+    } else if (totalChunks === size) {
       limit = 1;
     }
-    console.log(sliderRef.current);
     artistChunks.forEach((chonk) => {
       spotifyApi
         .getRecommendations({
@@ -204,16 +218,16 @@ const PlaylistBuilder = ({
           country: 'US',
           seed_artists: chonk,
 
-          target_danceability: sliderRef.current.energy,
-          target_energy: sliderRef.current.energy,
-          target_tempo: sliderRef.current.energy,
-          target_loudness: sliderRef.current.energy,
+          target_danceability: energy,
+          target_energy: energy,
+          target_tempo: energy,
+          target_loudness: energy,
 
-          target_instrumentalness: sliderRef.current.vocal,
-          // target_speechiness: sliderRef.current.vocal,
+          target_instrumentalness: vocal,
+          // target_speechiness: vocal,
 
-          target_valence: sliderRef.current.mood,
-          target_mode: sliderRef.current.mood > 0.5 ? 1 : 0,
+          target_valence: mood,
+          target_mode: mood > 0.5 ? 1 : 0,
         })
         .then((data) => {
           addTracksToPreview(data.tracks, spotifyApi);
@@ -227,16 +241,16 @@ const PlaylistBuilder = ({
           country: 'US',
           seed_tracks: chonk,
 
-          target_danceability: sliderRef.current.energy,
-          target_energy: sliderRef.current.energy,
-          target_tempo: sliderRef.current.energy,
-          target_loudness: sliderRef.current.energy,
+          target_danceability: energy,
+          target_energy: energy,
+          target_tempo: energy,
+          target_loudness: energy,
 
-          target_instrumentalness: sliderRef.current.vocal,
-          // target_speechiness: sliderRef.current.vocal,
+          target_instrumentalness: vocal,
+          // target_speechiness: vocal,
 
-          target_valence: sliderRef.current.mood,
-          target_mode: sliderRef.current.mood > 0.5 ? 1 : 0,
+          target_valence: mood,
+          target_mode: mood > 0.5 ? 1 : 0,
         })
         .then((data) => {
           let total = [];
@@ -247,7 +261,48 @@ const PlaylistBuilder = ({
         });
     });
   };
-  console.log('preview:', preview);
+
+  const commitChangesAndPublish = () => {
+    let body = {
+      public: publik,
+      collaborative: collaborative,
+      description: description,
+    };
+    fetch(`http://localhost:3000/api/v1/playlists/${playlistBuild.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify(body),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        console.log(data);
+        spotifyApi.getMe().then((data) => {
+          spotifyApi
+            .createPlaylist(data.id, {
+              name: name,
+              public: publik,
+              collaborative: collaborative,
+              description: description,
+            })
+            .then((data) => {
+              console.log(data);
+              spotifyApi
+                .addTracksToPlaylist(
+                  data.id,
+                  preview.map((track) => track.uri)
+                )
+                .then((data) => {
+                  console.log(data);
+                });
+            });
+        });
+      });
+  };
+  console.log('build', playlistBuild);
+
   return (
     <>
       <div className="builder">
@@ -262,7 +317,14 @@ const PlaylistBuilder = ({
                 onKeyDown={keyPress}
               ></input>
             ) : (
-              <h3 onClick={() => setTitleEdit(!titleEdit)}>
+              <h3
+                onClick={() => {
+                  setState((prevState) => ({
+                    ...prevState,
+                    titleEdit: !stateRef.current.titleEdit,
+                  }));
+                }}
+              >
                 {playlistBuild.name}
               </h3>
             )}
@@ -340,7 +402,10 @@ const PlaylistBuilder = ({
                   <Button
                     onClick={() => {
                       clearPreview();
-                      setOpen(true);
+                      setState((prevState) => ({
+                        ...prevState,
+                        open: true,
+                      }));
                     }}
                     icon="itunes note"
                     size="mini"
@@ -349,15 +414,25 @@ const PlaylistBuilder = ({
               />
 
               <Modal
-                onClose={() => setOpen(false)}
-                onOpen={() => setOpen(true)}
+                onClose={() =>
+                  setState((prevState) => ({
+                    ...prevState,
+                    open: false,
+                  }))
+                }
+                onOpen={() =>
+                  setState((prevState) => ({
+                    ...prevState,
+                    open: true,
+                  }))
+                }
                 open={open}
               >
                 <Modal.Header>Generate Playlist from this Build</Modal.Header>
                 <Modal.Content>
                   <Modal.Description>
                     <Segment placeholder>
-                      <Grid columns={3} relaxed="very" stackable>
+                      <Grid columns={2} relaxed="very" stackable>
                         <Grid.Column>
                           {titleEdit ? (
                             <>
@@ -371,7 +446,14 @@ const PlaylistBuilder = ({
                             </>
                           ) : (
                             <>
-                              <h3 onClick={() => setTitleEdit(!titleEdit)}>
+                              <h3
+                                onClick={() =>
+                                  setState((prevState) => ({
+                                    ...prevState,
+                                    titleEdit: !stateRef.current.titleEdit,
+                                  }))
+                                }
+                              >
                                 {playlistBuild.name}
                               </h3>
                               <br />
@@ -398,9 +480,6 @@ const PlaylistBuilder = ({
                             checked={collaborative}
                           />
                           <br />
-                        </Grid.Column>
-
-                        <Grid.Column>
                           <p>Energy:</p>
                           <input
                             type="range"
@@ -408,7 +487,7 @@ const PlaylistBuilder = ({
                             min={0.0}
                             max={1.0}
                             step={0.1}
-                            value={slider.energy}
+                            value={energy}
                             onChange={handleChange}
                           />
                           <p>Vocal:</p>
@@ -418,7 +497,7 @@ const PlaylistBuilder = ({
                             min={0.0}
                             max={1.0}
                             step={0.1}
-                            value={slider.vocal}
+                            value={vocal}
                             onChange={handleChange}
                           />
                           <p>Mood:</p>
@@ -428,7 +507,7 @@ const PlaylistBuilder = ({
                             min={0.0}
                             max={1.0}
                             step={0.1}
-                            value={slider.mood}
+                            value={mood}
                             onChange={handleChange}
                           />
                           <p>Length in tracks:</p>
@@ -437,7 +516,7 @@ const PlaylistBuilder = ({
                             name="size"
                             min={20}
                             max={100}
-                            value={slider.size}
+                            value={size}
                             onChange={handleChange}
                           />
                         </Grid.Column>
@@ -451,7 +530,9 @@ const PlaylistBuilder = ({
                         </Grid.Column>
                       </Grid>
 
-                      {/* <Divider vertical>Or</Divider> */}
+                      <Divider vertical>
+                        <Icon name="sound" />
+                      </Divider>
                     </Segment>
                   </Modal.Description>
                 </Modal.Content>
@@ -461,8 +542,7 @@ const PlaylistBuilder = ({
                     labelPosition="right"
                     icon="sound"
                     onClick={() => {
-                      publishBuild(playlistBuild);
-                      // setOpen(false);
+                      buildPreview(playlistBuild);
                     }}
                     positive
                   />
@@ -471,8 +551,11 @@ const PlaylistBuilder = ({
                     labelPosition="right"
                     icon="checkmark"
                     onClick={() => {
-                      // publishBuild(playlistBuild);
-                      setOpen(false);
+                      commitChangesAndPublish();
+                      setState((prevState) => ({
+                        ...prevState,
+                        open: false,
+                      }));
                     }}
                     positive
                   />
@@ -494,4 +577,4 @@ export default connect(msp, {
   deleteBuild,
   addTracksToPreview,
   clearPreview,
-})(PlaylistBuilder);
+})(withRouter(PlaylistBuilder));

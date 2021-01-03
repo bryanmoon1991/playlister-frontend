@@ -6,7 +6,7 @@ import Search from '../Components/Search';
 import RecommendedContainer from '../Containers/RecommendedContainer';
 import Discovery from '../Components/Discovery';
 import PlaylistBuilder from '../Components/PlaylistBuilder';
-import UnpublishedContainer from '../Containers/UnpublishedContainer';
+import BuildsContainer from './BuildsContainer';
 import '../Styles/Views.css';
 var Spotify = require('spotify-web-api-js');
 
@@ -41,7 +41,7 @@ const UsersContainer = ({
               <>
                 <div className="playlists">
                   <h3>Where the Playlists go</h3>
-                  <UnpublishedContainer />
+                  <BuildsContainer />
                 </div>
               </>
             );

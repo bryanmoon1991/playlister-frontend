@@ -1,0 +1,5 @@
+.features {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  justify-items: center;
+}

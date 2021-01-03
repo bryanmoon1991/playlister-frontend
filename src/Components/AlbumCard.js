@@ -4,6 +4,7 @@ import { createNext } from '../Redux/actions';
 import ArtistBubble from './ArtistBubble';
 import TracklistItem from './TracklistItem';
 import { Popup, Button } from 'semantic-ui-react';
+import '../Styles/AlbumCard.css';
 
 const AlbumCard = ({
   album,
@@ -107,7 +108,7 @@ const AlbumCard = ({
               />
             </Button.Group>
             <p>Artists on this album:</p>
-            {renderFeatures()}
+            <div className="features">{renderFeatures()}</div>
             <p>Tracklist:</p>
             {renderTracks()}
           </div>

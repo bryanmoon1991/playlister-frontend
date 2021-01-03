@@ -42,12 +42,22 @@ const TopTrack = ({
         hoverable
         hideOnScroll
         trigger={
-          <img
+          <div
+            style={{
+              backgroundImage: `url(${
+                album.images[album.images.length - 1].url
+              })`,
+              backgroundSize: 'cover',
+              height: '64px',
+              width: '64px',
+            }}
             onMouseEnter={() => playPreview()}
             onMouseLeave={() => stopPreview()}
             onWheel={() => stopPreview()}
-            src={album.images[album.images.length - 1].url}
-            alt={album.name}
+            // onClick={() => {
+            //   createNext(album, spotifyApi);
+            //   stopPreview();
+            // }}
           />
         }
       >
