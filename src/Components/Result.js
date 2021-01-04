@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { startNew } from '../Redux/actions';
+import { List, Image } from 'semantic-ui-react';
 
 const msp = (state) => {
   return {
@@ -9,76 +10,34 @@ const msp = (state) => {
   };
 };
 
-const Result = (props) => {
-  let preview;
-  props.track
-    ? props.track.preview_url
-      ? (preview = new Audio(props.track.preview_url))
-      : console.log('track with no preview')
-    : console.log('no preview');
-
-  const playPreview = () => {
-    if (props.artist) {
-      console.log('artist result');
-    } else if (props.track.preview_url) {
-      preview.play();
-    } else {
-      console.log('track with no preview');
-    }
-  };
-
-  const stopPreview = () => {
-    if (props.artist) {
-      console.log('artist result');
-    } else if (props.track.preview_url) {
-      preview.pause();
-      preview.currentTime = 0;
-    } else {
-      console.log('track with no preview');
-    }
-  };
-
+const Result = ({ user, artist, startNew, spotifyApi }) => {
   return (
     <>
-      {props.artist ? (
-        <div className="artist">
-          <h3
-            onClick={() =>
-              props.startNew(props.user.id, props.artist, props.spotifyApi)
+      {artist ? (
+        <List.Item
+          className="result"
+          as={Link}
+          to={`/users/${user.id}/new`}
+          onClick={() => startNew(user.id, artist, spotifyApi)}
+        >
+          <Image
+            avatar
+            src={
+              artist.images
+                ? artist.images.length
+                  ? artist.images[0].url
+                  : 'https://t4.ftcdn.net/jpg/03/32/59/65/360_F_332596535_lAdLhf6KzbW6PWXBWeIFTovTii1drkbT.jpg'
+                : 'https://t4.ftcdn.net/jpg/03/32/59/65/360_F_332596535_lAdLhf6KzbW6PWXBWeIFTovTii1drkbT.jpg'
             }
-          >
-            <Link to={`/users/${props.user.id}/new`}>{props.artist.name}</Link>
-            {/* {props.artist.images ? 
-                <img src={props.artist.images[props.artist.images.length - 1].url} alt={props.artist.name} /> :
-            undefined} */}
-          </h3>
-        </div>
-      ) : (
-        <div className="track">
-          <li
-            onClick={() =>
-              props.startNew(
-                props.user.id,
-                props.track.artists[0],
-                props.spotifyApi
-              )
-            }
-          >
-            <Link to={`/users/${props.user.id}/new`}>{props.track.name}</Link>
-            {props.track.album.images ? (
-              <img
-                src={
-                  props.track.album.images[props.track.album.images.length - 1]
-                    .url
-                }
-                alt={props.track.name}
-                onMouseOver={() => playPreview()}
-                onMouseOut={() => stopPreview()}
-              />
-            ) : undefined}
-          </li>
-        </div>
-      )}
+          />
+          <List.Content>
+            <List.Header>{artist.name}</List.Header>
+            <List.Description>
+              Followers: {artist.followers.total}
+            </List.Description>
+          </List.Content>
+        </List.Item>
+      ) : undefined}
     </>
   );
 };

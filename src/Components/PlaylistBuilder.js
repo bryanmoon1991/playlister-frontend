@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
 import PlaylistItem from './PlaylistItem';
 import chunk from 'lodash.chunk';
+import '../Styles/PlaylistBuilder.css';
 import {
   updatePlaylist,
   loadBuild,
@@ -67,7 +67,7 @@ const PlaylistBuilder = ({
         description: playlistBuild.description,
       }));
     }
-  }, []);
+  }, [playlistBuild.name, playlistBuild.description]);
 
   let {
     name,
@@ -211,55 +211,62 @@ const PlaylistBuilder = ({
     } else if (totalChunks === size) {
       limit = 1;
     }
-    artistChunks.forEach((chonk) => {
-      spotifyApi
-        .getRecommendations({
-          limit: limit,
-          country: 'US',
-          seed_artists: chonk,
+    // debugger;
+    if (artistChunks.length) {
+      artistChunks.forEach((chonk) => {
+        spotifyApi
+          .getRecommendations({
+            limit: limit,
+            country: 'US',
+            seed_artists: chonk,
 
-          target_danceability: energy,
-          target_energy: energy,
-          target_tempo: energy,
-          target_loudness: energy,
+            target_danceability: energy,
+            target_energy: energy,
+            target_tempo: energy,
+            target_loudness: energy,
 
-          target_instrumentalness: vocal,
-          // target_speechiness: vocal,
+            target_instrumentalness: vocal,
+            // target_speechiness: vocal,
 
-          target_valence: mood,
-          target_mode: mood > 0.5 ? 1 : 0,
-        })
-        .then((data) => {
-          addTracksToPreview(data.tracks, spotifyApi);
-        });
-    });
+            target_valence: mood,
+            target_mode: mood > 0.5 ? 1 : 0,
+          })
+          .then((data) => {
+            addTracksToPreview(data.tracks, spotifyApi);
+          });
+      });
+    }
 
-    trackChunks.forEach((chonk) => {
-      spotifyApi
-        .getRecommendations({
-          limit: limit,
-          country: 'US',
-          seed_tracks: chonk,
+    if (trackChunks.length) {
+      trackChunks.forEach((chonk) => {
+        spotifyApi
+          .getRecommendations({
+            limit: limit,
+            country: 'US',
+            seed_tracks: chonk,
 
-          target_danceability: energy,
-          target_energy: energy,
-          target_tempo: energy,
-          target_loudness: energy,
+            target_danceability: energy,
+            target_energy: energy,
+            target_tempo: energy,
+            target_loudness: energy,
 
-          target_instrumentalness: vocal,
-          // target_speechiness: vocal,
+            target_instrumentalness: vocal,
+            // target_speechiness: vocal,
 
-          target_valence: mood,
-          target_mode: mood > 0.5 ? 1 : 0,
-        })
-        .then((data) => {
-          let total = [];
-          if (chosenOnes.length) {
-            total = [...chosenOnes, ...data.tracks];
-          }
-          addTracksToPreview(total, spotifyApi);
-        });
-    });
+            target_valence: mood,
+            target_mode: mood > 0.5 ? 1 : 0,
+          })
+          .then((data) => {
+            let total = [];
+            if (chosenOnes.length) {
+              total = [...chosenOnes, ...data.tracks];
+              addTracksToPreview(total, spotifyApi);
+            } else {
+              addTracksToPreview(data.tracks, spotifyApi);
+            }
+          });
+      });
+    }
   };
 
   const commitChangesAndPublish = () => {
@@ -267,6 +274,7 @@ const PlaylistBuilder = ({
       public: publik,
       collaborative: collaborative,
       description: description,
+      published: true,
     };
     fetch(`http://localhost:3000/api/v1/playlists/${playlistBuild.id}`, {
       method: 'PATCH',
@@ -289,13 +297,31 @@ const PlaylistBuilder = ({
             })
             .then((data) => {
               console.log(data);
+              fetch(
+                `http://localhost:3000/api/v1/playlists/${playlistBuild.id}`,
+                {
+                  method: 'PATCH',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                  },
+                  body: JSON.stringify({
+                    href: data.href,
+                    spotify_id: data.id,
+                    uri: data.uri,
+                  }),
+                }
+              )
+                .then((r) => r.json())
+                .then((data) => console.log('updated build:', data));
+
               spotifyApi
                 .addTracksToPlaylist(
                   data.id,
                   preview.map((track) => track.uri)
                 )
                 .then((data) => {
-                  console.log(data);
+                  console.log('success');
                 });
             });
         });
@@ -577,4 +603,4 @@ export default connect(msp, {
   deleteBuild,
   addTracksToPreview,
   clearPreview,
-})(withRouter(PlaylistBuilder));
+})(PlaylistBuilder);

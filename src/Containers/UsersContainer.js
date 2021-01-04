@@ -7,13 +7,14 @@ import RecommendedContainer from '../Containers/RecommendedContainer';
 import Discovery from '../Components/Discovery';
 import PlaylistBuilder from '../Components/PlaylistBuilder';
 import BuildsContainer from './BuildsContainer';
+import BuildProfile from '../Components/BuildProfile';
+import Controls from '../Components/Controls';
 import '../Styles/Views.css';
 var Spotify = require('spotify-web-api-js');
 
 const msp = (state) => {
   return {
     user: state.user,
-    playlistBuild: state.playlistBuild,
   };
 };
 
@@ -32,7 +33,17 @@ const UsersContainer = ({
   return (
     <>
       <Switch>
-        <Route path="/users/:id/playlists/:id" component={PlaylistBuilder} />
+        {/* <Route path="/users/:id/playlists/:id" component={PlaylistBuilder} /> */}
+        <Route
+          path="/users/:id/playlists/:id"
+          render={() => {
+            return (
+              <>
+                <BuildProfile />
+              </>
+            );
+          }}
+        />
         <Route
           path="/users/:id/playlists"
           render={({ match }) => {
@@ -40,8 +51,7 @@ const UsersContainer = ({
             return (
               <>
                 <div className="playlists">
-                  <h3>Where the Playlists go</h3>
-                  <BuildsContainer />
+                  <BuildsContainer spotifyApi={spotifyApi} />
                 </div>
               </>
             );
@@ -52,6 +62,9 @@ const UsersContainer = ({
           render={() => {
             return (
               <>
+                {/* <div className="controls">
+                  <Controls spotifyApi={spotifyApi} />
+                </div> */}
                 <div className="discover">
                   <PlaylistBuilder spotifyApi={spotifyApi} />
                   <Discovery spotifyApi={spotifyApi} />

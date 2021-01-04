@@ -7,6 +7,13 @@
   grid-column: 1/2;
   display: grid;
   grid-template-columns: 1fr;
+  position: relative;
+}
+
+.controls {
+  position: absolute;
+  top: -10px;
+  left: -10px;
 }
 
 .bubbles {
@@ -38,16 +45,4 @@
 .bubble:hover {
   opacity: 0.8;
   filter: alpha(opacity=80);
-}
-
-.playlist-container {
-  overflow: hidden;
-  display: grid;
-}
-
-.playlist-item {
-  width: 300px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }

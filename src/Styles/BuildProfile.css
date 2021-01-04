@@ -1,0 +1,14 @@
+.profile {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr 1.2fr 0.8fr;
+  grid-template-rows: 1fr;
+  gap: 0px 0px;
+  grid-template-areas: '. build embedded .';
+  justify-items: center;
+}
+.build {
+  grid-area: build;
+}
+.embedded {
+  grid-area: embedded;
+}

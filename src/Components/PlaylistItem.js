@@ -40,11 +40,30 @@ const PlaylistItem = ({
 
   return (
     <List.Item
-      className="playlist-item"
       onMouseEnter={() => playPreview()}
       onMouseLeave={() => stopPreview()}
       onWheel={() => stopPreview()}
     >
+      {fromPreview ? (
+        <a>
+          <Icon
+            floated="left"
+            name="delete"
+            onClick={() => {
+              stopPreview();
+              removePreview(seed);
+            }}
+          />
+        </a>
+      ) : (
+        <a>
+          <Icon
+            floated="left"
+            name="delete"
+            onClick={() => removeSeed(seed, playlistId)}
+          />
+        </a>
+      )}
       <Image
         avatar
         src={
@@ -55,32 +74,12 @@ const PlaylistItem = ({
             : 'https://reactnativecode.com/wp-content/uploads/2018/02/Default_Image_Thumbnail.png'
         }
       />
-      <List.Content>
-        <List.Header>
-          {seed.name}
-          {fromPreview ? (
-            <a>
-              <Icon
-                floated="right"
-                name="delete"
-                onClick={() => {
-                  stopPreview();
-                  removePreview(seed);
-                }}
-              />
-            </a>
-          ) : (
-            <a>
-              <Icon
-                floated="right"
-                name="delete"
-                onClick={() => removeSeed(seed, playlistId)}
-              />
-            </a>
-          )}
-        </List.Header>
+      <List.Content className="playlist-item">
+        <List.Header className="item-info">{seed.name}</List.Header>
         {seed.type === 'artist' ? undefined : (
-          <List.Description>by {seed.artists[0].name}</List.Description>
+          <List.Description className="item-info">
+            by {seed.artists[0].name}
+          </List.Description>
         )}
       </List.Content>
     </List.Item>

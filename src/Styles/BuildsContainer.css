@@ -1,5 +1,10 @@
-.builds {
+.builds-container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  justify-items: center;
+  grid-template-columns: 0.3fr 2.4fr 0.3fr;
+  gap: 0px 0px;
+  grid-template-areas: '. builds .';
+}
+
+.cards {
+  grid-area: builds;
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import ArtistBubble from './ArtistBubble';
 import Card from './Card';
+import Controls from './Controls';
 import '../Styles/Discovery.css';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -35,6 +36,7 @@ const Discovery = ({ relatedArtists, spotifyApi }) => {
         {relatedArtists.artists ? (
           <>
             <div className="stack">
+              <Controls spotifyApi={spotifyApi} />
               <Card
                 spotifyApi={spotifyApi}
                 followNotify={followNotify}

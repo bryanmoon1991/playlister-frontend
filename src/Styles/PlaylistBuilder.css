@@ -1,0 +1,15 @@
+/* .item {
+  display: inline-block;
+} */
+
+.playlist-container {
+  overflow: hidden;
+  display: grid;
+}
+
+.item-info {
+  width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

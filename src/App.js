@@ -56,7 +56,10 @@ const App = ({ user, clearResults }) => {
               to={`/users/${user.id}/playlists`}
               name="playlists"
               active={activeItem === 'playlists'}
-              onClick={handleItemClick}
+              onClick={(e) => {
+                handleItemClick(e);
+                clearResults();
+              }}
             />
 
             <Menu.Item position="right">

@@ -1,17 +1,19 @@
 .recommended {
-    /* padding: 0; */
-    /* margin: 0; */
-    margin-top: 200px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  /* padding: 0; */
+  /* margin: 0; */
+  position: relative;
+  max-width: 500px;
+  margin-top: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .next,
 .prev {
   /* top: calc(50% - 20px); */
   position: absolute;
-  background: white;
+  background: rgb(200, 200, 200);
   border-radius: 50%;
   width: 30px;
   height: 30px;
@@ -20,19 +22,17 @@
   align-items: center;
   user-select: none;
   cursor: pointer;
-  font-weight: bold;
-  font-size: 18px;
   z-index: 2;
 }
 
 .next {
-  right: 900px;
+  right: 130px;
 }
 
 .prev {
-  left: 900px;
+  left: 130px;
 }
 
-.recommended img {
-    position: absolute;
+.recommended a {
+  position: absolute;
 }

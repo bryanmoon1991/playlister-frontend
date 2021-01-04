@@ -170,9 +170,11 @@ export const startNew = (userId, selection, spotifyApi) => {
           name: 'newPlaylist',
           public: false,
           collaborative: false,
+          published: false,
           description: 'Playlist created with Perfect Playlist',
           href: '',
           spotify_id: '',
+          history: [selection],
           images: {},
           items: [selection],
           uri: '',
@@ -246,6 +248,185 @@ export const startNew = (userId, selection, spotifyApi) => {
 export const createNext = (selection, spotifyApi) => {
   return (dispatch, getState) => {
     if (selection.type === 'artist') {
+      let updatedHistory = produce(
+        getState().playlistBuild.history,
+        (draft) => {
+          draft.push(selection);
+        }
+      );
+      Promise.all([
+        fetch(
+          `http://localhost:3000/api/v1/playlists/${
+            getState().playlistBuild.id
+          }`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify({
+              history: updatedHistory,
+            }),
+          }
+        ).then((r) => r.json()),
+        spotifyApi.getArtist(selection.id),
+        spotifyApi.getArtistAlbums(selection.id, { limit: 20, country: 'US' }),
+        // prettier-ignore
+        spotifyApi.getArtistAlbums(selection.id, { limit: 20, country: 'US' })
+          .then((albums) =>
+            spotifyApi.getAlbums(albums.items.map((alb) => alb.id))
+          ),
+        spotifyApi.getArtistTopTracks(selection.id, 'US'),
+        spotifyApi.getArtistRelatedArtists(selection.id),
+      ]).then(
+        ([
+          updatedBuild,
+          currentArtist,
+          currentArtistAlbums,
+          fullAlbums,
+          currentArtistTopTracks,
+          relatedArtists,
+        ]) => {
+          for (let i = 0; i < currentArtistAlbums.items.length; i++) {
+            currentArtistAlbums.items[i]['tracks'] =
+              fullAlbums.albums[i].tracks;
+          }
+          let firstFiltered = currentArtistAlbums.items.filter(
+            (album) => album.images.length > 0
+          );
+          let names = [];
+          let filtered = [];
+          firstFiltered.forEach((album) => {
+            if (!names.includes(album.name)) {
+              filtered.push(album);
+              names.push(album.name);
+            }
+          });
+          dispatch({
+            type: 'PLAYLIST_BUILD',
+            payload: updatedBuild,
+          });
+          dispatch({
+            type: 'RELATED_ARTISTS',
+            payload: relatedArtists,
+          });
+          dispatch({
+            type: 'SWITCH_CURRENT',
+            payload: {
+              info: currentArtist,
+              albums: filtered,
+              tracks: currentArtistTopTracks.tracks,
+            },
+          });
+          getMore(currentArtistAlbums.next, spotifyApi, dispatch);
+        },
+        (err) => {
+          console.log('error', err);
+          refresh(getState().user.id).then((data) => {
+            dispatch({
+              type: 'FETCH_CURRENT_USER',
+              payload: data,
+            });
+            spotifyApi.setAccessToken(data.access_token);
+            startNew(selection, spotifyApi);
+          });
+        }
+      );
+    } else if (selection.type === 'album') {
+      let updatedHistory = produce(
+        getState().playlistBuild.history,
+        (draft) => {
+          draft.push(selection);
+        }
+      );
+      Promise.all([
+        fetch(
+          `http://localhost:3000/api/v1/playlists/${
+            getState().playlistBuild.id
+          }`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify({
+              history: updatedHistory,
+            }),
+          }
+        ).then((r) => r.json()),
+        spotifyApi.getAlbum(selection.id),
+        spotifyApi.getArtists(selection.artists.map((artist) => artist.id)),
+        spotifyApi.getArtistRelatedArtists(selection.artists[0].id),
+      ]).then(
+        ([updatedBuild, currentAlbum, features, relatedArtists]) => {
+          if (features.artists[0].name === 'Various Artists') {
+            let allArtists = [];
+            currentAlbum.tracks.items.forEach((track) =>
+              track.artists.forEach((artist) => allArtists.push(artist.id))
+            );
+            let filteredArtists = [...new Set(allArtists)];
+            spotifyApi.getArtists(filteredArtists).then((data) => {
+              dispatch({
+                type: 'SWITCH_CURRENT',
+                payload: {
+                  info: currentAlbum,
+                  features: data.artists,
+                  tracks: currentAlbum.tracks.items,
+                },
+              });
+
+              dispatch({
+                type: 'PLAYLIST_BUILD',
+                payload: updatedBuild,
+              });
+
+              dispatch({
+                type: 'RELATED_ARTISTS',
+                payload: data,
+              });
+            });
+          } else {
+            dispatch({
+              type: 'SWITCH_CURRENT',
+              payload: {
+                info: currentAlbum,
+                features: features.artists,
+                tracks: currentAlbum.tracks.items,
+              },
+            });
+
+            dispatch({
+              type: 'PLAYLIST_BUILD',
+              payload: updatedBuild,
+            });
+
+            dispatch({
+              type: 'RELATED_ARTISTS',
+              payload: relatedArtists,
+            });
+          }
+        },
+        (err) => {
+          console.log('error', err);
+          refresh(getState().user.id).then((data) => {
+            dispatch({
+              type: 'FETCH_CURRENT_USER',
+              payload: data,
+            });
+            spotifyApi.setAccessToken(data.access_token);
+            startNew(selection, spotifyApi);
+          });
+        }
+      );
+    }
+  };
+};
+
+export const continueBuild = (selection, spotifyApi) => {
+  return (dispatch, getState) => {
+    if (selection.type === 'artist') {
       Promise.all([
         spotifyApi.getArtist(selection.id),
         spotifyApi.getArtistAlbums(selection.id, { limit: 20, country: 'US' }),
@@ -279,7 +460,6 @@ export const createNext = (selection, spotifyApi) => {
               names.push(album.name);
             }
           });
-
           dispatch({
             type: 'RELATED_ARTISTS',
             payload: relatedArtists,
@@ -342,6 +522,185 @@ export const createNext = (selection, spotifyApi) => {
                 features: features.artists,
                 tracks: currentAlbum.tracks.items,
               },
+            });
+
+            dispatch({
+              type: 'RELATED_ARTISTS',
+              payload: relatedArtists,
+            });
+          }
+        },
+        (err) => {
+          console.log('error', err);
+          refresh(getState().user.id).then((data) => {
+            dispatch({
+              type: 'FETCH_CURRENT_USER',
+              payload: data,
+            });
+            spotifyApi.setAccessToken(data.access_token);
+            startNew(selection, spotifyApi);
+          });
+        }
+      );
+    }
+  };
+};
+
+export const goBack = (selection, spotifyApi) => {
+  return (dispatch, getState) => {
+    if (selection.type === 'artist') {
+      let updatedHistory = produce(
+        getState().playlistBuild.history,
+        (draft) => {
+          draft.pop();
+        }
+      );
+      Promise.all([
+        fetch(
+          `http://localhost:3000/api/v1/playlists/${
+            getState().playlistBuild.id
+          }`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify({
+              history: updatedHistory,
+            }),
+          }
+        ).then((r) => r.json()),
+        spotifyApi.getArtist(selection.id),
+        spotifyApi.getArtistAlbums(selection.id, { limit: 20, country: 'US' }),
+        // prettier-ignore
+        spotifyApi.getArtistAlbums(selection.id, { limit: 20, country: 'US' })
+          .then((albums) =>
+            spotifyApi.getAlbums(albums.items.map((alb) => alb.id))
+          ),
+        spotifyApi.getArtistTopTracks(selection.id, 'US'),
+        spotifyApi.getArtistRelatedArtists(selection.id),
+      ]).then(
+        ([
+          updatedBuild,
+          currentArtist,
+          currentArtistAlbums,
+          fullAlbums,
+          currentArtistTopTracks,
+          relatedArtists,
+        ]) => {
+          for (let i = 0; i < currentArtistAlbums.items.length; i++) {
+            currentArtistAlbums.items[i]['tracks'] =
+              fullAlbums.albums[i].tracks;
+          }
+          let firstFiltered = currentArtistAlbums.items.filter(
+            (album) => album.images.length > 0
+          );
+          let names = [];
+          let filtered = [];
+          firstFiltered.forEach((album) => {
+            if (!names.includes(album.name)) {
+              filtered.push(album);
+              names.push(album.name);
+            }
+          });
+          dispatch({
+            type: 'PLAYLIST_BUILD',
+            payload: updatedBuild,
+          });
+          dispatch({
+            type: 'RELATED_ARTISTS',
+            payload: relatedArtists,
+          });
+          dispatch({
+            type: 'SWITCH_CURRENT',
+            payload: {
+              info: currentArtist,
+              albums: filtered,
+              tracks: currentArtistTopTracks.tracks,
+            },
+          });
+          getMore(currentArtistAlbums.next, spotifyApi, dispatch);
+        },
+        (err) => {
+          console.log('error', err);
+          refresh(getState().user.id).then((data) => {
+            dispatch({
+              type: 'FETCH_CURRENT_USER',
+              payload: data,
+            });
+            spotifyApi.setAccessToken(data.access_token);
+            startNew(selection, spotifyApi);
+          });
+        }
+      );
+    } else if (selection.type === 'album') {
+      let updatedHistory = produce(
+        getState().playlistBuild.history,
+        (draft) => {
+          draft.pop();
+        }
+      );
+      Promise.all([
+        fetch(
+          `http://localhost:3000/api/v1/playlists/${
+            getState().playlistBuild.id
+          }`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify({
+              history: updatedHistory,
+            }),
+          }
+        ).then((r) => r.json()),
+        spotifyApi.getAlbum(selection.id),
+        spotifyApi.getArtists(selection.artists.map((artist) => artist.id)),
+        spotifyApi.getArtistRelatedArtists(selection.artists[0].id),
+      ]).then(
+        ([updatedBuild, currentAlbum, features, relatedArtists]) => {
+          if (features.artists[0].name === 'Various Artists') {
+            let allArtists = [];
+            currentAlbum.tracks.items.forEach((track) =>
+              track.artists.forEach((artist) => allArtists.push(artist.id))
+            );
+            let filteredArtists = [...new Set(allArtists)];
+            spotifyApi.getArtists(filteredArtists).then((data) => {
+              dispatch({
+                type: 'SWITCH_CURRENT',
+                payload: {
+                  info: currentAlbum,
+                  features: data.artists,
+                  tracks: currentAlbum.tracks.items,
+                },
+              });
+
+              dispatch({
+                type: 'PLAYLIST_BUILD',
+                payload: updatedBuild,
+              });
+
+              dispatch({
+                type: 'RELATED_ARTISTS',
+                payload: data,
+              });
+            });
+          } else {
+            dispatch({
+              type: 'SWITCH_CURRENT',
+              payload: {
+                info: currentAlbum,
+                features: features.artists,
+                tracks: currentAlbum.tracks.items,
+              },
+            });
+
+            dispatch({
+              type: 'PLAYLIST_BUILD',
+              payload: updatedBuild,
             });
 
             dispatch({

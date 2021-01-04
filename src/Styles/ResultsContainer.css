@@ -1,13 +1,4 @@
-.results {
-    display: grid;
-    grid-template-columns: 1fr, 1fr;
-    gap: 100px;
-}
-
-.artist-results {
-    grid-column: 1/2;
-}
-
-.track-results {
-    grid-column: 2/3;
+.result:hover {
+  background-color: rgb(192, 209, 209);
+  border-radius: 25px;
 }
