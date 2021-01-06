@@ -1,3 +1,34 @@
-.App {
-  text-align: center;
+body {
+  background-color: #b0ddc2;
+}
+
+* {
+  color: #164249;
+}
+
+.login {
+  display: grid;
+  grid-template-columns: 1.3fr 0.4fr 1.3fr;
+  grid-template-rows: 1fr 0.8fr 1.2fr;
+  gap: 0px 0px;
+  grid-template-areas:
+    '. . .'
+    '. button .'
+    '. . .';
+}
+
+.login-items {
+  grid-area: button;
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  align-items: center;
+}
+
+.login-button {
+}
+
+.login-button:hover {
+  transition: all 0.2s ease-in-out;
+  transform: scale(1.2);
 }

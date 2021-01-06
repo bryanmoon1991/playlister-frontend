@@ -52,20 +52,6 @@ const TracklistItem = ({ track, images, addSeed, addToBuildNotify }) => {
                 mouseEnterDelay={500}
                 position="bottom center"
                 size="mini"
-                content="favorite this track"
-                trigger={<Button icon="like" size="mini" />}
-              />
-              <Popup
-                mouseEnterDelay={500}
-                position="bottom center"
-                size="mini"
-                content="open in spotify"
-                trigger={<Button icon="spotify" size="mini" />}
-              />
-              <Popup
-                mouseEnterDelay={500}
-                position="bottom center"
-                size="mini"
                 content="add this track to playlist"
                 trigger={
                   <Button
@@ -75,6 +61,21 @@ const TracklistItem = ({ track, images, addSeed, addToBuildNotify }) => {
                       addSeed(track, images);
                       addToBuildNotify(track.name);
                     }}
+                  />
+                }
+              />
+              <Popup
+                mouseEnterDelay={500}
+                position="bottom center"
+                size="mini"
+                content="open in spotify"
+                trigger={
+                  <Button
+                    as="a"
+                    target="_blank"
+                    href={track.external_urls.spotify}
+                    icon="spotify"
+                    size="mini"
                   />
                 }
               />

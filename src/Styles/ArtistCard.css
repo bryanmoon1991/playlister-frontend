@@ -18,6 +18,15 @@
   grid-template-columns: repeat(20, 32px);
 }
 
+.top-tracks,
+.albums,
+.singles,
+.appears,
+.compilations {
+  margin-top: 0%;
+  padding-top: 0%;
+}
+
 .album-preview {
   cursor: pointer;
 }

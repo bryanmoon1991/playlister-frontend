@@ -9,6 +9,7 @@ const ArtistBubble = ({
   spotifyApi,
   createNext,
   followNotify,
+  unfollowNotify,
   position,
 }) => {
   let [preview, setPreview] = useState(undefined);
@@ -95,13 +96,31 @@ const ArtistBubble = ({
                 mouseEnterDelay={500}
                 position="bottom center"
                 size="mini"
-                content={`Follow ${info.name} on Spotify`}
+                content={
+                  artist.following
+                    ? `Unfollow ${info.name} on Spotify`
+                    : `Follow ${info.name} on Spotify`
+                }
                 trigger={
-                  <Button
-                    icon="user plus"
-                    size="mini"
-                    onClick={() => followNotify(info.name)}
-                  />
+                  artist.following ? (
+                    <Button
+                      icon="user times"
+                      size="mini"
+                      onClick={() => {
+                        spotifyApi.unfollowArtists([artist.id]);
+                        unfollowNotify(info.name);
+                      }}
+                    />
+                  ) : (
+                    <Button
+                      icon="user plus"
+                      size="mini"
+                      onClick={() => {
+                        spotifyApi.followArtists([artist.id]);
+                        followNotify(info.name);
+                      }}
+                    />
+                  )
                 }
               />
               <Popup
@@ -109,7 +128,15 @@ const ArtistBubble = ({
                 position="bottom center"
                 size="mini"
                 content="Open in Spotify"
-                trigger={<Button icon="spotify" size="mini" />}
+                trigger={
+                  <Button
+                    as="a"
+                    target="_blank"
+                    href={artist.external_urls.spotify}
+                    icon="spotify"
+                    size="mini"
+                  />
+                }
               />
             </Button.Group>
           </Grid.Column>

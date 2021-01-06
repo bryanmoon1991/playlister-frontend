@@ -40,7 +40,7 @@ const App = ({ user, clearResults }) => {
     <>
       {user ? (
         <>
-          <Menu size="small">
+          <Menu color="grey" size="small">
             <Menu.Item
               as={Link}
               to={`/users/${user.id}`}
@@ -68,7 +68,32 @@ const App = ({ user, clearResults }) => {
           </Menu>
         </>
       ) : (
-        <a href="http://localhost:3000/api/v1/login">OAUTH LOGIN</a>
+        <>
+          <div className="login">
+            <div className="login-items">
+              <Button
+                className="login-button"
+                color="green"
+                circular
+                icon="spotify"
+                size="massive"
+                as="a"
+                href="http://localhost:3000/api/v1/login"
+              />
+              <h2>perfect playlist</h2>
+            </div>
+          </div>
+          {/* <svg>
+            <path
+              id="curve"
+              d="M100 200 A50 50 0 0 0 200 200"
+              fill="transparent"
+            />
+            <text width="800">
+              <textPath xlinkHref="#curve">perfect playlist</textPath>
+            </text>
+          </svg> */}
+        </>
       )}
       <Route path="/users" component={UsersContainer} />
     </>

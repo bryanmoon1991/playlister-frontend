@@ -20,6 +20,9 @@ import {
   Segment,
   Divider,
   Icon,
+  Placeholder,
+  Form,
+  TextArea,
 } from 'semantic-ui-react';
 
 const msp = (state) => {
@@ -42,6 +45,7 @@ const PlaylistBuilder = ({
   addTracksToPreview,
   clearPreview,
   preview,
+  fromProfile,
 }) => {
   const [state, setState] = useState({
     name: '',
@@ -357,109 +361,69 @@ const PlaylistBuilder = ({
             <List className="playlist-container" verticalAlign="middle">
               {renderSeeds()}
             </List>
-            <Button.Group>
-              <Popup
-                trigger={<Button icon="ellipsis horizontal" />}
-                content={
-                  <Button.Group>
-                    <Popup
-                      mouseEnterDelay={500}
-                      position="bottom center"
-                      size="mini"
-                      content="Delete this Build"
-                      trigger={
-                        <Button
-                          icon="trash alternate"
-                          size="mini"
-                          onClick={() => handleDelete(playlistBuild.id)}
-                        />
-                      }
-                    />
-                    <Popup
-                      mouseEnterDelay={500}
-                      position="bottom center"
-                      size="mini"
-                      content="Set to Collaborative"
-                      trigger={
-                        <Button
-                          icon="users"
-                          size="mini"
-                          onClick={() => handleDelete(playlistBuild.id)}
-                        />
-                      }
-                    />
-                    <Popup
-                      mouseEnterDelay={500}
-                      position="bottom center"
-                      size="mini"
-                      content="Set to Private"
-                      trigger={
-                        <Button
-                          icon="user secret"
-                          size="mini"
-                          onClick={() => handleDelete(playlistBuild.id)}
-                        />
-                      }
-                    />
-                    <Popup
-                      mouseEnterDelay={500}
-                      position="bottom center"
-                      size="mini"
-                      content="Edit Description"
-                      trigger={
-                        <Button
-                          icon="edit"
-                          size="mini"
-                          onClick={() => handleDelete(playlistBuild.id)}
-                        />
-                      }
-                    />
-                  </Button.Group>
-                }
-                on="click"
-                position="bottom center"
-              />
-              <Popup
-                mouseEnterDelay={500}
-                position="bottom center"
-                size="mini"
-                content="Generate Playlist!"
-                trigger={
-                  <Button
-                    onClick={() => {
-                      clearPreview();
-                      setState((prevState) => ({
-                        ...prevState,
-                        open: true,
-                      }));
-                    }}
-                    icon="itunes note"
-                    size="mini"
-                  />
-                }
-              />
-
-              <Modal
-                onClose={() =>
-                  setState((prevState) => ({
-                    ...prevState,
-                    open: false,
-                  }))
-                }
-                onOpen={() =>
-                  setState((prevState) => ({
-                    ...prevState,
-                    open: true,
-                  }))
-                }
-                open={open}
-              >
-                <Modal.Header>Generate Playlist from this Build</Modal.Header>
-                <Modal.Content>
-                  <Modal.Description>
-                    <Segment placeholder>
-                      <Grid columns={2} relaxed="very" stackable>
-                        <Grid.Column>
+            <Divider horizontal>options</Divider>
+            <Popup
+              mouseEnterDelay={500}
+              position="bottom center"
+              size="mini"
+              content="Delete this Build"
+              trigger={
+                <Button
+                  floated="left"
+                  negative
+                  circular
+                  onClick={() => {
+                    handleDelete(playlistBuild.id);
+                  }}
+                  icon="trash"
+                  size="small"
+                />
+              }
+            />
+            <Popup
+              mouseEnterDelay={500}
+              position="bottom center"
+              size="mini"
+              content="Generate Playlist!"
+              trigger={
+                <Button
+                  floated="right"
+                  positive
+                  circular
+                  onClick={() => {
+                    clearPreview();
+                    setState((prevState) => ({
+                      ...prevState,
+                      open: true,
+                    }));
+                  }}
+                  icon="itunes note"
+                  size="small"
+                />
+              }
+            />
+            <Modal
+              onClose={() =>
+                setState((prevState) => ({
+                  ...prevState,
+                  open: false,
+                }))
+              }
+              onOpen={() =>
+                setState((prevState) => ({
+                  ...prevState,
+                  open: true,
+                }))
+              }
+              open={open}
+            >
+              <Modal.Header>Generate Playlist from this Build</Modal.Header>
+              <Modal.Content>
+                <Modal.Description>
+                  <Segment placeholder>
+                    <Grid columns={2} relaxed="very" stackable>
+                      <Grid.Column>
+                        <div className="settings">
                           {titleEdit ? (
                             <>
                               <input
@@ -485,109 +449,180 @@ const PlaylistBuilder = ({
                               <br />
                             </>
                           )}
-                          <textarea
-                            placeholder="enter a description of your playlist"
-                            name="description"
-                            onChange={handleChange}
-                          />
+                          <Form floated="left">
+                            <TextArea
+                              placeholder="enter a description of your playlist"
+                              name="description"
+                              onChange={handleChange}
+                            />
+                          </Form>
                           <br />
                           <br />
+                          <strong>public?</strong>
                           <Checkbox
+                            className="toggle"
                             toggle
-                            label="public"
                             onChange={togglePublik}
                             checked={publik}
                           />
                           <br />
+                          <br />
+                          <strong>collaborative?</strong>
                           <Checkbox
+                            className="toggle"
                             toggle
-                            label="collaborative"
                             onChange={toggleCollab}
                             checked={collaborative}
                           />
                           <br />
-                          <p>Energy:</p>
-                          <input
-                            type="range"
-                            name="energy"
-                            min={0.0}
-                            max={1.0}
-                            step={0.1}
-                            value={energy}
-                            onChange={handleChange}
-                          />
-                          <p>Vocal:</p>
-                          <input
-                            type="range"
-                            name="vocal"
-                            min={0.0}
-                            max={1.0}
-                            step={0.1}
-                            value={vocal}
-                            onChange={handleChange}
-                          />
-                          <p>Mood:</p>
-                          <input
-                            type="range"
-                            name="mood"
-                            min={0.0}
-                            max={1.0}
-                            step={0.1}
-                            value={mood}
-                            onChange={handleChange}
-                          />
-                          <p>Length in tracks:</p>
-                          <input
-                            type="range"
-                            name="size"
-                            min={20}
-                            max={100}
-                            value={size}
-                            onChange={handleChange}
-                          />
-                        </Grid.Column>
+                          <br />
+                          <div>
+                            <strong>Energy:</strong>
+                            <br />
+                            <input
+                              className="slider"
+                              type="range"
+                              name="energy"
+                              min={0.0}
+                              max={1.0}
+                              step={0.1}
+                              value={energy}
+                              onChange={handleChange}
+                            />
+                            <br />
+                            <br />
+                            <strong>Instrumental:</strong>
+                            <br />
+                            <input
+                              className="slider"
+                              type="range"
+                              name="vocal"
+                              min={0.0}
+                              max={1.0}
+                              step={0.1}
+                              value={vocal}
+                              onChange={handleChange}
+                            />
+                          </div>
+                          <div>
+                            <br />
+                            <strong>Mood:</strong>
+                            <br />
+                            <input
+                              className="slider"
+                              type="range"
+                              name="mood"
+                              min={0.0}
+                              max={1.0}
+                              step={0.1}
+                              value={mood}
+                              onChange={handleChange}
+                            />
+                            <br />
+                            <br />
+                            <strong>Length in tracks: {size}</strong>
+                            <br />
+                            <input
+                              className="slider"
+                              type="range"
+                              name="size"
+                              min={20}
+                              max={100}
+                              value={size}
+                              onChange={handleChange}
+                            />
+                          </div>
+                        </div>
+                      </Grid.Column>
 
-                        <Grid.Column>
-                          {preview.length > 0 ? (
-                            <List>{renderPreviews()}</List>
-                          ) : (
-                            <h4>playlist will show here</h4>
-                          )}
-                        </Grid.Column>
-                      </Grid>
-
-                      <Divider vertical>
-                        <Icon name="sound" />
-                      </Divider>
-                    </Segment>
-                  </Modal.Description>
-                </Modal.Content>
-                <Modal.Actions>
-                  <Button
-                    content="Preview"
-                    labelPosition="right"
-                    icon="sound"
-                    onClick={() => {
-                      buildPreview(playlistBuild);
-                    }}
-                    positive
-                  />
-                  <Button
-                    content="Publish"
-                    labelPosition="right"
-                    icon="checkmark"
-                    onClick={() => {
-                      commitChangesAndPublish();
-                      setState((prevState) => ({
-                        ...prevState,
-                        open: false,
-                      }));
-                    }}
-                    positive
-                  />
-                </Modal.Actions>
-              </Modal>
-            </Button.Group>
+                      <Grid.Column>
+                        {preview.length > 0 ? (
+                          <List>{renderPreviews()}</List>
+                        ) : (
+                          <>
+                            <Placeholder>
+                              <Placeholder.Header image>
+                                <Placeholder.Line />
+                                <Placeholder.Line />
+                              </Placeholder.Header>
+                            </Placeholder>
+                            <Placeholder>
+                              <Placeholder.Header image>
+                                <Placeholder.Line />
+                                <Placeholder.Line />
+                              </Placeholder.Header>
+                            </Placeholder>
+                            <Placeholder>
+                              <Placeholder.Header image>
+                                <Placeholder.Line />
+                                <Placeholder.Line />
+                              </Placeholder.Header>
+                            </Placeholder>
+                            <Placeholder>
+                              <Placeholder.Header image>
+                                <Placeholder.Line />
+                                <Placeholder.Line />
+                              </Placeholder.Header>
+                            </Placeholder>
+                            <Placeholder>
+                              <Placeholder.Header image>
+                                <Placeholder.Line />
+                                <Placeholder.Line />
+                              </Placeholder.Header>
+                            </Placeholder>
+                            <Placeholder>
+                              <Placeholder.Header image>
+                                <Placeholder.Line />
+                                <Placeholder.Line />
+                              </Placeholder.Header>
+                            </Placeholder>
+                            <Placeholder>
+                              <Placeholder.Header image>
+                                <Placeholder.Line />
+                                <Placeholder.Line />
+                              </Placeholder.Header>
+                            </Placeholder>
+                            <Placeholder>
+                              <Placeholder.Header image>
+                                <Placeholder.Line />
+                                <Placeholder.Line />
+                              </Placeholder.Header>
+                            </Placeholder>
+                          </>
+                        )}
+                      </Grid.Column>
+                    </Grid>
+                    <Divider vertical>
+                      <Icon name="sound" />
+                    </Divider>
+                  </Segment>
+                </Modal.Description>
+              </Modal.Content>
+              <Modal.Actions>
+                <Button
+                  content="Preview"
+                  labelPosition="right"
+                  icon="sound"
+                  onClick={() => {
+                    buildPreview(playlistBuild);
+                  }}
+                  positive
+                />
+                <Button
+                  content="Publish"
+                  labelPosition="right"
+                  icon="checkmark"
+                  onClick={() => {
+                    commitChangesAndPublish();
+                    setState((prevState) => ({
+                      ...prevState,
+                      open: false,
+                    }));
+                  }}
+                  positive
+                />
+              </Modal.Actions>
+            </Modal>
           </>
         ) : (
           <h3>loading playlist builder</h3>

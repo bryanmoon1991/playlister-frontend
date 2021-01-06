@@ -3,7 +3,13 @@ import { Grid, Popup, Header, Button } from 'semantic-ui-react';
 import { createNext } from '../Redux/actions';
 import { connect } from 'react-redux';
 
-const Preview = ({ album, spotifyApi, createNext }) => {
+const Preview = ({
+  album,
+  spotifyApi,
+  createNext,
+  saveNotify,
+  unsaveNotify,
+}) => {
   let [preview, setPreview] = useState(undefined);
   let [info, setInfo] = useState({ album: '', title: '' });
 
@@ -97,15 +103,43 @@ const Preview = ({ album, spotifyApi, createNext }) => {
                 mouseEnterDelay={500}
                 position="bottom center"
                 size="mini"
-                content="favorite this album"
-                trigger={<Button icon="like" size="mini" />}
+                content={album.saved ? 'remove from saved' : 'save this album'}
+                trigger={
+                  album.saved ? (
+                    <Button
+                      icon="undo"
+                      size="mini"
+                      onClick={() => {
+                        unsaveNotify(album.name);
+                        spotifyApi.removeFromMySavedAlbums([album.id]);
+                      }}
+                    />
+                  ) : (
+                    <Button
+                      icon="save"
+                      size="mini"
+                      onClick={() => {
+                        saveNotify(album.name);
+                        spotifyApi.addToMySavedAlbums([album.id]);
+                      }}
+                    />
+                  )
+                }
               />
               <Popup
                 mouseEnterDelay={500}
                 position="bottom center"
                 size="mini"
                 content="open in spotify"
-                trigger={<Button icon="external" size="mini" />}
+                trigger={
+                  <Button
+                    as="a"
+                    target="_blank"
+                    href={album.external_urls.spotify}
+                    icon="spotify"
+                    size="mini"
+                  />
+                }
               />
             </Button.Group>
           </Grid.Column>

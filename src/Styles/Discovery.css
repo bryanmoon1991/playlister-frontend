@@ -1,6 +1,9 @@
 .discovery-tool {
   display: grid;
   grid-template-columns: 1fr, 1fr;
+  column-gap: 50px;
+  background-color: #e9f7f9;
+  padding: 15px;
 }
 
 .stack {

@@ -1,19 +1,25 @@
-import React from 'react'
-import { connect } from 'react-redux'
-import {addSeed} from '../Redux/actions';
+import React from 'react';
+import { connect } from 'react-redux';
+import { addSeed } from '../Redux/actions';
 import ArtistCard from './ArtistCard';
 import AlbumCard from './AlbumCard';
 
+const msp = (state) => {
+  return {
+    currentSelection: state.currentSelection,
+  };
+};
 
-
-const msp = state => {
-    return {
-        currentSelection: state.currentSelection
-    }
-}
-
-const Card = ({currentSelection, addSeed, spotifyApi, followNotify, favoriteNotify, addToBuildNotify}) => {
-
+const Card = ({
+  currentSelection,
+  addSeed,
+  spotifyApi,
+  followNotify,
+  saveNotify,
+  unfollowNotify,
+  unsaveNotify,
+  addToBuildNotify,
+}) => {
   const renderComponent = () => {
     switch (currentSelection.info.type) {
       case 'artist':
@@ -23,7 +29,9 @@ const Card = ({currentSelection, addSeed, spotifyApi, followNotify, favoriteNoti
             addSeed={addSeed}
             spotifyApi={spotifyApi}
             followNotify={followNotify}
-            favoriteNotify={favoriteNotify}
+            unfollowNotify={unfollowNotify}
+            saveNotify={saveNotify}
+            unsaveNotify={unsaveNotify}
             addToBuildNotify={addToBuildNotify}
           />
         );
@@ -34,7 +42,9 @@ const Card = ({currentSelection, addSeed, spotifyApi, followNotify, favoriteNoti
             addSeed={addSeed}
             spotifyApi={spotifyApi}
             followNotify={followNotify}
-            favoriteNotify={favoriteNotify}
+            unfollowNotify={unfollowNotify}
+            saveNotify={saveNotify}
+            unsaveNotify={unsaveNotify}
             addToBuildNotify={addToBuildNotify}
           />
         );
@@ -45,12 +55,12 @@ const Card = ({currentSelection, addSeed, spotifyApi, followNotify, favoriteNoti
   return (
     <>
       {currentSelection.info ? (
-          renderComponent()
+        renderComponent()
       ) : (
         <h3>Loading Discovery Tool</h3>
       )}
     </>
   );
-}
+};
 
-export default connect(msp, {addSeed})(Card);
+export default connect(msp, { addSeed })(Card);

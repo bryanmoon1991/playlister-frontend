@@ -70,6 +70,16 @@ const playlistBuildReducer = (state = defaultState.playlistBuild, action) => {
 
 const relatedArtistsReducer = produce((draft, action) => {
   switch (action.type) {
+    // case 'RELATED_ARTISTS':
+    //   action.spotifyApi
+    //     .isFollowingArtists(action.payload.artists.map((artist) => artist.id))
+    //     .then((data) => {
+    //       for (let i = 0; i < action.payload.artists.length; i++) {
+    //         action.payload.artists[i]['following'] = data[i];
+    //       }
+    //     });
+    //   console.log('test', x, action.payload);
+    //   return action.payload;
     case 'RELATED_ARTISTS':
       return action.payload;
     case 'ADD_TOP_TRACK':

@@ -8,3 +8,7 @@
 .cards {
   grid-area: builds;
 }
+
+.card {
+  background-color: #e9f7f9;
+}

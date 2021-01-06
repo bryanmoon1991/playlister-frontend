@@ -40,6 +40,7 @@ const PlaylistItem = ({
 
   return (
     <List.Item
+      className="item-content"
       onMouseEnter={() => playPreview()}
       onMouseLeave={() => stopPreview()}
       onWheel={() => stopPreview()}

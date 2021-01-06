@@ -25,6 +25,7 @@ const Controls = ({ playlistBuild, goBack, spotifyApi }) => {
               }`}
               trigger={
                 <Button
+                  // style={{ backgroundColor: '#f0c040' }}
                   className="controls"
                   circular
                   icon="step backward"

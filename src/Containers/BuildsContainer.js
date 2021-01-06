@@ -1,9 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Card, Image, Icon, Button, Popup } from 'semantic-ui-react';
 import '../Styles/BuildsContainer.css';
-import { loadBuild, continueBuild } from '../Redux/actions';
+import { loadBuild, continueBuild, deleteBuild } from '../Redux/actions';
 
 const msp = (state) => {
   return {
@@ -18,6 +18,8 @@ const BuildsContainer = ({
   loadBuild,
   continueBuild,
   spotifyApi,
+  deleteBuild,
+  history,
 }) => {
   console.log(user, playlists);
 
@@ -56,18 +58,23 @@ const BuildsContainer = ({
     }
   };
 
+  const handleDelete = (id) => {
+    deleteBuild(id);
+    history.push(`/users/${user.id}`);
+  };
+
   const renderBuilds = () => {
     return playlists.map((playlist) => (
-      <Card
-        as={Link}
-        to={`/users/${user.id}/playlists/${playlist.id}`}
-        key={playlist.id}
-        color={playlist.published ? 'green' : 'red'}
-        onClick={() => loadBuild(playlist.id)}
-      >
+      <Card key={playlist.id} color={playlist.published ? 'green' : 'red'}>
         <Image src={playlist.items[0].images[0].url} wrapped ui={false} />
         <Card.Content>
-          <Card.Header>{playlist.name}</Card.Header>
+          <Card.Header
+            as={Link}
+            to={`/users/${user.id}/playlists/${playlist.id}`}
+            onClick={() => loadBuild(playlist.id)}
+          >
+            {playlist.name}
+          </Card.Header>
           <Card.Meta>
             <span className="genres">
               <strong>Genres: </strong>
@@ -104,16 +111,35 @@ const BuildsContainer = ({
               position="bottom center"
               size="mini"
               content="Delete this Build"
-              trigger={<Button icon="trash" size="medium" />}
+              trigger={
+                <Button
+                  onClick={() => {
+                    handleDelete(playlist.id);
+                  }}
+                  icon="trash"
+                  size="medium"
+                />
+              }
             />
+          </Button.Group>
+          {playlist.published ? (
             <Popup
               mouseEnterDelay={500}
               position="bottom center"
               size="mini"
               content="Open in Spotify"
-              trigger={<Button icon="spotify" size="medium" />}
+              trigger={
+                <Button
+                  floated="right"
+                  as="a"
+                  target="_blank"
+                  href={playlist.href}
+                  icon="spotify"
+                  size="medium"
+                />
+              }
             />
-          </Button.Group>
+          ) : undefined}
         </Card.Content>
         <Card.Content extra>
           <p>
@@ -142,4 +168,6 @@ const BuildsContainer = ({
   );
 };
 
-export default connect(msp, { loadBuild, continueBuild })(BuildsContainer);
+export default withRouter(
+  connect(msp, { loadBuild, continueBuild, deleteBuild })(BuildsContainer)
+);

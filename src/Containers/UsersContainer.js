@@ -59,14 +59,11 @@ const UsersContainer = ({
         />
         <Route
           path="/users/:id/new"
-          render={() => {
+          render={({ history }) => {
             return (
               <>
-                {/* <div className="controls">
-                  <Controls spotifyApi={spotifyApi} />
-                </div> */}
                 <div className="discover">
-                  <PlaylistBuilder spotifyApi={spotifyApi} />
+                  <PlaylistBuilder spotifyApi={spotifyApi} history={history} />
                   <Discovery spotifyApi={spotifyApi} />
                 </div>
               </>

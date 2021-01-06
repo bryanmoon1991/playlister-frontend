@@ -1,10 +1,22 @@
 /* .item {
   display: inline-block;
+
 } */
+
+.builder {
+  background-color: #e9f7f9;
+}
 
 .playlist-container {
   overflow: hidden;
   display: grid;
+  padding: 15px;
+}
+
+.item-content,
+.item-info,
+.description {
+  white-space: nowrap;
 }
 
 .item-info {
@@ -12,4 +24,32 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.settings {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+}
+
+.slider {
+  -webkit-appearance: none;
+}
+
+.slider:focus {
+  outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 15px;
+  width: 15px;
+  background: #502b5a;
+  margin-top: -5px;
+  border-radius: 50%;
+}
+
+.slider::-webkit-slider-runnable-track {
+  background: #31724b;
+  height: 5px;
 }

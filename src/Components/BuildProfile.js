@@ -22,7 +22,7 @@ const BuildProfile = ({ playlistBuild }) => {
               src={`https://open.spotify.com/embed/playlist/${playlistBuild.spotify_id}`}
               width="400"
               height="580"
-              frameborder="0"
+              frameBorder="0"
               allowtransparency="true"
               allow="encrypted-media"
               title={playlistBuild.name}

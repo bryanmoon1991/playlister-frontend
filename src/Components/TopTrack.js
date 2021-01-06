@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
 import { Grid, Popup, Header, Button } from 'semantic-ui-react';
+import { connect } from 'react-redux';
+import { createNext } from '../Redux/actions';
 
 const TopTrack = ({
   track,
   album,
-  favoriteNotify,
+  saveNotify,
+  unsaveNotify,
   addToBuildNotify,
   addSeed,
+  createNext,
+  spotifyApi,
 }) => {
   let [preview, setPreview] = useState(new Audio(track.preview_url));
   let [info, setInfo] = useState({ album: album.name, title: track.name });
@@ -54,10 +59,11 @@ const TopTrack = ({
             onMouseEnter={() => playPreview()}
             onMouseLeave={() => stopPreview()}
             onWheel={() => stopPreview()}
-            // onClick={() => {
-            //   createNext(album, spotifyApi);
-            //   stopPreview();
-            // }}
+            className="album-preview"
+            onClick={() => {
+              createNext(album, spotifyApi);
+              stopPreview();
+            }}
           />
         }
       >
@@ -70,13 +76,27 @@ const TopTrack = ({
                 mouseEnterDelay={500}
                 position="bottom center"
                 size="mini"
-                content="Favorite this Track"
+                content={track.saved ? 'Remove from Saved' : 'Save this Track'}
                 trigger={
-                  <Button
-                    icon="like"
-                    size="mini"
-                    onClick={() => favoriteNotify(info.title)}
-                  />
+                  track.saved ? (
+                    <Button
+                      icon="undo"
+                      size="mini"
+                      onClick={() => {
+                        unsaveNotify(track.name);
+                        spotifyApi.removeFromMySavedTracks([track.id]);
+                      }}
+                    />
+                  ) : (
+                    <Button
+                      icon="save"
+                      size="mini"
+                      onClick={() => {
+                        saveNotify(track.name);
+                        spotifyApi.addToMySavedTracks([track.id]);
+                      }}
+                    />
+                  )
                 }
               />
               <Popup
@@ -100,7 +120,15 @@ const TopTrack = ({
                 position="bottom center"
                 size="mini"
                 content="Open in Spotify"
-                trigger={<Button icon="spotify" size="mini" />}
+                trigger={
+                  <Button
+                    as="a"
+                    target="_blank"
+                    href={track.external_urls.spotify}
+                    icon="spotify"
+                    size="mini"
+                  />
+                }
               />
             </Button.Group>
           </Grid.Column>
@@ -110,4 +138,4 @@ const TopTrack = ({
   );
 };
 
-export default TopTrack;
+export default connect(null, { createNext })(TopTrack);

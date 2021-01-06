@@ -9,7 +9,9 @@ const ArtistCard = ({
   addSeed,
   spotifyApi,
   followNotify,
-  favoriteNotify,
+  saveNotify,
+  unfollowNotify,
+  unsaveNotify,
   addToBuildNotify,
 }) => {
   console.log('artist card', artist);
@@ -31,8 +33,10 @@ const ArtistCard = ({
           key={track.id}
           track={track}
           album={track.album}
-          favoriteNotify={favoriteNotify}
+          saveNotify={saveNotify}
+          unsaveNotify={unsaveNotify}
           addToBuildNotify={addToBuildNotify}
+          spotifyApi={spotifyApi}
           addSeed={addSeed}
         />
       );
@@ -42,22 +46,46 @@ const ArtistCard = ({
       switch (album.album_group) {
         case 'album':
           albums.push(
-            <Preview key={album.id} album={album} spotifyApi={spotifyApi} />
+            <Preview
+              key={album.id}
+              album={album}
+              spotifyApi={spotifyApi}
+              saveNotify={saveNotify}
+              unsaveNotify={unsaveNotify}
+            />
           );
           break;
         case 'single':
           singles.push(
-            <Preview key={album.id} album={album} spotifyApi={spotifyApi} />
+            <Preview
+              key={album.id}
+              album={album}
+              spotifyApi={spotifyApi}
+              saveNotify={saveNotify}
+              unsaveNotify={unsaveNotify}
+            />
           );
           break;
         case 'compilation':
           compilation.push(
-            <Preview key={album.id} album={album} spotifyApi={spotifyApi} />
+            <Preview
+              key={album.id}
+              album={album}
+              spotifyApi={spotifyApi}
+              saveNotify={saveNotify}
+              unsaveNotify={unsaveNotify}
+            />
           );
           break;
         case 'appears_on':
           appears.push(
-            <Preview key={album.id} album={album} spotifyApi={spotifyApi} />
+            <Preview
+              key={album.id}
+              album={album}
+              spotifyApi={spotifyApi}
+              saveNotify={saveNotify}
+              unsaveNotify={unsaveNotify}
+            />
           );
           break;
         default:
@@ -69,31 +97,31 @@ const ArtistCard = ({
       <>
         {tracks.length ? (
           <div>
-            <p>top tracks:</p>
+            <strong>top tracks:</strong>
             <div className="top-tracks">{tracks}</div>
           </div>
         ) : undefined}
         {albums.length ? (
           <div>
-            <p>albums:</p>
+            <strong>albums:</strong>
             <div className="albums">{albums}</div>
           </div>
         ) : undefined}
         {singles.length ? (
           <div>
-            <p>singles:</p>
+            <strong>singles:</strong>
             <div className="singles">{singles}</div>
           </div>
         ) : undefined}
         {appears.length ? (
           <div>
-            <p>appears on:</p>
+            <strong>appears on:</strong>
             <div className="appears">{appears}</div>
           </div>
         ) : undefined}
         {compilation.length ? (
           <div>
-            <p>compilations:</p>
+            <strong>compilations:</strong>
             <div className="compilations">{compilation}</div>
           </div>
         ) : undefined}
@@ -123,11 +151,25 @@ const ArtistCard = ({
                 size="mini"
                 content={`Follow ${artist.info.name} on Spotify`}
                 trigger={
-                  <Button
-                    icon="user plus"
-                    size="mini"
-                    onClick={() => followNotify(artist.info.name)}
-                  />
+                  artist.info.following ? (
+                    <Button
+                      icon="user times"
+                      size="mini"
+                      onClick={() => {
+                        spotifyApi.unfollowArtists([artist.info.id]);
+                        unfollowNotify(artist.info.name);
+                      }}
+                    />
+                  ) : (
+                    <Button
+                      icon="user plus"
+                      size="mini"
+                      onClick={() => {
+                        spotifyApi.followArtists([artist.info.id]);
+                        followNotify(artist.info.name);
+                      }}
+                    />
+                  )
                 }
               />
               <Popup
@@ -150,25 +192,21 @@ const ArtistCard = ({
                 mouseEnterDelay={500}
                 position="bottom center"
                 size="mini"
-                content={`Add ${artist.info.name} to Favorites`}
+                content="Open in Spotify"
                 trigger={
                   <Button
-                    icon="heart"
+                    as="a"
+                    target="_blank"
+                    href={artist.info.external_urls.spotify}
+                    icon="spotify"
                     size="mini"
-                    onClick={() => favoriteNotify(artist.info.name)}
                   />
                 }
-              />
-              <Popup
-                mouseEnterDelay={500}
-                position="bottom center"
-                size="mini"
-                content="Open in Spotify"
-                trigger={<Button icon="spotify" size="mini" />}
               />
             </Button.Group>
             <h4>Followers: {artist.info.followers.total}</h4>
             <p>{renderGenres()}</p>
+            <br />
           </div>
           <div className="artist-works">{renderAlbums()}</div>
         </div>

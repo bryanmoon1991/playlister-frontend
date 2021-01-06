@@ -12,7 +12,9 @@ const AlbumCard = ({
   spotifyApi,
   createNext,
   followNotify,
-  favoriteNotify,
+  saveNotify,
+  unfollowNotify,
+  unsaveNotify,
   addToBuildNotify,
 }) => {
   console.log('in album card', album);
@@ -28,6 +30,8 @@ const AlbumCard = ({
           artist={artist}
           spotifyApi={spotifyApi}
           createNext={createNext}
+          followNotify={followNotify}
+          unfollowNotify={unfollowNotify}
         />
       ));
     }
@@ -61,13 +65,31 @@ const AlbumCard = ({
                 mouseEnterDelay={500}
                 position="bottom center"
                 size="mini"
-                content={`Follow ${album.info.artists[0].name} on Spotify`}
+                content={
+                  album.info.saved
+                    ? `Remove ${album.info.name} from Saved`
+                    : `Add ${album.info.name} to Favorites`
+                }
                 trigger={
-                  <Button
-                    icon="user plus"
-                    size="mini"
-                    onClick={() => followNotify(album.info.artists[0].name)}
-                  />
+                  album.info.saved ? (
+                    <Button
+                      icon="undo"
+                      size="mini"
+                      onClick={() => {
+                        spotifyApi.removeFromMySavedAlbums([album.info.id]);
+                        unsaveNotify(album.info.name);
+                      }}
+                    />
+                  ) : (
+                    <Button
+                      icon="save"
+                      size="mini"
+                      onClick={() => {
+                        spotifyApi.addToMySavedAlbums([album.info.id]);
+                        saveNotify(album.info.name);
+                      }}
+                    />
+                  )
                 }
               />
               <Popup
@@ -90,21 +112,16 @@ const AlbumCard = ({
                 mouseEnterDelay={500}
                 position="bottom center"
                 size="mini"
-                content={`Add ${album.info.name} to Favorites`}
+                content="Open in Spotify"
                 trigger={
                   <Button
-                    icon="heart"
+                    as="a"
+                    target="_blank"
+                    href={album.info.external_urls.spotify}
+                    icon="spotify"
                     size="mini"
-                    onClick={() => favoriteNotify(album.info.name)}
                   />
                 }
-              />
-              <Popup
-                mouseEnterDelay={500}
-                position="bottom center"
-                size="mini"
-                content="Open in Spotify"
-                trigger={<Button icon="spotify" size="mini" />}
               />
             </Button.Group>
             <p>Artists on this album:</p>

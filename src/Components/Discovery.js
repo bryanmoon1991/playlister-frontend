@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import ArtistBubble from './ArtistBubble';
 import Card from './Card';
@@ -13,10 +13,16 @@ const msp = (state) => {
 };
 
 const Discovery = ({ relatedArtists, spotifyApi }) => {
-  const favoriteNotify = (item) => toast(`Added ${item} to Favorites!`);
+  const saveNotify = (item) => toast(`Saved ${item} on Spotify`);
+  const unsaveNotify = (item) => toast(`Removed ${item} from Saved`);
   const followNotify = (artist) => toast(`Now following ${artist} on Spotify`);
+  const unfollowNotify = (artist) => toast(`Unfollowed ${artist} on Spotify`);
   const addToBuildNotify = (item) =>
     toast(`Added ${item} to Your Current Build!`);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const renderArtistBubbles = () => {
     return relatedArtists.artists.map((artist, i) => (
@@ -25,6 +31,7 @@ const Discovery = ({ relatedArtists, spotifyApi }) => {
         key={artist.id}
         spotifyApi={spotifyApi}
         followNotify={followNotify}
+        unfollowNotify={unfollowNotify}
         position={i}
       />
     ));
@@ -40,7 +47,9 @@ const Discovery = ({ relatedArtists, spotifyApi }) => {
               <Card
                 spotifyApi={spotifyApi}
                 followNotify={followNotify}
-                favoriteNotify={favoriteNotify}
+                unfollowNotify={unfollowNotify}
+                saveNotify={saveNotify}
+                unsaveNotify={unsaveNotify}
                 addToBuildNotify={addToBuildNotify}
               />
             </div>
