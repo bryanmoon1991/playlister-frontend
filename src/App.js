@@ -66,7 +66,7 @@ const App = ({ user, clearResults, history, handleLogout }) => {
 								size="massive"
 								as="a"
 								// href="http://localhost:3000/api/v1/login"
-								href="https://playlister-app-api.herokuapp.com/api/v1/login"
+								href="http://playlister-app-api.herokuapp.com/api/v1/login"
 							/>
 							<h2>perfect playlist</h2>
 						</div>
