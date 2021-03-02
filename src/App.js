@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Route, withRouter, Link } from 'react-router-dom';
 import UsersContainer from './Containers/UsersContainer';
 import { connect } from 'react-redux';
-import { clearResults } from './Redux/actions';
+import { clearResults, handleLogout } from './Redux/actions';
 import { Menu, Button } from 'semantic-ui-react';
 import './App.css';
 
-const App = ({ user, clearResults }) => {
+const App = ({ user, clearResults, history, handleLogout }) => {
   let [activeItem, setActiveItem] = useState('home');
 
   const handleItemClick = (e) => {
@@ -14,29 +14,14 @@ const App = ({ user, clearResults }) => {
     setActiveItem(name);
   };
 
+  const logOut = () => {
+    localStorage.clear();
+    handleLogout();
+    history.push('/');
+    window.location.reload(true);
+  };
+
   return (
-    // <>
-    //     {user ? (
-    //       <>
-    //         <a href="http://spotify.com/logout">Logout</a>
-    //         <Link
-    //         to={`/users/${user.id}/playlists`}>
-    //         My Playlists
-    //         </Link>
-    //         <Link
-    //         to={`/users/${user.id}`}
-    //         onClick={() => clearResults()}>
-    //           Home
-    //         </Link>
-    //       </>
-    //     ) : (
-    //         <a href="http://localhost:3000/api/v1/login">OAUTH LOGIN</a>
-    //       )}
-    //     <Route
-    //     path="/users"
-    //     component={UsersContainer}
-    //     />
-    //   </>
     <>
       {user ? (
         <>
@@ -63,7 +48,9 @@ const App = ({ user, clearResults }) => {
             />
 
             <Menu.Item position="right">
-              <Button primary>Log Out</Button>
+              <Button onClick={() => logOut()} primary>
+                Log Out
+              </Button>
             </Menu.Item>
           </Menu>
         </>
@@ -83,16 +70,6 @@ const App = ({ user, clearResults }) => {
               <h2>perfect playlist</h2>
             </div>
           </div>
-          {/* <svg>
-            <path
-              id="curve"
-              d="M100 200 A50 50 0 0 0 200 200"
-              fill="transparent"
-            />
-            <text width="800">
-              <textPath xlinkHref="#curve">perfect playlist</textPath>
-            </text>
-          </svg> */}
         </>
       )}
       <Route path="/users" component={UsersContainer} />
@@ -106,4 +83,4 @@ const msp = (state) => {
   };
 };
 
-export default withRouter(connect(msp, { clearResults })(App));
+export default withRouter(connect(msp, { clearResults, handleLogout })(App));

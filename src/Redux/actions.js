@@ -1172,4 +1172,12 @@ export const removePreview = (seed) => {
   };
 };
 
+export const handleLogout = () => {
+  return (dispatch) => {
+    dispatch({
+      type: 'LOGOUT',
+    });
+  };
+};
+
 export const publishBuild = (id, tracks, spotifyApi) => {};

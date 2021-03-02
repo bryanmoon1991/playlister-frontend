@@ -8,7 +8,7 @@ import Discovery from '../Components/Discovery';
 import PlaylistBuilder from '../Components/PlaylistBuilder';
 import BuildsContainer from './BuildsContainer';
 import BuildProfile from '../Components/BuildProfile';
-import Controls from '../Components/Controls';
+import { Loader } from 'semantic-ui-react';
 import '../Styles/Views.css';
 var Spotify = require('spotify-web-api-js');
 
@@ -88,7 +88,7 @@ const UsersContainer = ({
                     </div>
                   </>
                 ) : (
-                  <h1>loading</h1>
+                  <Loader active inline="centered" />
                 )}
               </>
             );

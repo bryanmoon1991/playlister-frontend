@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
+import { Loader } from 'semantic-ui-react';
 import ArtistBubble from './ArtistBubble';
 import Card from './Card';
 import Controls from './Controls';
@@ -60,7 +61,7 @@ const Discovery = ({ relatedArtists, spotifyApi }) => {
             <Toaster />
           </>
         ) : (
-          <h2>loading discovery tool</h2>
+          <Loader active inline="centered" />
         )}
       </div>
     </>
