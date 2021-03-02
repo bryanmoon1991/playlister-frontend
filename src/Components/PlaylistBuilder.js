@@ -25,6 +25,7 @@ import {
 	Loader,
 	TextArea,
 } from 'semantic-ui-react';
+import { API_ROOT } from '../apiRoot';
 
 const msp = (state) => {
 	return {
@@ -291,7 +292,7 @@ const PlaylistBuilder = ({
 			description: description,
 			published: true,
 		};
-		fetch(`http://localhost:3000/api/v1/playlists/${playlistBuild.id}`, {
+		fetch(`${API_ROOT}api/v1/playlists/${playlistBuild.id}`, {
 			method: 'PATCH',
 			headers: {
 				'Content-Type': 'application/json',
@@ -312,21 +313,18 @@ const PlaylistBuilder = ({
 						})
 						.then((data) => {
 							console.log('this is what you want', data);
-							fetch(
-								`http://localhost:3000/api/v1/playlists/${playlistBuild.id}`,
-								{
-									method: 'PATCH',
-									headers: {
-										'Content-Type': 'application/json',
-										Accept: 'application/json',
-									},
-									body: JSON.stringify({
-										href: data.external_urls.spotify,
-										spotify_id: data.id,
-										uri: data.uri,
-									}),
-								}
-							)
+							fetch(`${API_ROOT}api/v1/playlists/${playlistBuild.id}`, {
+								method: 'PATCH',
+								headers: {
+									'Content-Type': 'application/json',
+									Accept: 'application/json',
+								},
+								body: JSON.stringify({
+									href: data.external_urls.spotify,
+									spotify_id: data.id,
+									uri: data.uri,
+								}),
+							})
 								.then((r) => r.json())
 								.then((data) => {
 									console.log('updated build:', data);
