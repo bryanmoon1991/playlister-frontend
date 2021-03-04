@@ -4,7 +4,7 @@ Perfect Playlist is a web app that allows users to generate parametric playlists
 
 Check out the deployed version:
 
-[Perfect Playlist](playlister-frontend.heroku.com)
+[Perfect Playlist](https://playlister-frontend.herokuapp.com/)
 
 ## Running it Locally
 
