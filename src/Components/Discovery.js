@@ -1,11 +1,11 @@
-import React, { useEffect } from "react"
-import { connect } from "react-redux"
-import { Loader } from "semantic-ui-react"
-import ArtistBubble from "./ArtistBubble"
-import Card from "./Card"
-import Controls from "./Controls"
-import "../Styles/Discovery.css"
-import { Toaster } from "react-hot-toast"
+import React, { useEffect } from 'react'
+import { connect } from 'react-redux'
+import { Loader } from 'semantic-ui-react'
+import ArtistBubble from './ArtistBubble'
+import Card from './Card'
+import Controls from './Controls'
+import '../Styles/Discovery.css'
+import { Toaster } from 'react-hot-toast'
 
 import {
   saveNotify,
@@ -13,7 +13,7 @@ import {
   followNotify,
   unfollowNotify,
   addToBuildNotify,
-} from "./utils"
+} from './utils'
 
 const msp = (state) => {
   return {
