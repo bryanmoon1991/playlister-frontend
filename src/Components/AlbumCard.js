@@ -5,17 +5,19 @@ import ArtistBubble from './ArtistBubble';
 import TracklistItem from './TracklistItem';
 import { Popup, Button } from 'semantic-ui-react';
 import '../Styles/AlbumCard.css';
+import {
+  saveNotify,
+  unsaveNotify,
+  followNotify,
+  unfollowNotify,
+  addToBuildNotify,
+} from './utils'
 
 const AlbumCard = ({
   album,
   addSeed,
   spotifyApi,
   createNext,
-  followNotify,
-  saveNotify,
-  unfollowNotify,
-  unsaveNotify,
-  addToBuildNotify,
 }) => {
   console.log('in album card', album);
 

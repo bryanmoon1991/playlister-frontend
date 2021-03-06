@@ -1,59 +1,55 @@
-import React, { useEffect, useState } from 'react';
-import { Grid, Popup, Header, Button } from 'semantic-ui-react';
-import { createNext } from '../Redux/actions';
-import { connect } from 'react-redux';
+import { useEffect, useState } from 'react'
+import { Grid, Popup, Header, Button } from 'semantic-ui-react'
+import { createNext } from '../Redux/actions'
+import { connect } from 'react-redux'
 
-const Preview = ({
-  album,
-  spotifyApi,
-  createNext,
-  saveNotify,
-  unsaveNotify,
-}) => {
-  let [preview, setPreview] = useState(undefined);
-  let [info, setInfo] = useState({ album: '', title: '' });
+import { saveNotify, unsaveNotify } from './utils'
+
+const Preview = ({ album, spotifyApi, createNext }) => {
+  let [preview, setPreview] = useState(undefined)
+  let [info, setInfo] = useState({ album: '', title: '' })
 
   useEffect(() => {
     for (let i = 0; i < album.tracks.items.length; i++) {
       let random = Math.floor(
-        Math.random() * Math.floor(album.tracks.items.length)
-      );
+        Math.random() * Math.floor(album.tracks.items.length),
+      )
       if (album.tracks.items[random].preview_url) {
-        setPreview(new Audio(album.tracks.items[random].preview_url));
-        setInfo({ album: album.name, title: album.tracks.items[random].name });
-        break;
+        setPreview(new Audio(album.tracks.items[random].preview_url))
+        setInfo({ album: album.name, title: album.tracks.items[random].name })
+        break
       }
     }
 
     return () => {
-      setPreview(undefined);
-      setInfo({ album: '', title: '' });
-    };
-  }, [spotifyApi]);
+      setPreview(undefined)
+      setInfo({ album: '', title: '' })
+    }
+  }, [spotifyApi])
 
   const playPreview = () => {
     if (preview) {
-      let playPromise = preview.play();
+      let playPromise = preview.play()
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
-            console.log('playing');
+            console.log('playing')
           })
           .catch(() => {
-            console.log('no preview available');
-          });
+            console.log('no preview available')
+          })
       }
     } else {
-      console.log('no preview for this artist');
+      console.log('no preview for this artist')
     }
-  };
+  }
 
   const stopPreview = () => {
     if (preview) {
-      preview.pause();
-      preview.currentTime = 0;
+      preview.pause()
+      preview.currentTime = 0
     }
-  };
+  }
 
   return (
     <>
@@ -88,8 +84,8 @@ const Preview = ({
             onWheel={() => stopPreview()}
             className="album-preview"
             onClick={() => {
-              createNext(album, spotifyApi);
-              stopPreview();
+              createNext(album, spotifyApi)
+              stopPreview()
             }}
           />
         }
@@ -110,8 +106,8 @@ const Preview = ({
                       icon="undo"
                       size="mini"
                       onClick={() => {
-                        unsaveNotify(album.name);
-                        spotifyApi.removeFromMySavedAlbums([album.id]);
+                        unsaveNotify(album.name)
+                        spotifyApi.removeFromMySavedAlbums([album.id])
                       }}
                     />
                   ) : (
@@ -119,8 +115,8 @@ const Preview = ({
                       icon="save"
                       size="mini"
                       onClick={() => {
-                        saveNotify(album.name);
-                        spotifyApi.addToMySavedAlbums([album.id]);
+                        saveNotify(album.name)
+                        spotifyApi.addToMySavedAlbums([album.id])
                       }}
                     />
                   )
@@ -146,7 +142,7 @@ const Preview = ({
         </Grid>
       </Popup>
     </>
-  );
-};
+  )
+}
 
-export default connect(null, { createNext })(Preview);
+export default connect(null, { createNext })(Preview)

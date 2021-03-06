@@ -7,14 +7,6 @@ import Controls from './Controls'
 import '../Styles/Discovery.css'
 import { Toaster } from 'react-hot-toast'
 
-import {
-  saveNotify,
-  unsaveNotify,
-  followNotify,
-  unfollowNotify,
-  addToBuildNotify,
-} from './utils'
-
 const msp = (state) => {
   return {
     relatedArtists: state.relatedArtists,
@@ -32,8 +24,6 @@ const Discovery = ({ relatedArtists, spotifyApi }) => {
         artist={artist}
         key={artist.id}
         spotifyApi={spotifyApi}
-        followNotify={followNotify}
-        unfollowNotify={unfollowNotify}
         position={i}
       />
     ))
@@ -46,14 +36,7 @@ const Discovery = ({ relatedArtists, spotifyApi }) => {
           <>
             <div className="stack">
               <Controls spotifyApi={spotifyApi} />
-              <Card
-                spotifyApi={spotifyApi}
-                followNotify={followNotify}
-                unfollowNotify={unfollowNotify}
-                saveNotify={saveNotify}
-                unsaveNotify={unsaveNotify}
-                addToBuildNotify={addToBuildNotify}
-              />
+              <Card spotifyApi={spotifyApi} />
             </div>
             <div className="bubbles">
               <p>Related Artists:</p>

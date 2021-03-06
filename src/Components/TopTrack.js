@@ -1,44 +1,37 @@
-import React, { useState } from 'react';
-import { Grid, Popup, Header, Button } from 'semantic-ui-react';
-import { connect } from 'react-redux';
-import { createNext } from '../Redux/actions';
+import React, { useState } from 'react'
+import { Grid, Popup, Header, Button } from 'semantic-ui-react'
+import { connect } from 'react-redux'
+import { createNext } from '../Redux/actions'
 
-const TopTrack = ({
-  track,
-  album,
-  saveNotify,
-  unsaveNotify,
-  addToBuildNotify,
-  addSeed,
-  createNext,
-  spotifyApi,
-}) => {
-  let [preview, setPreview] = useState(new Audio(track.preview_url));
-  let [info, setInfo] = useState({ album: album.name, title: track.name });
+import { saveNotify, unsaveNotify, addToBuildNotify } from './utils'
+
+const TopTrack = ({ track, album, addSeed, createNext, spotifyApi }) => {
+  let [preview, setPreview] = useState(new Audio(track.preview_url))
+  let [info, setInfo] = useState({ album: album.name, title: track.name })
 
   const playPreview = () => {
     if (preview) {
-      let playPromise = preview.play();
+      let playPromise = preview.play()
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
-            console.log('playing');
+            console.log('playing')
           })
           .catch(() => {
-            console.log('no preview available');
-          });
+            console.log('no preview available')
+          })
       }
     } else {
-      console.log('no preview for this artist');
+      console.log('no preview for this artist')
     }
-  };
+  }
 
   const stopPreview = () => {
     if (preview) {
-      preview.pause();
-      preview.currentTime = 0;
+      preview.pause()
+      preview.currentTime = 0
     }
-  };
+  }
 
   return (
     <>
@@ -61,8 +54,8 @@ const TopTrack = ({
             onWheel={() => stopPreview()}
             className="album-preview"
             onClick={() => {
-              createNext(album, spotifyApi);
-              stopPreview();
+              createNext(album, spotifyApi)
+              stopPreview()
             }}
           />
         }
@@ -83,8 +76,8 @@ const TopTrack = ({
                       icon="undo"
                       size="mini"
                       onClick={() => {
-                        unsaveNotify(track.name);
-                        spotifyApi.removeFromMySavedTracks([track.id]);
+                        unsaveNotify(track.name)
+                        spotifyApi.removeFromMySavedTracks([track.id])
                       }}
                     />
                   ) : (
@@ -92,8 +85,8 @@ const TopTrack = ({
                       icon="save"
                       size="mini"
                       onClick={() => {
-                        saveNotify(track.name);
-                        spotifyApi.addToMySavedTracks([track.id]);
+                        saveNotify(track.name)
+                        spotifyApi.addToMySavedTracks([track.id])
                       }}
                     />
                   )
@@ -109,8 +102,8 @@ const TopTrack = ({
                     icon="add"
                     size="mini"
                     onClick={() => {
-                      addToBuildNotify(info.title);
-                      addSeed(track, album.images);
+                      addToBuildNotify(info.title)
+                      addSeed(track, album.images)
                     }}
                   />
                 }
@@ -135,7 +128,7 @@ const TopTrack = ({
         </Grid>
       </Popup>
     </>
-  );
-};
+  )
+}
 
-export default connect(null, { createNext })(TopTrack);
+export default connect(null, { createNext })(TopTrack)
