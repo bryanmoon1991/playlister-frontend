@@ -1,22 +1,22 @@
-import React, { useEffect } from 'react'
-import { connect } from 'react-redux'
-import { Loader } from 'semantic-ui-react'
-import ArtistBubble from './ArtistBubble'
-import Card from './Card'
-import Controls from './Controls'
-import '../Styles/Discovery.css'
-import { Toaster } from 'react-hot-toast'
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
+import { Loader } from 'semantic-ui-react';
+import ArtistBubble from './ArtistBubble';
+import Card from './Card';
+import Controls from './Controls';
+import '../Styles/Discovery.css';
+import { Toaster } from 'react-hot-toast';
 
 const msp = (state) => {
   return {
     relatedArtists: state.relatedArtists,
-  }
-}
+  };
+};
 
 const Discovery = ({ relatedArtists, spotifyApi }) => {
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [])
+    window.scrollTo(0, 0);
+  }, []);
 
   const renderArtistBubbles = () => {
     return relatedArtists.artists.map((artist, i) => (
@@ -26,8 +26,8 @@ const Discovery = ({ relatedArtists, spotifyApi }) => {
         spotifyApi={spotifyApi}
         position={i}
       />
-    ))
-  }
+    ));
+  };
 
   return (
     <>
@@ -49,7 +49,7 @@ const Discovery = ({ relatedArtists, spotifyApi }) => {
         )}
       </div>
     </>
-  )
-}
+  );
+};
 
-export default connect(msp)(Discovery)
+export default connect(msp)(Discovery);

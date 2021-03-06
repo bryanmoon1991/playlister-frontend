@@ -1,2 +1,2 @@
-export * from './base'
-export * from './spotify'
+export * from './base';
+export * from './spotify';

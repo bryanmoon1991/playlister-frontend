@@ -1,14 +1,14 @@
-import React from 'react'
-import { connect } from 'react-redux'
-import { addSeed } from '../Redux/actions'
-import ArtistCard from './ArtistCard'
-import AlbumCard from './AlbumCard'
+import React from 'react';
+import { connect } from 'react-redux';
+import { addSeed } from '../Redux/actions';
+import ArtistCard from './ArtistCard';
+import AlbumCard from './AlbumCard';
 
 const msp = (state) => {
   return {
     currentSelection: state.currentSelection,
-  }
-}
+  };
+};
 
 const Card = ({ currentSelection, addSeed, spotifyApi }) => {
   const renderComponent = () => {
@@ -20,7 +20,7 @@ const Card = ({ currentSelection, addSeed, spotifyApi }) => {
             addSeed={addSeed}
             spotifyApi={spotifyApi}
           />
-        )
+        );
       case 'album':
         return (
           <AlbumCard
@@ -28,11 +28,11 @@ const Card = ({ currentSelection, addSeed, spotifyApi }) => {
             addSeed={addSeed}
             spotifyApi={spotifyApi}
           />
-        )
+        );
       default:
-        console.log('no match')
+        console.log('no match');
     }
-  }
+  };
   return (
     <>
       {currentSelection.info ? (
@@ -41,7 +41,7 @@ const Card = ({ currentSelection, addSeed, spotifyApi }) => {
         <h3>Loading Discovery Tool</h3>
       )}
     </>
-  )
-}
+  );
+};
 
-export default connect(msp, { addSeed })(Card)
+export default connect(msp, { addSeed })(Card);

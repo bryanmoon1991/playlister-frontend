@@ -1,27 +1,27 @@
-import React from 'react'
-import Preview from './Preview'
-import TopTrack from './TopTrack'
-import '../Styles/ArtistCard.css'
-import { Popup, Button } from 'semantic-ui-react'
+import React from 'react';
+import Preview from './Preview';
+import TopTrack from './TopTrack';
+import '../Styles/ArtistCard.css';
+import { Popup, Button } from 'semantic-ui-react';
 import {
   saveNotify,
   unsaveNotify,
   followNotify,
   unfollowNotify,
   addToBuildNotify,
-} from './utils'
+} from './utils';
 
 const ArtistCard = ({ artist, addSeed, spotifyApi }) => {
   const renderGenres = () => {
-    return artist.info.genres.join(', ')
-  }
+    return artist.info.genres.join(', ');
+  };
 
   const renderAlbums = () => {
-    let tracks = []
-    let albums = []
-    let singles = []
-    let compilation = []
-    let appears = []
+    let tracks = [];
+    let albums = [];
+    let singles = [];
+    let compilation = [];
+    let appears = [];
 
     artist.tracks.forEach((track) => {
       tracks.push(
@@ -32,51 +32,35 @@ const ArtistCard = ({ artist, addSeed, spotifyApi }) => {
           spotifyApi={spotifyApi}
           addSeed={addSeed}
         />,
-      )
-    })
+      );
+    });
 
     artist.albums.forEach((album) => {
       switch (album.album_group) {
         case 'album':
           albums.push(
-            <Preview
-              key={album.id}
-              album={album}
-              spotifyApi={spotifyApi}
-            />,
-          )
-          break
+            <Preview key={album.id} album={album} spotifyApi={spotifyApi} />,
+          );
+          break;
         case 'single':
           singles.push(
-            <Preview
-              key={album.id}
-              album={album}
-              spotifyApi={spotifyApi}
-            />,
-          )
-          break
+            <Preview key={album.id} album={album} spotifyApi={spotifyApi} />,
+          );
+          break;
         case 'compilation':
           compilation.push(
-            <Preview
-              key={album.id}
-              album={album}
-              spotifyApi={spotifyApi}
-            />,
-          )
-          break
+            <Preview key={album.id} album={album} spotifyApi={spotifyApi} />,
+          );
+          break;
         case 'appears_on':
           appears.push(
-            <Preview
-              key={album.id}
-              album={album}
-              spotifyApi={spotifyApi}
-            />,
-          )
-          break
+            <Preview key={album.id} album={album} spotifyApi={spotifyApi} />,
+          );
+          break;
         default:
-          console.log(`no match for ${album.album_group}`)
+          console.log(`no match for ${album.album_group}`);
       }
-    })
+    });
 
     return (
       <>
@@ -111,8 +95,8 @@ const ArtistCard = ({ artist, addSeed, spotifyApi }) => {
           </div>
         ) : undefined}
       </>
-    )
-  }
+    );
+  };
 
   return (
     <>
@@ -141,8 +125,8 @@ const ArtistCard = ({ artist, addSeed, spotifyApi }) => {
                       icon="user times"
                       size="mini"
                       onClick={() => {
-                        spotifyApi.unfollowArtists([artist.info.id])
-                        unfollowNotify(artist.info.name)
+                        spotifyApi.unfollowArtists([artist.info.id]);
+                        unfollowNotify(artist.info.name);
                       }}
                     />
                   ) : (
@@ -150,8 +134,8 @@ const ArtistCard = ({ artist, addSeed, spotifyApi }) => {
                       icon="user plus"
                       size="mini"
                       onClick={() => {
-                        spotifyApi.followArtists([artist.info.id])
-                        followNotify(artist.info.name)
+                        spotifyApi.followArtists([artist.info.id]);
+                        followNotify(artist.info.name);
                       }}
                     />
                   )
@@ -167,8 +151,8 @@ const ArtistCard = ({ artist, addSeed, spotifyApi }) => {
                     icon="add"
                     size="mini"
                     onClick={() => {
-                      addToBuildNotify(artist.info.name)
-                      addSeed(artist.info)
+                      addToBuildNotify(artist.info.name);
+                      addSeed(artist.info);
                     }}
                   />
                 }
@@ -199,7 +183,7 @@ const ArtistCard = ({ artist, addSeed, spotifyApi }) => {
         <h3>Loading Discovery Tool</h3>
       )}
     </>
-  )
-}
+  );
+};
 
-export default ArtistCard
+export default ArtistCard;

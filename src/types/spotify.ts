@@ -1,26 +1,26 @@
-import { Image } from './base'
+import { Image } from './base';
 
 interface ArtistExternalURLs {
-  spotify: string
+  spotify: string;
 }
 
 export interface Artist {
-  id: number
-  name: string
-  images: Image[]
-  following: boolean
-  external_urls: ArtistExternalURLs
+  id: number;
+  name: string;
+  images: Image[];
+  following: boolean;
+  external_urls: ArtistExternalURLs;
 }
 
 export interface APIResponse {
-  data: SpotifyResponse
+  data: SpotifyResponse;
 }
 
 export interface Track {
-  name: string
-  preview_url: string
+  name: string;
+  preview_url: string;
 }
 
 export interface SpotifyResponse {
-  tracks: Track[]
+  tracks: Track[];
 }
