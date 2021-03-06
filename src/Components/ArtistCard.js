@@ -1,4 +1,3 @@
-import React from 'react';
 import Preview from './Preview';
 import TopTrack from './TopTrack';
 import '../Styles/ArtistCard.css';

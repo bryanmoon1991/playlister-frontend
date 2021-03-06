@@ -1,4 +1,3 @@
-import React from 'react';
 import { connect } from 'react-redux';
 import { addSeed } from '../Redux/actions';
 import ArtistCard from './ArtistCard';

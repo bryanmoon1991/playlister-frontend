@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Grid, Popup, Header, Button } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { createNext } from '../Redux/actions';
