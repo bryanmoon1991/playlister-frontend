@@ -1,18 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Grid, Popup, Header, Button } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { createNext } from '../Redux/actions';
 
-const TopTrack = ({
-  track,
-  album,
-  saveNotify,
-  unsaveNotify,
-  addToBuildNotify,
-  addSeed,
-  createNext,
-  spotifyApi,
-}) => {
+import { saveNotify, unsaveNotify, addToBuildNotify } from './utils';
+
+const TopTrack = ({ track, album, addSeed, createNext, spotifyApi }) => {
   let [preview, setPreview] = useState(new Audio(track.preview_url));
   let [info, setInfo] = useState({ album: album.name, title: track.name });
 

@@ -1,22 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Grid, Popup, Header, Button } from 'semantic-ui-react';
 import { createNext } from '../Redux/actions';
 import { connect } from 'react-redux';
 
-const Preview = ({
-  album,
-  spotifyApi,
-  createNext,
-  saveNotify,
-  unsaveNotify,
-}) => {
+import { saveNotify, unsaveNotify } from './utils';
+
+const Preview = ({ album, spotifyApi, createNext }) => {
   let [preview, setPreview] = useState(undefined);
   let [info, setInfo] = useState({ album: '', title: '' });
 
   useEffect(() => {
     for (let i = 0; i < album.tracks.items.length; i++) {
       let random = Math.floor(
-        Math.random() * Math.floor(album.tracks.items.length)
+        Math.random() * Math.floor(album.tracks.items.length),
       );
       if (album.tracks.items[random].preview_url) {
         setPreview(new Audio(album.tracks.items[random].preview_url));

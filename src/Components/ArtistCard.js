@@ -1,21 +1,16 @@
-import React from 'react';
 import Preview from './Preview';
 import TopTrack from './TopTrack';
 import '../Styles/ArtistCard.css';
 import { Popup, Button } from 'semantic-ui-react';
-
-const ArtistCard = ({
-  artist,
-  addSeed,
-  spotifyApi,
-  followNotify,
+import {
   saveNotify,
-  unfollowNotify,
   unsaveNotify,
+  followNotify,
+  unfollowNotify,
   addToBuildNotify,
-}) => {
-  console.log('artist card', artist);
+} from './utils';
 
+const ArtistCard = ({ artist, addSeed, spotifyApi }) => {
   const renderGenres = () => {
     return artist.info.genres.join(', ');
   };
@@ -33,12 +28,9 @@ const ArtistCard = ({
           key={track.id}
           track={track}
           album={track.album}
-          saveNotify={saveNotify}
-          unsaveNotify={unsaveNotify}
-          addToBuildNotify={addToBuildNotify}
           spotifyApi={spotifyApi}
           addSeed={addSeed}
-        />
+        />,
       );
     });
 
@@ -46,46 +38,22 @@ const ArtistCard = ({
       switch (album.album_group) {
         case 'album':
           albums.push(
-            <Preview
-              key={album.id}
-              album={album}
-              spotifyApi={spotifyApi}
-              saveNotify={saveNotify}
-              unsaveNotify={unsaveNotify}
-            />
+            <Preview key={album.id} album={album} spotifyApi={spotifyApi} />,
           );
           break;
         case 'single':
           singles.push(
-            <Preview
-              key={album.id}
-              album={album}
-              spotifyApi={spotifyApi}
-              saveNotify={saveNotify}
-              unsaveNotify={unsaveNotify}
-            />
+            <Preview key={album.id} album={album} spotifyApi={spotifyApi} />,
           );
           break;
         case 'compilation':
           compilation.push(
-            <Preview
-              key={album.id}
-              album={album}
-              spotifyApi={spotifyApi}
-              saveNotify={saveNotify}
-              unsaveNotify={unsaveNotify}
-            />
+            <Preview key={album.id} album={album} spotifyApi={spotifyApi} />,
           );
           break;
         case 'appears_on':
           appears.push(
-            <Preview
-              key={album.id}
-              album={album}
-              spotifyApi={spotifyApi}
-              saveNotify={saveNotify}
-              unsaveNotify={unsaveNotify}
-            />
+            <Preview key={album.id} album={album} spotifyApi={spotifyApi} />,
           );
           break;
         default:

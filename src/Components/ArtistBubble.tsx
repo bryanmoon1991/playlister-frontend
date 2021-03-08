@@ -1,36 +1,53 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Grid, Popup, Button, Header } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { createNext } from '../Redux/actions';
 import '../Styles/ArtistBubble.css';
 
-const ArtistBubble = ({
-  artist,
-  spotifyApi,
-  createNext,
-  followNotify,
-  unfollowNotify,
-  position,
-}) => {
-  let [preview, setPreview] = useState(undefined);
-  let [info, setInfo] = useState({ name: '', title: '' });
-  let [show, setShow] = useState(false);
+import { followNotify, unfollowNotify } from './utils';
+import { Artist, SpotifyResponse } from '../types';
+
+interface Props {
+  artist: Artist;
+  spotifyApi: any;
+  createNext: Function;
+  position: number;
+}
+
+interface TrackInfo {
+  name: string;
+  title: string;
+}
+
+// Util to add context to an implicit truthiness check
+const hasTracks = (data: SpotifyResponse) => !!data.tracks[0];
+const getFirstTrack = (data: SpotifyResponse) => data.tracks[0];
+
+const ArtistBubble = ({ artist, spotifyApi, createNext, position }: Props) => {
+  const initialInfo = { name: '', title: '' };
+
+  let [preview, setPreview] = useState<HTMLAudioElement>();
+  let [info, setInfo] = useState<TrackInfo>(initialInfo);
 
   useEffect(() => {
-    spotifyApi.getArtistTopTracks(artist.id, 'US').then((data) => {
-      if (data.tracks[0]) {
-        setPreview(new Audio(data.tracks[0].preview_url));
-        setInfo({ name: artist.name, title: data.tracks[0].name });
+    const { id, name } = artist;
+
+    spotifyApi.getArtistTopTracks(id, 'US').then((data: SpotifyResponse) => {
+      const track = getFirstTrack(data);
+
+      if (hasTracks(data)) {
+        setPreview(new Audio(track.preview_url));
+        setInfo({ name, title: track.name });
       } else {
-        setInfo({ name: artist.name, title: 'Sorry, there is no preview' });
+        setInfo({ name, title: 'Sorry, there is no preview' });
       }
     });
 
     return () => {
       setPreview(undefined);
-      setInfo({ name: '', title: '' });
+      setInfo(initialInfo);
     };
-  }, [spotifyApi]);
+  }, [artist, spotifyApi, initialInfo]);
 
   const playPreview = () => {
     if (preview) {
@@ -56,6 +73,13 @@ const ArtistBubble = ({
     }
   };
 
+  // Object destructuring for some cleaner TSX
+  const { name, title } = info;
+  const { id, images, external_urls } = artist;
+  const imageURL = images[0]
+    ? images[0].url
+    : 'https://reactnativecode.com/wp-content/uploads/2018/02/Default_Image_Thumbnail.png';
+
   return (
     <>
       <Popup
@@ -66,11 +90,7 @@ const ArtistBubble = ({
         trigger={
           <div
             style={{
-              backgroundImage: `url(${
-                artist.images[0]
-                  ? artist.images[0].url
-                  : 'https://reactnativecode.com/wp-content/uploads/2018/02/Default_Image_Thumbnail.png'
-              })`,
+              backgroundImage: `url(${imageURL})`,
               backgroundSize: 'cover',
               height: '50px',
               width: '50px',
@@ -89,8 +109,8 @@ const ArtistBubble = ({
       >
         <Grid columns={1}>
           <Grid.Column textAlign="left">
-            <Header as="h4">{`Artist: ${info.name}`}</Header>
-            <p>{`Top Track: ${info.title}`}</p>
+            <Header as="h4">{`Artist: ${name}`}</Header>
+            <p>{`Top Track: ${title}`}</p>
             <Button.Group>
               <Popup
                 mouseEnterDelay={500}
@@ -98,8 +118,8 @@ const ArtistBubble = ({
                 size="mini"
                 content={
                   artist.following
-                    ? `Unfollow ${info.name} on Spotify`
-                    : `Follow ${info.name} on Spotify`
+                    ? `Unfollow ${name} on Spotify`
+                    : `Follow ${name} on Spotify`
                 }
                 trigger={
                   artist.following ? (
@@ -107,8 +127,8 @@ const ArtistBubble = ({
                       icon="user times"
                       size="mini"
                       onClick={() => {
-                        spotifyApi.unfollowArtists([artist.id]);
-                        unfollowNotify(info.name);
+                        spotifyApi.unfollowArtists([id]);
+                        unfollowNotify(name);
                       }}
                     />
                   ) : (
@@ -116,8 +136,8 @@ const ArtistBubble = ({
                       icon="user plus"
                       size="mini"
                       onClick={() => {
-                        spotifyApi.followArtists([artist.id]);
-                        followNotify(info.name);
+                        spotifyApi.followArtists([id]);
+                        followNotify(name);
                       }}
                     />
                   )
@@ -132,7 +152,7 @@ const ArtistBubble = ({
                   <Button
                     as="a"
                     target="_blank"
-                    href={artist.external_urls.spotify}
+                    href={external_urls.spotify}
                     icon="spotify"
                     size="mini"
                   />

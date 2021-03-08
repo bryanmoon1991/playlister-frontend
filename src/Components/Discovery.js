@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Loader } from 'semantic-ui-react';
 import ArtistBubble from './ArtistBubble';
 import Card from './Card';
 import Controls from './Controls';
 import '../Styles/Discovery.css';
-import toast, { Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 
 const msp = (state) => {
   return {
@@ -14,13 +14,6 @@ const msp = (state) => {
 };
 
 const Discovery = ({ relatedArtists, spotifyApi }) => {
-  const saveNotify = (item) => toast(`Saved ${item} on Spotify`);
-  const unsaveNotify = (item) => toast(`Removed ${item} from Saved`);
-  const followNotify = (artist) => toast(`Now following ${artist} on Spotify`);
-  const unfollowNotify = (artist) => toast(`Unfollowed ${artist} on Spotify`);
-  const addToBuildNotify = (item) =>
-    toast(`Added ${item} to Your Current Build!`);
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -31,8 +24,6 @@ const Discovery = ({ relatedArtists, spotifyApi }) => {
         artist={artist}
         key={artist.id}
         spotifyApi={spotifyApi}
-        followNotify={followNotify}
-        unfollowNotify={unfollowNotify}
         position={i}
       />
     ));
@@ -45,14 +36,7 @@ const Discovery = ({ relatedArtists, spotifyApi }) => {
           <>
             <div className="stack">
               <Controls spotifyApi={spotifyApi} />
-              <Card
-                spotifyApi={spotifyApi}
-                followNotify={followNotify}
-                unfollowNotify={unfollowNotify}
-                saveNotify={saveNotify}
-                unsaveNotify={unsaveNotify}
-                addToBuildNotify={addToBuildNotify}
-              />
+              <Card spotifyApi={spotifyApi} />
             </div>
             <div className="bubbles">
               <p>Related Artists:</p>

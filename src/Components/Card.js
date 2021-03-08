@@ -1,4 +1,3 @@
-import React from 'react';
 import { connect } from 'react-redux';
 import { addSeed } from '../Redux/actions';
 import ArtistCard from './ArtistCard';
@@ -10,16 +9,7 @@ const msp = (state) => {
   };
 };
 
-const Card = ({
-  currentSelection,
-  addSeed,
-  spotifyApi,
-  followNotify,
-  saveNotify,
-  unfollowNotify,
-  unsaveNotify,
-  addToBuildNotify,
-}) => {
+const Card = ({ currentSelection, addSeed, spotifyApi }) => {
   const renderComponent = () => {
     switch (currentSelection.info.type) {
       case 'artist':
@@ -28,11 +18,6 @@ const Card = ({
             artist={currentSelection}
             addSeed={addSeed}
             spotifyApi={spotifyApi}
-            followNotify={followNotify}
-            unfollowNotify={unfollowNotify}
-            saveNotify={saveNotify}
-            unsaveNotify={unsaveNotify}
-            addToBuildNotify={addToBuildNotify}
           />
         );
       case 'album':
@@ -41,11 +26,6 @@ const Card = ({
             album={currentSelection}
             addSeed={addSeed}
             spotifyApi={spotifyApi}
-            followNotify={followNotify}
-            unfollowNotify={unfollowNotify}
-            saveNotify={saveNotify}
-            unsaveNotify={unsaveNotify}
-            addToBuildNotify={addToBuildNotify}
           />
         );
       default:
