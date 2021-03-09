@@ -11,22 +11,25 @@ import {
   followNotify,
   unfollowNotify,
   addToBuildNotify,
-} from './utils'
+} from './utils';
 
-const AlbumCard = ({
-  album,
-  addSeed,
-  spotifyApi,
-  createNext,
-}) => {
-  console.log('in album card', album);
+import { Album } from '../types/index';
+
+interface Props {
+  album: Album;
+  addSeed: Function;
+  spotifyApi: any;
+  createNext: Function;
+}
+
+const AlbumCard = ({ album, addSeed, spotifyApi, createNext }: Props) => {
+  const { info, features, tracks } = album;
 
   const renderFeatures = () => {
-    // debugger;
-    if (album.info.artists[0].name === 'Various Artists') {
+    if (info.artists[0].name === 'Various Artists') {
       return <p>See Related Artists:</p>;
     } else {
-      return album.features.map((artist) => (
+      return features.map((artist) => (
         <ArtistBubble
           key={artist.id}
           artist={artist}
@@ -40,46 +43,46 @@ const AlbumCard = ({
   };
 
   const renderTracks = () => {
-    return album.info.tracks.items.map((track) => (
+    // return album.info.tracks.items.map((track) => (
+    return tracks.map((track) => (
       <TracklistItem
-        key={track.id}
+        //why is the key erroring out?
+        // key={track.id}
         track={track}
-        images={album.info.images}
+        images={info.images}
         addToBuildNotify={addToBuildNotify}
         addSeed={addSeed}
       />
     ));
   };
 
+  //should i desctructure info further?
+
   return (
     <>
-      {album.info ? (
+      {info ? (
         <div className="album-card">
-          <img
-            src={album.info.images[1].url}
-            alt="album"
-            className="album-picture"
-          />
+          <img src={info.images[1].url} alt="album" className="album-picture" />
           <div className="info">
-            <h3>{album.info.name + ' by ' + album.info.artists[0].name}</h3>
+            <h3>{info.name + ' by ' + info.artists[0].name}</h3>
             <Button.Group>
               <Popup
                 mouseEnterDelay={500}
                 position="bottom center"
                 size="mini"
                 content={
-                  album.info.saved
-                    ? `Remove ${album.info.name} from Saved`
-                    : `Add ${album.info.name} to Favorites`
+                  info.saved
+                    ? `Remove ${info.name} from Saved`
+                    : `Add ${info.name} to Favorites`
                 }
                 trigger={
-                  album.info.saved ? (
+                  info.saved ? (
                     <Button
                       icon="undo"
                       size="mini"
                       onClick={() => {
-                        spotifyApi.removeFromMySavedAlbums([album.info.id]);
-                        unsaveNotify(album.info.name);
+                        spotifyApi.removeFromMySavedAlbums([info.id]);
+                        unsaveNotify(info.name);
                       }}
                     />
                   ) : (
@@ -87,8 +90,8 @@ const AlbumCard = ({
                       icon="save"
                       size="mini"
                       onClick={() => {
-                        spotifyApi.addToMySavedAlbums([album.info.id]);
-                        saveNotify(album.info.name);
+                        spotifyApi.addToMySavedAlbums([info.id]);
+                        saveNotify(info.name);
                       }}
                     />
                   )
@@ -98,14 +101,14 @@ const AlbumCard = ({
                 mouseEnterDelay={500}
                 position="bottom center"
                 size="mini"
-                content={`Add ${album.info.name} to Playlist Build`}
+                content={`Add ${info.name} to Playlist Build`}
                 trigger={
                   <Button
                     icon="add"
                     size="mini"
                     onClick={() => {
-                      addToBuildNotify(album.info.name);
-                      addSeed(album.info);
+                      addToBuildNotify(info.name);
+                      addSeed(info);
                     }}
                   />
                 }
@@ -119,7 +122,7 @@ const AlbumCard = ({
                   <Button
                     as="a"
                     target="_blank"
-                    href={album.info.external_urls.spotify}
+                    href={info.external_urls.spotify}
                     icon="spotify"
                     size="mini"
                   />
